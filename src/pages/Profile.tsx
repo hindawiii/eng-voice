@@ -1,4 +1,5 @@
 import { Coins, Crown, Play, Settings, Share2, TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ProBadge } from "@/components/ProBadge";
 import { LEVELS } from "@/data/rooms";
@@ -26,9 +27,13 @@ const Profile = () => {
       <header className="bg-gradient-hero px-6 pb-20 pt-12 text-primary-foreground">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Profile</h1>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur">
+          <Link
+            to="/settings"
+            aria-label="Settings"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur transition-smooth hover:bg-white/20"
+          >
             <Settings className="h-5 w-5" />
-          </button>
+          </Link>
         </div>
       </header>
 
