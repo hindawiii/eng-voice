@@ -6,13 +6,21 @@ import {
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
 import { Seat } from "@/components/Seat";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/I18nProvider";
 
-const TOPICS = [
+const TOPICS_EN = [
   "Tell us about a weird food you've tried",
   "Describe your perfect Sunday morning",
   "A small habit that changed your life",
   "Your favorite city to walk in",
   "What song reminds you of childhood?",
+];
+const TOPICS_AR = [
+  "أخبرنا عن طعام غريب جربته",
+  "صف صباح الأحد المثالي",
+  "عادة صغيرة غيّرت حياتك",
+  "مدينتك المفضلة للمشي",
+  "أي أغنية تذكرك بطفولتك؟",
 ];
 
 const LISTENERS = [
@@ -31,7 +39,10 @@ const TOPIC_INTERVAL = 300; // 5 min
 
 const Room = () => {
   const { key } = useParams();
+  const { t, lang } = useI18n();
   const room = ROOMS.find((r) => r.key === key) ?? ROOMS[0];
+  const TOPICS = lang === "ar" ? TOPICS_AR : TOPICS_EN;
+  const roomName = lang === "ar" ? room.nameAr : room.name;
 
   // Seats: 8 slots
   const [seats, setSeats] = useState<(SeatUser | undefined)[]>(() => {
@@ -101,8 +112,8 @@ const Room = () => {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70">Live Room</p>
-            <h1 className="text-lg font-bold">{room.flag} {room.name}</h1>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70">{t("room.live")}</p>
+            <h1 className="text-lg font-bold">{room.flag} {roomName}</h1>
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive">
             <Flag className="h-4 w-4" />
@@ -113,7 +124,7 @@ const Room = () => {
         <div className="mt-5 rounded-2xl bg-white/95 p-4 text-foreground shadow-elegant">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-foreground">
-              <Sparkles className="h-3 w-3" /> Topic
+              <Sparkles className="h-3 w-3" /> {t("room.topic")}
             </span>
             <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
               <Timer className="h-3 w-3" />
@@ -129,12 +140,12 @@ const Room = () => {
         <section className="-mt-4 rounded-3xl bg-card p-5 shadow-elegant">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              <Mic className="h-4 w-4" /> Speakers · {seats.filter(Boolean).length}/8
+              <Mic className="h-4 w-4" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
             </h2>
             {activeSpeakerIdx !== -1 && (
               <span className="flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-1 text-xs font-bold text-gold-foreground tabular-nums">
                 <Timer className="h-3 w-3" />
-                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")} left
+                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")} {t("room.left")}
               </span>
             )}
           </div>
@@ -149,10 +160,10 @@ const Room = () => {
         <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              Listeners · {LISTENERS.length}
+              {t("room.listeners")} · {LISTENERS.length}
             </h2>
             <button className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground">
-              <Hand className="h-3.5 w-3.5" /> Raise hand
+              <Hand className="h-3.5 w-3.5" /> {t("room.raise")}
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -163,7 +174,7 @@ const Room = () => {
               </div>
             ))}
             <button className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
-              <Plus className="h-3 w-3" /> Invite
+              <Plus className="h-3 w-3" /> {t("room.invite")}
             </button>
           </div>
         </section>
@@ -171,9 +182,9 @@ const Room = () => {
         {/* Silent translation */}
         <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            <Languages className="h-4 w-4" /> Silent Translation
+            <Languages className="h-4 w-4" /> {t("room.silent")}
           </h2>
-          <p className="text-xs text-muted-foreground">Tap a phrase to translate it instantly without interrupting the speaker.</p>
+          <p className="text-xs text-muted-foreground">{t("room.silentHint")}</p>
           <ul className="mt-3 space-y-2">
             {phrases.map((p) => (
               <li key={p.src}>
@@ -200,14 +211,14 @@ const Room = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-gold" />
-                <h2 className="text-base font-bold">30-second Challenge</h2>
+                <h2 className="text-base font-bold">{t("room.challenge")}</h2>
               </div>
               <p className="mt-1 text-sm text-primary-foreground/80">
-                Send a tongue twister to a speaker — 50 LP if they nail it.
+                {t("room.challengeHint")}
               </p>
             </div>
             <button className="rounded-full bg-gradient-gold px-4 py-2 text-sm font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
-              Send
+              {t("room.send")}
             </button>
           </div>
         </section>
@@ -217,10 +228,10 @@ const Room = () => {
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-lg">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-3">
           <button className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm font-semibold transition-smooth hover:bg-primary-soft">
-            <Hand className="h-4 w-4" /> Request seat
+            <Hand className="h-4 w-4" /> {t("room.requestSeat")}
           </button>
           <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-elegant transition-spring hover:scale-[1.02]">
-            <Mic className="h-4 w-4" /> Tap to speak
+            <Mic className="h-4 w-4" /> {t("room.tapSpeak")}
           </button>
         </div>
       </div>

@@ -1,14 +1,19 @@
-import { Mic, Users } from "lucide-react";
+import { Mic } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Room } from "@/data/rooms";
 import { ProBadge } from "./ProBadge";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/I18nProvider";
 
 interface RoomCardProps {
   room: Room;
 }
 
 export const RoomCard = ({ room }: RoomCardProps) => {
+  const { lang } = useI18n();
+  const title = lang === "ar" ? room.nameAr : room.name;
+  const subtitle = lang === "ar" ? room.name : room.nameAr;
+  const topic = lang === "ar" ? room.topicAr : room.topic;
   return (
     <Link
       to={`/room/${room.key}`}
@@ -24,16 +29,16 @@ export const RoomCard = ({ room }: RoomCardProps) => {
             {room.flag}
           </div>
           <div>
-            <h3 className="font-bold leading-tight text-foreground">{room.name}</h3>
-            <p className="font-arabic text-sm text-muted-foreground">{room.nameAr}</p>
+            <h3 className="font-bold leading-tight text-foreground">{title}</h3>
+            <p className={cn("text-sm text-muted-foreground", lang === "en" && "font-arabic")}>{subtitle}</p>
           </div>
         </div>
         {room.pro && <ProBadge />}
       </div>
 
       <p className="mt-4 line-clamp-2 text-sm text-foreground/80">
-        <span className="mr-1.5 inline-flex h-1.5 w-1.5 -translate-y-0.5 rounded-full bg-gold align-middle" />
-        {room.topic}
+        <span className="mx-1.5 inline-flex h-1.5 w-1.5 -translate-y-0.5 rounded-full bg-gold align-middle" />
+        {topic}
       </p>
 
       <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-sm">
@@ -43,7 +48,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
             </span>
-            <span className="font-medium text-foreground">{room.liveUsers}</span> live
+            <span className="font-medium text-foreground">{room.liveUsers}</span> {lang === "ar" ? "مباشر" : "live"}
           </span>
           <span className="flex items-center gap-1.5">
             <Mic className="h-3.5 w-3.5" />
@@ -51,7 +56,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
           </span>
         </div>
         <span className="text-xs font-semibold text-primary opacity-0 transition-smooth group-hover:opacity-100">
-          Join →
+          {lang === "ar" ? "← انضم" : "Join →"}
         </span>
       </div>
     </Link>
