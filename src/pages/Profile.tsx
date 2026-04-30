@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ProBadge } from "@/components/ProBadge";
 import { LEVELS } from "@/data/rooms";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const USER = {
   name: "Yusuf Al-Amin",
@@ -16,6 +17,7 @@ const USER = {
 };
 
 const Profile = () => {
+  const { t, lang } = useI18n();
   const currentLevel = LEVELS.find((l) => l.id === USER.level)!;
   const nextLevel = LEVELS.find((l) => l.id === USER.level + 1);
   const progress = nextLevel
@@ -26,10 +28,10 @@ const Profile = () => {
     <AppShell>
       <header className="bg-gradient-hero px-6 pb-20 pt-12 text-primary-foreground">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Profile</h1>
+          <h1 className="text-2xl font-bold">{t("profile.title")}</h1>
           <Link
             to="/settings"
-            aria-label="Settings"
+            aria-label={t("settings.title")}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur transition-smooth hover:bg-white/20"
           >
             <Settings className="h-5 w-5" />
@@ -56,7 +58,7 @@ const Profile = () => {
               </div>
               <p className="text-sm text-muted-foreground">{USER.handle}</p>
               <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-gold-foreground">
-                🔥 {USER.streak}-day streak
+                🔥 {USER.streak}-{t("profile.streak")}
               </div>
             </div>
             <button className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-smooth hover:bg-primary hover:text-primary-foreground">
@@ -68,11 +70,11 @@ const Profile = () => {
           <div className="mt-6 rounded-2xl bg-primary-soft p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="font-bold text-primary">
-                {currentLevel.emoji} {currentLevel.name} · Lv {currentLevel.id}
+                {currentLevel.emoji} {lang === "ar" ? currentLevel.nameAr : currentLevel.name} · Lv {currentLevel.id}
               </span>
               {nextLevel && (
                 <span className="text-xs text-muted-foreground">
-                  {USER.xp} / {nextLevel.min} XP
+                  {USER.xp} / {nextLevel.min} {t("profile.xp")}
                 </span>
               )}
             </div>
@@ -81,7 +83,7 @@ const Profile = () => {
             </div>
             {nextLevel && (
               <p className="mt-2 text-xs text-muted-foreground">
-                Next: <span className="font-semibold text-foreground">{nextLevel.emoji} {nextLevel.name}</span> in {nextLevel.min - USER.xp} XP
+                {t("profile.next")}: <span className="font-semibold text-foreground">{nextLevel.emoji} {lang === "ar" ? nextLevel.nameAr : nextLevel.name}</span> {t("profile.in")} {nextLevel.min - USER.xp} {t("profile.xp")}
               </p>
             )}
           </div>
@@ -90,13 +92,13 @@ const Profile = () => {
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-2xl border border-border p-4">
               <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-                <TrendingUp className="h-3.5 w-3.5" /> XP
+                <TrendingUp className="h-3.5 w-3.5" /> {t("profile.xp")}
               </div>
               <p className="mt-1 text-2xl font-black">{USER.xp.toLocaleString()}</p>
             </div>
             <div className="rounded-2xl border border-border bg-gold-soft/40 p-4">
               <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-                <Coins className="h-3.5 w-3.5 text-gold" /> LP
+                <Coins className="h-3.5 w-3.5 text-gold" /> {t("profile.lp")}
               </div>
               <p className="mt-1 text-2xl font-black text-gold-foreground">{USER.lp.toLocaleString()}</p>
             </div>
@@ -105,7 +107,7 @@ const Profile = () => {
 
         {/* Levels ladder */}
         <section className="rounded-3xl bg-card p-5 shadow-soft">
-          <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">Journey</h3>
+          <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">{t("profile.journey")}</h3>
           <div className="flex items-center justify-between">
             {LEVELS.map((l) => {
               const reached = USER.level >= l.id;
@@ -122,7 +124,7 @@ const Profile = () => {
                     {l.emoji}
                   </div>
                   <span className={"text-[11px] font-semibold " + (reached ? "text-foreground" : "text-muted-foreground")}>
-                    {l.name}
+                    {lang === "ar" ? l.nameAr : l.name}
                   </span>
                 </div>
               );
@@ -132,16 +134,16 @@ const Profile = () => {
 
         {/* Earn LP */}
         <section className="rounded-3xl bg-card p-5 shadow-soft">
-          <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">Earn LP</h3>
+          <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">{t("profile.earnLp")}</h3>
           <button className="flex w-full items-center gap-3 rounded-2xl bg-secondary p-4 text-start transition-smooth hover:bg-primary-soft">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground">
               <Play className="h-5 w-5" fill="currentColor" />
             </div>
             <div className="flex-1">
-              <p className="font-semibold">Watch a rewarded ad</p>
-              <p className="text-xs text-muted-foreground">~30s · Earn 25 LP</p>
+              <p className="font-semibold">{t("profile.watchAd")}</p>
+              <p className="text-xs text-muted-foreground">{t("profile.adSub")}</p>
             </div>
-            <span className="rounded-full bg-gold px-3 py-1 text-xs font-bold text-gold-foreground">+25 LP</span>
+            <span className="rounded-full bg-gold px-3 py-1 text-xs font-bold text-gold-foreground">+25 {t("profile.lp")}</span>
           </button>
         </section>
 
@@ -152,13 +154,13 @@ const Profile = () => {
             <div className="relative">
               <div className="flex items-center gap-2">
                 <Crown className="h-5 w-5 text-gold" />
-                <h3 className="text-lg font-bold">Go Pro</h3>
+                <h3 className="text-lg font-bold">{t("profile.goPro")}</h3>
               </div>
               <p className="mt-1 text-sm text-primary-foreground/80">
-                Unlimited rooms · Gold badge · AI translation tools
+                {t("profile.proPerks")}
               </p>
               <button className="mt-4 inline-flex items-center justify-center rounded-full bg-gradient-gold px-5 py-2.5 text-sm font-bold text-gold-foreground shadow-gold transition-spring hover:scale-[1.02]">
-                Upgrade — $2.99 / month
+                {t("profile.upgrade")}
               </button>
             </div>
           </section>
