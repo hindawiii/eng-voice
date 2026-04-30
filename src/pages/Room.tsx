@@ -145,7 +145,7 @@ const Room = () => {
             {activeSpeakerIdx !== -1 && (
               <span className="flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-1 text-xs font-bold text-gold-foreground tabular-nums">
                 <Timer className="h-3 w-3" />
-                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")} left
+                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")} {t("room.left")}
               </span>
             )}
           </div>
@@ -160,10 +160,10 @@ const Room = () => {
         <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              Listeners · {LISTENERS.length}
+              {t("room.listeners")} · {LISTENERS.length}
             </h2>
             <button className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground">
-              <Hand className="h-3.5 w-3.5" /> Raise hand
+              <Hand className="h-3.5 w-3.5" /> {t("room.raise")}
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -174,7 +174,7 @@ const Room = () => {
               </div>
             ))}
             <button className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
-              <Plus className="h-3 w-3" /> Invite
+              <Plus className="h-3 w-3" /> {t("room.invite")}
             </button>
           </div>
         </section>
@@ -182,9 +182,9 @@ const Room = () => {
         {/* Silent translation */}
         <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            <Languages className="h-4 w-4" /> Silent Translation
+            <Languages className="h-4 w-4" /> {t("room.silent")}
           </h2>
-          <p className="text-xs text-muted-foreground">Tap a phrase to translate it instantly without interrupting the speaker.</p>
+          <p className="text-xs text-muted-foreground">{t("room.silentHint")}</p>
           <ul className="mt-3 space-y-2">
             {phrases.map((p) => (
               <li key={p.src}>
@@ -211,14 +211,14 @@ const Room = () => {
             <div>
               <div className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-gold" />
-                <h2 className="text-base font-bold">30-second Challenge</h2>
+                <h2 className="text-base font-bold">{t("room.challenge")}</h2>
               </div>
               <p className="mt-1 text-sm text-primary-foreground/80">
-                Send a tongue twister to a speaker — 50 LP if they nail it.
+                {t("room.challengeHint")}
               </p>
             </div>
             <button className="rounded-full bg-gradient-gold px-4 py-2 text-sm font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
-              Send
+              {t("room.send")}
             </button>
           </div>
         </section>
@@ -228,10 +228,10 @@ const Room = () => {
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-lg">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-3">
           <button className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm font-semibold transition-smooth hover:bg-primary-soft">
-            <Hand className="h-4 w-4" /> Request seat
+            <Hand className="h-4 w-4" /> {t("room.requestSeat")}
           </button>
           <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-elegant transition-spring hover:scale-[1.02]">
-            <Mic className="h-4 w-4" /> Tap to speak
+            <Mic className="h-4 w-4" /> {t("room.tapSpeak")}
           </button>
         </div>
       </div>
