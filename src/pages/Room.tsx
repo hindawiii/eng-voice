@@ -6,13 +6,21 @@ import {
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
 import { Seat } from "@/components/Seat";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/I18nProvider";
 
-const TOPICS = [
+const TOPICS_EN = [
   "Tell us about a weird food you've tried",
   "Describe your perfect Sunday morning",
   "A small habit that changed your life",
   "Your favorite city to walk in",
   "What song reminds you of childhood?",
+];
+const TOPICS_AR = [
+  "أخبرنا عن طعام غريب جربته",
+  "صف صباح الأحد المثالي",
+  "عادة صغيرة غيّرت حياتك",
+  "مدينتك المفضلة للمشي",
+  "أي أغنية تذكرك بطفولتك؟",
 ];
 
 const LISTENERS = [
