@@ -48,7 +48,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
             </span>
-            <span className="font-medium text-foreground">{room.liveUsers}</span> live
+            <span className="font-medium text-foreground">{room.liveUsers}</span> {lang === "ar" ? "مباشر" : "live"}
           </span>
           <span className="flex items-center gap-1.5">
             <Mic className="h-3.5 w-3.5" />
@@ -56,7 +56,7 @@ export const RoomCard = ({ room }: RoomCardProps) => {
           </span>
         </div>
         <span className="text-xs font-semibold text-primary opacity-0 transition-smooth group-hover:opacity-100">
-          Join →
+          {lang === "ar" ? "← انضم" : "Join →"}
         </span>
       </div>
     </Link>
