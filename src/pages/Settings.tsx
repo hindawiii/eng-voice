@@ -7,27 +7,17 @@ import { AppShell } from "@/components/AppShell";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-
-type Lang = "ar" | "en";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const Settings = () => {
+  const { t, lang, setLang } = useI18n();
   const [dark, setDark] = useState<boolean>(() =>
     typeof document !== "undefined" && document.documentElement.classList.contains("dark")
-  );
-  const [lang, setLang] = useState<Lang>(() =>
-    typeof document !== "undefined" && document.documentElement.dir === "rtl" ? "ar" : "en"
   );
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
-
-  useEffect(() => {
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    document.documentElement.lang = lang;
-  }, [lang]);
-
-  const t = (en: string, ar: string) => (lang === "ar" ? ar : en);
 
   return (
     <AppShell>
@@ -38,13 +28,13 @@ const Settings = () => {
             to="/profile"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-5 w-5 rtl:rotate-180" />
           </Link>
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70">
-              {t("Account", "الحساب")}
+              {t("settings.account")}
             </p>
-            <h1 className="text-2xl font-bold">{t("Settings", "الإعدادات")}</h1>
+            <h1 className="text-2xl font-bold">{t("settings.title")}</h1>
           </div>
         </div>
       </header>
@@ -52,30 +42,26 @@ const Settings = () => {
       <div className="space-y-5 px-5 -mt-6">
         {/* Account section */}
         <section className="overflow-hidden rounded-3xl bg-card shadow-elegant">
-          <SettingsHeader label={t("Account", "الحساب")} />
+          <SettingsHeader label={t("settings.account")} />
           <SettingsRow
             icon={<UserCog className="h-5 w-5" />}
-            title={t("Edit Profile", "تعديل الملف الشخصي")}
-            subtitle={t("Name, avatar, languages", "الاسم، الصورة، اللغات")}
-            onClick={() =>
-              toast({ title: t("Edit Profile", "تعديل الملف الشخصي"), description: t("Coming soon", "قريباً") })
-            }
+            title={t("settings.editProfile")}
+            subtitle={t("settings.editProfileSub")}
+            onClick={() => toast({ title: t("settings.editProfile"), description: t("settings.comingSoon") })}
           />
         </section>
 
         {/* Preferences */}
         <section className="overflow-hidden rounded-3xl bg-card shadow-soft">
-          <SettingsHeader label={t("Preferences", "التفضيلات")} />
+          <SettingsHeader label={t("settings.preferences")} />
 
           <div className="flex items-center gap-4 px-5 py-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
               <Moon className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <p className="font-semibold">{t("Dark Mode", "الوضع الليلي")}</p>
-              <p className="text-xs text-muted-foreground">
-                {t("Easier on the eyes at night", "أسهل على العين في الليل")}
-              </p>
+              <p className="font-semibold">{t("settings.dark")}</p>
+              <p className="text-xs text-muted-foreground">{t("settings.darkSub")}</p>
             </div>
             <Switch checked={dark} onCheckedChange={setDark} />
           </div>
@@ -87,10 +73,8 @@ const Settings = () => {
               <Globe className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <p className="font-semibold">{t("Language", "اللغة")}</p>
-              <p className="text-xs text-muted-foreground">
-                {t("Interface language", "لغة الواجهة")}
-              </p>
+              <p className="font-semibold">{t("settings.language")}</p>
+              <p className="text-xs text-muted-foreground">{t("settings.languageSub")}</p>
             </div>
             <div className="flex rounded-full bg-secondary p-1">
               <LangPill active={lang === "en"} onClick={() => setLang("en")}>EN</LangPill>
@@ -101,51 +85,34 @@ const Settings = () => {
 
         {/* Privacy & About */}
         <section className="overflow-hidden rounded-3xl bg-card shadow-soft">
-          <SettingsHeader label={t("Support", "الدعم")} />
+          <SettingsHeader label={t("settings.support")} />
           <SettingsRow
             icon={<Shield className="h-5 w-5" />}
-            title={t("Privacy and Safety", "الخصوصية والأمان")}
-            subtitle={t("Blocked users, reports, data", "المحظورون، البلاغات، البيانات")}
-            onClick={() =>
-              toast({ title: t("Privacy and Safety", "الخصوصية والأمان"), description: t("Coming soon", "قريباً") })
-            }
+            title={t("settings.privacy")}
+            subtitle={t("settings.privacySub")}
+            onClick={() => toast({ title: t("settings.privacy"), description: t("settings.comingSoon") })}
           />
           <Divider />
           <SettingsRow
             icon={<Info className="h-5 w-5" />}
-            title={t("About the App", "حول التطبيق")}
-            subtitle={t("LingVoice · v1.0.0", "حِوار · الإصدار ١٫٠٫٠")}
-            onClick={() =>
-              toast({
-                title: t("LingVoice (حِوار)", "حِوار (LingVoice)"),
-                description: t(
-                  "A language exchange community built for connection.",
-                  "مجتمع لتبادل اللغات صُمم للتواصل."
-                ),
-              })
-            }
+            title={t("settings.about")}
+            subtitle={t("settings.aboutSub")}
+            onClick={() => toast({ title: "حِوار · LingVoice", description: t("settings.aboutBody") })}
           />
         </section>
 
         {/* Logout */}
         <section className="overflow-hidden rounded-3xl bg-card shadow-soft">
           <button
-            onClick={() =>
-              toast({
-                title: t("Logged out", "تم تسجيل الخروج"),
-                description: t("See you soon!", "إلى اللقاء قريباً!"),
-              })
-            }
+            onClick={() => toast({ title: t("settings.loggedOut"), description: t("settings.seeYou") })}
             className="flex w-full items-center gap-4 px-5 py-4 text-start transition-smooth hover:bg-destructive/10"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
               <LogOut className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <p className="font-bold text-destructive">{t("Log Out", "تسجيل الخروج")}</p>
-              <p className="text-xs text-muted-foreground">
-                {t("Sign out of this device", "تسجيل الخروج من هذا الجهاز")}
-              </p>
+              <p className="font-bold text-destructive">{t("settings.logout")}</p>
+              <p className="text-xs text-muted-foreground">{t("settings.logoutSub")}</p>
             </div>
             <ChevronRight className="h-4 w-4 text-destructive/70 rtl:rotate-180" />
           </button>
