@@ -16,19 +16,19 @@ const Activity = () => {
   <AppShell>
     <header className="bg-gradient-hero px-6 pb-8 pt-12 text-primary-foreground">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Activity</h1>
+        <h1 className="text-2xl font-bold">{t("activity.title")}</h1>
         <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur">
           <Bell className="h-5 w-5" />
         </button>
       </div>
-      <p className="mt-1 text-sm text-primary-foreground/70">Verified facts wall & your notifications</p>
+      <p className="mt-1 text-sm text-primary-foreground/70">{t("activity.subtitle")}</p>
     </header>
 
     <div className="space-y-6 px-5 -mt-4">
       {/* Notifications */}
       <section className="rounded-3xl bg-card p-4 shadow-soft">
         <h2 className="mb-3 flex items-center gap-2 px-1 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-          <Bell className="h-4 w-4" /> Notifications
+          <Bell className="h-4 w-4" /> {t("activity.notifications")}
         </h2>
         <ul className="space-y-2">
           {NOTIFICATIONS.map((n) => (
@@ -38,10 +38,10 @@ const Activity = () => {
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{n.title}</p>
+                  <p className="text-sm font-semibold">{n.title[lang]}</p>
                   <span className="text-xs text-muted-foreground">{n.time}</span>
                 </div>
-                <p className="text-sm text-muted-foreground">{n.body}</p>
+                <p className="text-sm text-muted-foreground">{n.body[lang]}</p>
               </div>
             </li>
           ))}
@@ -51,7 +51,7 @@ const Activity = () => {
       {/* Facts wall */}
       <section className="rounded-3xl bg-card p-4 shadow-soft">
         <h2 className="mb-3 flex items-center gap-2 px-1 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-          <Sparkles className="h-4 w-4 text-gold" /> Facts Wall
+          <Sparkles className="h-4 w-4 text-gold" /> {t("activity.facts")}
         </h2>
         <ul className="space-y-3">
           {FACTS.map((f) => (
@@ -85,6 +85,7 @@ const Activity = () => {
       </section>
     </div>
   </AppShell>
-);
+  );
+};
 
 export default Activity;
