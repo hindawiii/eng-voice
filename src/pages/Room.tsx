@@ -39,7 +39,10 @@ const TOPIC_INTERVAL = 300; // 5 min
 
 const Room = () => {
   const { key } = useParams();
+  const { t, lang } = useI18n();
   const room = ROOMS.find((r) => r.key === key) ?? ROOMS[0];
+  const TOPICS = lang === "ar" ? TOPICS_AR : TOPICS_EN;
+  const roomName = lang === "ar" ? room.nameAr : room.name;
 
   // Seats: 8 slots
   const [seats, setSeats] = useState<(SeatUser | undefined)[]>(() => {
