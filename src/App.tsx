@@ -9,11 +9,13 @@ import Profile from "./pages/Profile.tsx";
 import Room from "./pages/Room.tsx";
 import Settings from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { I18nProvider } from "./i18n/I18nProvider";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <I18nProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
