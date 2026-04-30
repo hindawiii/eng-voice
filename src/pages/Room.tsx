@@ -112,8 +112,8 @@ const Room = () => {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70">Live Room</p>
-            <h1 className="text-lg font-bold">{room.flag} {room.name}</h1>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70">{t("room.live")}</p>
+            <h1 className="text-lg font-bold">{room.flag} {roomName}</h1>
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive">
             <Flag className="h-4 w-4" />
@@ -124,7 +124,7 @@ const Room = () => {
         <div className="mt-5 rounded-2xl bg-white/95 p-4 text-foreground shadow-elegant">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-foreground">
-              <Sparkles className="h-3 w-3" /> Topic
+              <Sparkles className="h-3 w-3" /> {t("room.topic")}
             </span>
             <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
               <Timer className="h-3 w-3" />
@@ -140,7 +140,7 @@ const Room = () => {
         <section className="-mt-4 rounded-3xl bg-card p-5 shadow-elegant">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              <Mic className="h-4 w-4" /> Speakers · {seats.filter(Boolean).length}/8
+              <Mic className="h-4 w-4" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
             </h2>
             {activeSpeakerIdx !== -1 && (
               <span className="flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-1 text-xs font-bold text-gold-foreground tabular-nums">
