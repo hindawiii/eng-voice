@@ -2,14 +2,17 @@ import { ArrowUp, Bell, MessageCircle, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { LevelBadge } from "@/components/LevelBadge";
 import { FACTS } from "@/data/rooms";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const NOTIFICATIONS = [
-  { id: "n1", icon: "🏆", title: "You earned 50 LP", body: "Your tip about 'Sobremesa' got 25 upvotes!", time: "2m" },
-  { id: "n2", icon: "🎤", title: "Layla invited you to speak", body: "English Lounge · 'Weird foods' topic", time: "12m" },
-  { id: "n3", icon: "✨", title: "New level unlocked", body: "You reached Tree 🌳 (Level 3)", time: "1h" },
+  { id: "n1", icon: "🏆", title: { en: "You earned 50 LP", ar: "ربحت ٥٠ ن.ت" }, body: { en: "Your tip about 'Sobremesa' got 25 upvotes!", ar: "حصلت نصيحتك عن 'Sobremesa' على ٢٥ تصويتاً!" }, time: "2m" },
+  { id: "n2", icon: "🎤", title: { en: "Layla invited you to speak", ar: "ليلى دعتك للتحدث" }, body: { en: "English Lounge · 'Weird foods' topic", ar: "صالون الإنجليزية · موضوع 'أطعمة غريبة'" }, time: "12m" },
+  { id: "n3", icon: "✨", title: { en: "New level unlocked", ar: "فُتح مستوى جديد" }, body: { en: "You reached Tree 🌳 (Level 3)", ar: "وصلت إلى شجرة 🌳 (المستوى ٣)" }, time: "1h" },
 ];
 
-const Activity = () => (
+const Activity = () => {
+  const { t, lang } = useI18n();
+  return (
   <AppShell>
     <header className="bg-gradient-hero px-6 pb-8 pt-12 text-primary-foreground">
       <div className="flex items-center justify-between">
