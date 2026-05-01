@@ -16,7 +16,13 @@ const Activity = () => {
   const { t, lang } = useI18n();
   const [tip, setTip] = useState("");
   const [facts, setFacts] = useState<FactItem[]>(FACTS);
-  const [voted, setVoted] = useState<Record<string, boolean>>({});
+  const [voted, setVoted] = useState<Record<string, "up" | "down" | undefined>>({});
+  const [downvotes, setDownvotes] = useState<Record<string, number>>({});
+  const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string }[]>>({
+    f1: [{ id: "c1", user: "Hassan", text: lang === "ar" ? "تستخدم أيضاً 'إزيّك' مع التشديد" : "Also used as 'Ezzayyak' with emphasis" }],
+  });
+  const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
+  const [draftComment, setDraftComment] = useState<Record<string, string>>({});
 
   const post = () => {
     const trimmed = tip.trim().slice(0, 150);
