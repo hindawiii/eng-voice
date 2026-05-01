@@ -1,11 +1,16 @@
-import { Search, Sparkles, Coins } from "lucide-react";
+import { Search, Sparkles, Coins, Lock } from "lucide-react";
+import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { RoomCard } from "@/components/RoomCard";
+import { CreateRoomDialog } from "@/components/CreateRoomDialog";
 import { ROOMS } from "@/data/rooms";
+import { useCustomRooms } from "@/data/customRooms";
 import { useI18n } from "@/i18n/I18nProvider";
 
 const Index = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const customRooms = useCustomRooms();
+
   return (
     <AppShell>
       {/* Header */}
@@ -31,14 +36,62 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-gold/15 px-3 py-1.5 text-sm">
-          <Sparkles className="h-3.5 w-3.5 text-gold" />
-          <span className="text-primary-foreground/90">680 {t("lounge.live")}</span>
+        <div className="mt-5 flex items-center justify-between">
+          <div className="inline-flex items-center gap-2 rounded-full bg-gold/15 px-3 py-1.5 text-sm">
+            <Sparkles className="h-3.5 w-3.5 text-gold" />
+            <span className="text-primary-foreground/90">680 {t("lounge.live")}</span>
+          </div>
+          <CreateRoomDialog />
         </div>
       </header>
 
-      {/* Rooms grid */}
-      <section className="px-5 -mt-6">
+      {/* Custom rooms */}
+      {customRooms.length > 0 && (
+        <section className="px-5 -mt-6">
+          <div className="rounded-3xl bg-card p-4 shadow-elegant">
+            <div className="mb-3 flex items-baseline justify-between px-1">
+              <h2 className="text-lg font-bold">
+                {lang === "ar" ? "غرفك المُنشأة" : "Your rooms"}
+              </h2>
+              <span className="text-xs text-muted-foreground">
+                {customRooms.length} {lang === "ar" ? "غرفة" : "rooms"}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {customRooms.map((r) => (
+                <Link
+                  key={r.key}
+                  to={`/room/${r.key}`}
+                  className="group relative block overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-soft transition-spring hover:-translate-y-1 hover:shadow-elegant"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-soft text-2xl">
+                        {r.flag}
+                      </div>
+                      <div>
+                        <h3 className="font-bold leading-tight text-foreground">{r.language}</h3>
+                        <p className="text-xs text-muted-foreground">
+                          {lang === "ar" ? "أنشأتها أنت" : "Created by you"}
+                        </p>
+                      </div>
+                    </div>
+                    {r.isPrivate && (
+                      <span className="flex items-center gap-1 rounded-full bg-gold-soft px-2 py-1 text-[10px] font-bold text-gold-foreground">
+                        <Lock className="h-3 w-3" /> {lang === "ar" ? "خاصة" : "Private"}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-3 line-clamp-2 text-sm text-foreground/80">{r.topic}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Public rooms */}
+      <section className={customRooms.length > 0 ? "px-5 mt-5" : "px-5 -mt-6"}>
         <div className="rounded-3xl bg-card p-4 shadow-elegant">
           <div className="mb-3 flex items-baseline justify-between px-1">
             <h2 className="text-lg font-bold">{t("lounge.title")}</h2>
