@@ -46,11 +46,36 @@ const Activity = () => {
     toast.success(lang === "ar" ? "تم النشر" : "Posted!");
   };
 
-  const upvote = (id: string) => {
-    if (voted[id]) return;
-    setVoted((v) => ({ ...v, [id]: true }));
-    setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: x.upvotes + 1 } : x)));
+  const vote = (id: string, dir: "up" | "down") => {
+    const current = voted[id];
+    if (current === dir) return;
+    setVoted((v) => ({ ...v, [id]: dir }));
+    if (dir === "up") {
+      setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: x.upvotes + 1 } : x)));
+      if (current === "down") {
+        setDownvotes((d) => ({ ...d, [id]: Math.max(0, (d[id] || 0) - 1) }));
+      }
+    } else {
+      setDownvotes((d) => ({ ...d, [id]: (d[id] || 0) + 1 }));
+      if (current === "up") {
+        setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: Math.max(0, x.upvotes - 1) } : x)));
+      }
+    }
   };
+
+  const toggleComments = (id: string) =>
+    setOpenComments((o) => ({ ...o, [id]: !o[id] }));
+
+  const submitComment = (id: string) => {
+    const text = (draftComment[id] || "").trim().slice(0, 200);
+    if (text.length < 2) return;
+    setComments((c) => ({
+      ...c,
+      [id]: [...(c[id] || []), { id: `c${Date.now()}`, user: "You", text }],
+    }));
+    setDraftComment((d) => ({ ...d, [id]: "" }));
+  };
+
 
   const share = async (item: FactItem) => {
     try {
