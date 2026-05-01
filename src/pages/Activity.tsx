@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUp, Bell, MessageCircle, Send, Share2, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowUp, Bell, MessageCircle, Send, Share2, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { LevelBadge } from "@/components/LevelBadge";
 import { FACTS, FactItem } from "@/data/rooms";
