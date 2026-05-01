@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUp, Bell, MessageCircle, Send, Share2, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowUp, Bell, MessageCircle, Send, Share2, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { LevelBadge } from "@/components/LevelBadge";
 import { FACTS, FactItem } from "@/data/rooms";
@@ -16,7 +16,13 @@ const Activity = () => {
   const { t, lang } = useI18n();
   const [tip, setTip] = useState("");
   const [facts, setFacts] = useState<FactItem[]>(FACTS);
-  const [voted, setVoted] = useState<Record<string, boolean>>({});
+  const [voted, setVoted] = useState<Record<string, "up" | "down" | undefined>>({});
+  const [downvotes, setDownvotes] = useState<Record<string, number>>({});
+  const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string }[]>>({
+    f1: [{ id: "c1", user: "Hassan", text: lang === "ar" ? "تستخدم أيضاً 'إزيّك' مع التشديد" : "Also used as 'Ezzayyak' with emphasis" }],
+  });
+  const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
+  const [draftComment, setDraftComment] = useState<Record<string, string>>({});
 
   const post = () => {
     const trimmed = tip.trim().slice(0, 150);
@@ -40,11 +46,36 @@ const Activity = () => {
     toast.success(lang === "ar" ? "تم النشر" : "Posted!");
   };
 
-  const upvote = (id: string) => {
-    if (voted[id]) return;
-    setVoted((v) => ({ ...v, [id]: true }));
-    setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: x.upvotes + 1 } : x)));
+  const vote = (id: string, dir: "up" | "down") => {
+    const current = voted[id];
+    if (current === dir) return;
+    setVoted((v) => ({ ...v, [id]: dir }));
+    if (dir === "up") {
+      setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: x.upvotes + 1 } : x)));
+      if (current === "down") {
+        setDownvotes((d) => ({ ...d, [id]: Math.max(0, (d[id] || 0) - 1) }));
+      }
+    } else {
+      setDownvotes((d) => ({ ...d, [id]: (d[id] || 0) + 1 }));
+      if (current === "up") {
+        setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: Math.max(0, x.upvotes - 1) } : x)));
+      }
+    }
   };
+
+  const toggleComments = (id: string) =>
+    setOpenComments((o) => ({ ...o, [id]: !o[id] }));
+
+  const submitComment = (id: string) => {
+    const text = (draftComment[id] || "").trim().slice(0, 200);
+    if (text.length < 2) return;
+    setComments((c) => ({
+      ...c,
+      [id]: [...(c[id] || []), { id: `c${Date.now()}`, user: "You", text }],
+    }));
+    setDraftComment((d) => ({ ...d, [id]: "" }));
+  };
+
 
   const share = async (item: FactItem) => {
     try {
@@ -138,17 +169,32 @@ const Activity = () => {
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={() => upvote(f.id)}
-                    className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold transition-smooth ${
-                      voted[f.id]
-                        ? "bg-gold text-primary-foreground"
-                        : "bg-gold-soft text-gold-foreground hover:bg-gold hover:text-primary-foreground"
-                    }`}
-                  >
-                    <ArrowUp className="h-3.5 w-3.5" />
-                    {f.upvotes}
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => vote(f.id, "up")}
+                      className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition-smooth ${
+                        voted[f.id] === "up"
+                          ? "bg-gold text-primary-foreground"
+                          : "bg-gold-soft text-gold-foreground hover:bg-gold hover:text-primary-foreground"
+                      }`}
+                      aria-label={lang === "ar" ? "تصويت إيجابي" : "Upvote"}
+                    >
+                      <ArrowUp className="h-3.5 w-3.5" />
+                      {f.upvotes}
+                    </button>
+                    <button
+                      onClick={() => vote(f.id, "down")}
+                      className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition-smooth ${
+                        voted[f.id] === "down"
+                          ? "bg-destructive text-destructive-foreground"
+                          : "bg-secondary text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
+                      }`}
+                      aria-label={lang === "ar" ? "تصويت سلبي" : "Downvote"}
+                    >
+                      <ArrowDown className="h-3.5 w-3.5" />
+                      {downvotes[f.id] || 0}
+                    </button>
+                  </div>
                 </div>
                 <p className="mt-3 font-arabic text-base leading-relaxed">{f.fact}</p>
                 {f.translation && (
@@ -157,7 +203,14 @@ const Activity = () => {
                     {f.translation}
                   </p>
                 )}
-                <div className="mt-3 flex justify-end">
+                <div className="mt-3 flex items-center justify-between">
+                  <button
+                    onClick={() => toggleComments(f.id)}
+                    className="flex items-center gap-1 text-xs text-muted-foreground transition-smooth hover:text-primary"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                    {(comments[f.id]?.length || 0)} {lang === "ar" ? "تعليقات" : "comments"}
+                  </button>
                   <button
                     onClick={() => share(f)}
                     className="flex items-center gap-1 text-xs text-muted-foreground transition-smooth hover:text-primary"
@@ -165,6 +218,39 @@ const Activity = () => {
                     <Share2 className="h-3.5 w-3.5" /> {lang === "ar" ? "مشاركة" : "Share"}
                   </button>
                 </div>
+
+                {openComments[f.id] && (
+                  <div className="mt-3 space-y-2 rounded-2xl bg-secondary/40 p-3">
+                    {(comments[f.id] || []).length === 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        {lang === "ar" ? "كن أول من يعلّق" : "Be the first to comment"}
+                      </p>
+                    )}
+                    {(comments[f.id] || []).map((c) => (
+                      <div key={c.id} className="rounded-xl bg-card p-2 text-sm">
+                        <span className="font-semibold text-primary">{c.user}: </span>
+                        <span>{c.text}</span>
+                      </div>
+                    ))}
+                    <div className="flex items-center gap-2">
+                      <input
+                        value={draftComment[f.id] || ""}
+                        onChange={(e) => setDraftComment((d) => ({ ...d, [f.id]: e.target.value }))}
+                        onKeyDown={(e) => e.key === "Enter" && submitComment(f.id)}
+                        maxLength={200}
+                        placeholder={lang === "ar" ? "صحّح أو أضف ملاحظة…" : "Correct or add nuance…"}
+                        className="flex-1 rounded-full border border-border bg-background px-3 py-1.5 text-xs outline-none focus:border-primary"
+                      />
+                      <button
+                        onClick={() => submitComment(f.id)}
+                        className="rounded-full bg-primary p-1.5 text-primary-foreground transition-smooth hover:scale-105"
+                        aria-label={lang === "ar" ? "إرسال" : "Send"}
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
