@@ -1,12 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
-  ArrowLeft, Flag, Hand, Languages, Mic, Sparkles, Timer, Zap, Plus,
+  ArrowLeft, Flag, Hand, Languages, Lock, Mic, Sparkles, Timer, Zap, Plus, Crown, MicOff, UserMinus, X,
 } from "lucide-react";
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
+import { getCustomRoom, CustomRoom } from "@/data/customRooms";
 import { Seat } from "@/components/Seat";
+import { ChatBox } from "@/components/ChatBox";
+import { RequestQueue, SpeakRequest } from "@/components/RequestQueue";
+import { AdminPanel } from "@/components/AdminPanel";
+import { GiftButton } from "@/components/GiftButton";
+import { ShareButton } from "@/components/ShareButton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nProvider";
+import { toast } from "sonner";
 
 const TOPICS_EN = [
   "Tell us about a weird food you've tried",
@@ -23,7 +34,7 @@ const TOPICS_AR = [
   "أي أغنية تذكرك بطفولتك؟",
 ];
 
-const LISTENERS = [
+const INITIAL_LISTENERS = [
   { id: "l1", flag: "🇩🇪", name: "Hans" },
   { id: "l2", flag: "🇧🇷", name: "Lucas" },
   { id: "l3", flag: "🇰🇷", name: "Min" },
@@ -34,41 +45,80 @@ const LISTENERS = [
   { id: "l8", flag: "🇮🇳", name: "Aria" },
 ];
 
-const SPEAKER_TURN = 180; // 3 min
+const INITIAL_REQUESTS: SpeakRequest[] = [
+  { id: "r1", name: "Hans", flag: "🇩🇪", level: 2 },
+  { id: "r2", name: "Léa", flag: "🇫🇷", level: 4 },
+];
+
 const TOPIC_INTERVAL = 300; // 5 min
 
 const Room = () => {
   const { key } = useParams();
+  const [searchParams] = useSearchParams();
   const { t, lang } = useI18n();
-  const room = ROOMS.find((r) => r.key === key) ?? ROOMS[0];
+
+  const publicRoom = ROOMS.find((r) => r.key === key);
+  const customRoom: CustomRoom | undefined = !publicRoom && key ? getCustomRoom(key) : undefined;
+
+  const isCustom = !!customRoom;
+  const room = publicRoom ?? {
+    key: customRoom?.key || "unknown",
+    name: customRoom?.name || "Room",
+    nameAr: customRoom?.nameAr || "غرفة",
+    flag: customRoom?.flag || "🌍",
+    accent: customRoom?.accent || "from-[#1E3A5F] to-[#D4AF37]",
+    topic: customRoom?.topic || "",
+    topicAr: customRoom?.topicAr || "",
+  } as any;
+
+  // Custom rooms: creator is admin. Public rooms: simulate "you are admin" off.
+  const isAdmin = isCustom;
+  const requiresPassword = isCustom && !!customRoom?.password;
+  const urlPassword = searchParams.get("pw") || "";
+  const [unlocked, setUnlocked] = useState(
+    !requiresPassword || urlPassword === customRoom?.password
+  );
+  const [pwInput, setPwInput] = useState("");
+
   const TOPICS = lang === "ar" ? TOPICS_AR : TOPICS_EN;
+  const [customTopic, setCustomTopic] = useState(
+    isCustom ? (lang === "ar" ? customRoom!.topicAr : customRoom!.topic) : ""
+  );
   const roomName = lang === "ar" ? room.nameAr : room.name;
 
-  // Seats: 8 slots
+  // Seats
   const [seats, setSeats] = useState<(SeatUser | undefined)[]>(() => {
     const arr: (SeatUser | undefined)[] = [...SAMPLE_SPEAKERS];
     while (arr.length < 8) arr.push(undefined);
     return arr;
   });
 
+  // Speaker timer
+  const [turnLength, setTurnLength] = useState(180);
+  const [timeLeft, setTimeLeft] = useState(180);
   const activeSpeakerIdx = useMemo(() => seats.findIndex((s) => s?.speaking), [seats]);
-  const [timeLeft, setTimeLeft] = useState(SPEAKER_TURN);
+
   const [topicIdx, setTopicIdx] = useState(0);
   const [topicTime, setTopicTime] = useState(TOPIC_INTERVAL);
 
-  // Speaker timer: rotates active speaker when it hits 0
+  const [requests, setRequests] = useState<SpeakRequest[]>(isAdmin ? INITIAL_REQUESTS : []);
+  const [listeners, setListeners] = useState(INITIAL_LISTENERS);
+
+  const [sessionExtraMin, setSessionExtraMin] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [newTopicInput, setNewTopicInput] = useState(customTopic);
+  const [newPasswordInput, setNewPasswordInput] = useState(customRoom?.password || "");
+
+  // Speaker rotation timer
   useEffect(() => {
-    const t = setInterval(() => {
+    const tk = setInterval(() => {
       setTimeLeft((s) => {
         if (s > 1) return s - 1;
-        // rotate
         setSeats((prev) => {
           const idx = prev.findIndex((u) => u?.speaking);
           if (idx === -1) return prev;
           const next = [...prev];
-          // mute current
           next[idx] = { ...(next[idx] as SeatUser), speaking: false };
-          // promote next non-empty seat
           for (let i = 1; i <= prev.length; i++) {
             const j = (idx + i) % prev.length;
             if (next[j]) {
@@ -78,23 +128,24 @@ const Room = () => {
           }
           return next;
         });
-        return SPEAKER_TURN;
+        return turnLength;
       });
     }, 1000);
-    return () => clearInterval(t);
-  }, []);
+    return () => clearInterval(tk);
+  }, [turnLength]);
 
-  // Topic rotation
+  // Topic rotation (only if no fixed custom topic)
   useEffect(() => {
-    const t = setInterval(() => {
+    if (isCustom && customTopic) return; // custom room keeps its set topic
+    const tk = setInterval(() => {
       setTopicTime((s) => {
         if (s > 1) return s - 1;
         setTopicIdx((i) => (i + 1) % TOPICS.length);
         return TOPIC_INTERVAL;
       });
     }, 1000);
-    return () => clearInterval(t);
-  }, []);
+    return () => clearInterval(tk);
+  }, [TOPICS.length, isCustom, customTopic]);
 
   const [translation, setTranslation] = useState<string | null>(null);
   const phrases = [
@@ -102,6 +153,122 @@ const Room = () => {
     { src: "I think this dish tastes amazing.", tr: "أعتقد أن هذا الطبق طعمه رائع." },
     { src: "It reminds me of my hometown.", tr: "إنه يذكرني بمسقط رأسي." },
   ];
+
+  // Seat actions (admin)
+  const [seatMenuIdx, setSeatMenuIdx] = useState<number | null>(null);
+  const muteSeat = (i: number) => {
+    setSeats((prev) => {
+      const next = [...prev];
+      if (next[i]) next[i] = { ...(next[i] as SeatUser), speaking: false };
+      return next;
+    });
+    toast.success(lang === "ar" ? "تم الكتم" : "Muted");
+    setSeatMenuIdx(null);
+  };
+  const demoteSeat = (i: number) => {
+    setSeats((prev) => {
+      const next = [...prev];
+      const u = next[i];
+      if (u) {
+        setListeners((ls) => [...ls, { id: u.id, flag: u.flag, name: u.name }]);
+        next[i] = undefined;
+      }
+      return next;
+    });
+    setSeatMenuIdx(null);
+  };
+  const kickSeat = (i: number) => {
+    setSeats((prev) => {
+      const next = [...prev];
+      next[i] = undefined;
+      return next;
+    });
+    toast.error(lang === "ar" ? "تم الطرد" : "Kicked");
+    setSeatMenuIdx(null);
+  };
+
+  const approveRequest = (id: string) => {
+    const req = requests.find((r) => r.id === id);
+    if (!req) return;
+    setSeats((prev) => {
+      const empty = prev.findIndex((s) => !s);
+      if (empty === -1) {
+        toast.error(lang === "ar" ? "لا توجد مقاعد متاحة" : "No seats available");
+        return prev;
+      }
+      const next = [...prev];
+      next[empty] = {
+        id: req.id, name: req.name, flag: req.flag,
+        level: Math.max(1, Math.min(5, req.level)) as 1 | 2 | 3 | 4 | 5,
+      };
+      return next;
+    });
+    setRequests((rs) => rs.filter((r) => r.id !== id));
+    setListeners((ls) => ls.filter((l) => l.id !== id));
+  };
+  const rejectRequest = (id: string) => setRequests((rs) => rs.filter((r) => r.id !== id));
+
+  const requestSeat = () => {
+    const myId = `me-${Date.now()}`;
+    if (isAdmin) {
+      // creator can take a seat directly
+      setSeats((prev) => {
+        const empty = prev.findIndex((s) => !s);
+        if (empty === -1) return prev;
+        const next = [...prev];
+        next[empty] = { id: myId, name: "You", flag: "🌟", level: 3 };
+        return next;
+      });
+      return;
+    }
+    setRequests((rs) => [...rs, { id: myId, name: "You", flag: "🌟", level: 3 }]);
+    toast.success(lang === "ar" ? "أُرسل الطلب للمشرف" : "Request sent to admin");
+  };
+
+  // password gate
+  if (requiresPassword && !unlocked) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-room p-6">
+        <div className="w-full max-w-sm rounded-3xl bg-card p-6 shadow-elegant">
+          <div className="flex items-center gap-2">
+            <Lock className="h-5 w-5 text-gold" />
+            <h1 className="text-lg font-bold">
+              {lang === "ar" ? "غرفة خاصة" : "Private room"}
+            </h1>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {lang === "ar" ? "أدخل كلمة المرور للانضمام" : "Enter the password to join"}
+          </p>
+          <Input
+            className="mt-4"
+            value={pwInput}
+            onChange={(e) => setPwInput(e.target.value)}
+            placeholder="••••"
+            onKeyDown={(e) => e.key === "Enter" && tryUnlock()}
+          />
+          <div className="mt-4 flex gap-2">
+            <Link to="/" className="flex-1">
+              <Button variant="outline" className="w-full">
+                {lang === "ar" ? "إلغاء" : "Cancel"}
+              </Button>
+            </Link>
+            <Button className="flex-1 bg-gradient-primary" onClick={tryUnlock}>
+              {lang === "ar" ? "دخول" : "Enter"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+
+    function tryUnlock() {
+      if (pwInput === customRoom?.password) {
+        setUnlocked(true);
+        toast.success(lang === "ar" ? "أهلاً بك" : "Welcome!");
+      } else {
+        toast.error(lang === "ar" ? "كلمة مرور خاطئة" : "Wrong password");
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-room pb-32">
@@ -112,8 +279,17 @@ const Room = () => {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div className="text-center">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70">{t("room.live")}</p>
-            <h1 className="text-lg font-bold">{room.flag} {roomName}</h1>
+            <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 flex items-center justify-center gap-1">
+              {isAdmin && <Crown className="h-3 w-3 text-gold" />}
+              {t("room.live")}
+              {sessionExtraMin > 0 && (
+                <span className="ml-1 rounded-full bg-gold/30 px-1.5 text-[10px]">+{sessionExtraMin}m</span>
+              )}
+            </p>
+            <h1 className="text-lg font-bold flex items-center justify-center gap-1">
+              {room.flag} {roomName}
+              {requiresPassword && <Lock className="h-3.5 w-3.5 text-gold" />}
+            </h1>
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive">
             <Flag className="h-4 w-4" />
@@ -126,18 +302,59 @@ const Room = () => {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-foreground">
               <Sparkles className="h-3 w-3" /> {t("room.topic")}
             </span>
-            <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
-              <Timer className="h-3 w-3" />
-              {Math.floor(topicTime / 60)}:{(topicTime % 60).toString().padStart(2, "0")}
-            </span>
+            {!(isCustom && customTopic) && (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
+                <Timer className="h-3 w-3" />
+                {Math.floor(topicTime / 60)}:{(topicTime % 60).toString().padStart(2, "0")}
+              </span>
+            )}
           </div>
-          <p className="mt-2 text-base font-semibold">{TOPICS[topicIdx]}</p>
+          <p className="mt-2 text-base font-semibold">
+            {isCustom && customTopic ? customTopic : TOPICS[topicIdx]}
+          </p>
+        </div>
+
+        {/* Quick actions */}
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          <ShareButton roomKey={room.key} password={customRoom?.password} />
+          <GiftButton />
         </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-5">
+        {/* Admin Panel */}
+        {isAdmin && (
+          <AdminPanel
+            turnLength={turnLength}
+            onTurnLengthChange={(s) => {
+              setTurnLength(s);
+              setTimeLeft(s);
+              toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`);
+            }}
+            onResetTimer={() => setTimeLeft(turnLength)}
+            onExtendTimer={() => setTimeLeft((s) => s + 30)}
+            onMuteAll={() => {
+              setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u)));
+              toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted");
+            }}
+            onWatchAd={() => {
+              toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
+              setTimeout(() => {
+                setSessionExtraMin((m) => m + 15);
+                toast.success(lang === "ar" ? "+15 دقيقة للجلسة!" : "+15 min added!", { id: "ad" });
+              }, 1500);
+            }}
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+        )}
+
+        {/* Request queue (admin only) */}
+        {isAdmin && (
+          <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
+        )}
+
         {/* Speakers grid */}
-        <section className="-mt-4 rounded-3xl bg-card p-5 shadow-elegant">
+        <section className="mt-5 rounded-3xl bg-card p-5 shadow-elegant">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
               <Mic className="h-4 w-4" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
@@ -151,7 +368,14 @@ const Room = () => {
           </div>
           <div className="grid grid-cols-4 gap-y-5 gap-x-2">
             {seats.map((u, i) => (
-              <Seat key={i} user={u} index={i} timeLeft={u?.speaking ? timeLeft : undefined} />
+              <button
+                key={i}
+                type="button"
+                onClick={() => isAdmin && u && setSeatMenuIdx(i)}
+                className={cn("rounded-xl p-1", isAdmin && u && "transition-smooth hover:bg-secondary cursor-pointer")}
+              >
+                <Seat user={u} index={i} timeLeft={u?.speaking ? timeLeft : undefined} />
+              </button>
             ))}
           </div>
         </section>
@@ -160,14 +384,17 @@ const Room = () => {
         <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              {t("room.listeners")} · {LISTENERS.length}
+              {t("room.listeners")} · {listeners.length}
             </h2>
-            <button className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground">
+            <button
+              onClick={requestSeat}
+              className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
+            >
               <Hand className="h-3.5 w-3.5" /> {t("room.raise")}
             </button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {LISTENERS.map((l) => (
+            {listeners.map((l) => (
               <div key={l.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs">
                 <span>{l.flag}</span>
                 <span className="font-medium">{l.name}</span>
@@ -178,6 +405,9 @@ const Room = () => {
             </button>
           </div>
         </section>
+
+        {/* Chat */}
+        <ChatBox isAdmin={isAdmin} />
 
         {/* Silent translation */}
         <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
@@ -213,9 +443,7 @@ const Room = () => {
                 <Zap className="h-5 w-5 text-gold" />
                 <h2 className="text-base font-bold">{t("room.challenge")}</h2>
               </div>
-              <p className="mt-1 text-sm text-primary-foreground/80">
-                {t("room.challengeHint")}
-              </p>
+              <p className="mt-1 text-sm text-primary-foreground/80">{t("room.challengeHint")}</p>
             </div>
             <button className="rounded-full bg-gradient-gold px-4 py-2 text-sm font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
               {t("room.send")}
@@ -227,7 +455,10 @@ const Room = () => {
       {/* Bottom action bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-lg">
         <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-3">
-          <button className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm font-semibold transition-smooth hover:bg-primary-soft">
+          <button
+            onClick={requestSeat}
+            className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm font-semibold transition-smooth hover:bg-primary-soft"
+          >
             <Hand className="h-4 w-4" /> {t("room.requestSeat")}
           </button>
           <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-elegant transition-spring hover:scale-[1.02]">
@@ -235,6 +466,85 @@ const Room = () => {
           </button>
         </div>
       </div>
+
+      {/* Seat action menu (admin) */}
+      <Dialog open={seatMenuIdx !== null} onOpenChange={(o) => !o && setSeatMenuIdx(null)}>
+        <DialogContent className="sm:max-w-xs">
+          <DialogHeader>
+            <DialogTitle>
+              {seatMenuIdx !== null && seats[seatMenuIdx]?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => seatMenuIdx !== null && muteSeat(seatMenuIdx)}
+            >
+              <MicOff className="mr-2 h-4 w-4" /> {lang === "ar" ? "كتم" : "Mute"}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => seatMenuIdx !== null && demoteSeat(seatMenuIdx)}
+            >
+              <UserMinus className="mr-2 h-4 w-4" />
+              {lang === "ar" ? "نقل إلى المستمعين" : "Move to listeners"}
+            </Button>
+            <Button
+              variant="destructive"
+              className="w-full justify-start"
+              onClick={() => seatMenuIdx !== null && kickSeat(seatMenuIdx)}
+            >
+              <X className="mr-2 h-4 w-4" /> {lang === "ar" ? "طرد" : "Kick"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Room Settings (admin) */}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{lang === "ar" ? "إعدادات الغرفة" : "Room Settings"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>{lang === "ar" ? "الموضوع" : "Topic"}</Label>
+              <Input
+                value={newTopicInput}
+                onChange={(e) => setNewTopicInput(e.target.value)}
+                maxLength={120}
+              />
+            </div>
+            {requiresPassword && (
+              <div className="space-y-2">
+                <Label>{lang === "ar" ? "كلمة المرور" : "Password"}</Label>
+                <Input
+                  value={newPasswordInput}
+                  onChange={(e) => setNewPasswordInput(e.target.value)}
+                  maxLength={32}
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSettingsOpen(false)}>
+              {lang === "ar" ? "إلغاء" : "Cancel"}
+            </Button>
+            <Button
+              className="bg-gradient-primary"
+              onClick={() => {
+                setCustomTopic(newTopicInput.trim());
+                setSettingsOpen(false);
+                toast.success(lang === "ar" ? "تم التحديث" : "Updated");
+              }}
+            >
+              {lang === "ar" ? "حفظ" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
