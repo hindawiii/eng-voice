@@ -126,6 +126,7 @@ const Room = () => {
 
   const [sessionExtraMin, setSessionExtraMin] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
   const [newTopicInput, setNewTopicInput] = useState(customTopic);
   const [newPasswordInput, setNewPasswordInput] = useState(customRoom?.password || "");
 
