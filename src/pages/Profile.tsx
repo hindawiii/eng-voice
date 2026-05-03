@@ -129,6 +129,36 @@ const Profile = () => {
           </div>
         </section>
 
+        {/* Gifts received */}
+        <section className="rounded-3xl bg-card p-5 shadow-soft">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              <Gift className="h-4 w-4 text-gold" />
+              {lang === "ar" ? "هدايا مُستلمة" : "Gifts Received"}
+            </h3>
+            <span className="rounded-full bg-gold-soft px-2.5 py-0.5 text-[11px] font-bold text-gold-foreground">
+              {RECEIVED_GIFTS.reduce((s, g) => s + g.count, 0)}
+            </span>
+          </div>
+          <div className="-mx-5 overflow-x-auto px-5">
+            <div className="flex gap-2.5 pb-1">
+              {RECEIVED_GIFTS.map((g) => (
+                <div
+                  key={g.id}
+                  className="flex shrink-0 flex-col items-center gap-1 rounded-2xl border border-border bg-gradient-to-br from-gold-soft/60 to-card p-3 transition-spring hover:scale-105"
+                  style={{ minWidth: "76px" }}
+                >
+                  <span className="text-3xl">{g.emoji}</span>
+                  <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-gold-foreground">
+                    ×{g.count}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{g.from}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Levels ladder */}
         <section className="rounded-3xl bg-card p-5 shadow-soft">
           <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">{t("profile.journey")}</h3>
