@@ -86,6 +86,20 @@ const Activity = () => {
     setDraftComment((d) => ({ ...d, [id]: "" }));
   };
 
+  const react = (id: string, rid: ReactionId) => {
+    const prev = myReaction[id];
+    setReactions((r) => {
+      const cur = { ...(r[id] || ({} as Record<ReactionId, number>)) };
+      if (prev === rid) {
+        cur[rid] = Math.max(0, (cur[rid] || 1) - 1);
+        return { ...r, [id]: cur };
+      }
+      if (prev) cur[prev] = Math.max(0, (cur[prev] || 1) - 1);
+      cur[rid] = (cur[rid] || 0) + 1;
+      return { ...r, [id]: cur };
+    });
+    setMyReaction((m) => ({ ...m, [id]: prev === rid ? undefined : rid }));
+  };
 
   const share = async (item: FactItem) => {
     try {
