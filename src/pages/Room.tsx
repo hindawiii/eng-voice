@@ -341,52 +341,33 @@ const Room = () => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-5">
-        {/* Admin Panel */}
-        {isAdmin && (
-          <AdminPanel
-            turnLength={turnLength}
-            onTurnLengthChange={(s) => {
-              setTurnLength(s);
-              setTimeLeft(s);
-              toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`);
-            }}
-            onResetTimer={() => setTimeLeft(turnLength)}
-            onExtendTimer={() => setTimeLeft((s) => s + 30)}
-            onMuteAll={() => {
-              setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u)));
-              toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted");
-            }}
-            onWatchAd={() => {
-              toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
-              setTimeout(() => {
-                setSessionExtraMin((m) => m + 15);
-                toast.success(lang === "ar" ? "+15 دقيقة للجلسة!" : "+15 min added!", { id: "ad" });
-              }, 1500);
-            }}
-            onOpenSettings={() => setSettingsOpen(true)}
-          />
-        )}
-
-        {/* Request queue (admin only) */}
-        {isAdmin && (
-          <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
-        )}
-
-        {/* Speakers grid */}
-        <section className="mt-5 rounded-3xl bg-card p-5 shadow-elegant">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              <Mic className="h-4 w-4" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
+      <main className="mx-auto max-w-2xl px-5 -mt-4">
+        {/* Speakers grid — compact card */}
+        <section className="rounded-3xl bg-card p-4 shadow-elegant">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <Mic className="h-3.5 w-3.5" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
             </h2>
-            {activeSpeakerIdx !== -1 && (
-              <span className="flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-1 text-xs font-bold text-gold-foreground tabular-nums">
-                <Timer className="h-3 w-3" />
-                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")} {t("room.left")}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {activeSpeakerIdx !== -1 && (
+                <span className="flex items-center gap-1 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold text-gold-foreground tabular-nums">
+                  <Timer className="h-3 w-3" />
+                  {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
+                </span>
+              )}
+              {isAdmin && (
+                <button
+                  onClick={() => setAdminOpen((v) => !v)}
+                  className="flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
+                >
+                  <Crown className="h-3 w-3 text-gold" />
+                  {lang === "ar" ? "تحكم" : "Controls"}
+                  {adminOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                </button>
+              )}
+            </div>
           </div>
-          <div className="grid grid-cols-4 gap-y-5 gap-x-2">
+          <div className="grid grid-cols-4 gap-y-3 gap-x-1">
             {seats.map((u, i) => (
               <button
                 key={i}
@@ -398,78 +379,134 @@ const Room = () => {
               </button>
             ))}
           </div>
-        </section>
 
-        {/* Listeners */}
-        <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              {t("room.listeners")} · {listeners.length}
-            </h2>
-            <button
-              onClick={requestSeat}
-              className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
-            >
-              <Hand className="h-3.5 w-3.5" /> {t("room.raise")}
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {listeners.map((l) => (
-              <div key={l.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs">
-                <span>{l.flag}</span>
-                <span className="font-medium">{l.name}</span>
-              </div>
-            ))}
-            <button className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
-              <Plus className="h-3 w-3" /> {t("room.invite")}
-            </button>
-          </div>
-        </section>
-
-        {/* Chat */}
-        <ChatBox isAdmin={isAdmin} />
-
-        {/* Silent translation */}
-        <section className="mt-5 rounded-3xl bg-card p-5 shadow-soft">
-          <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            <Languages className="h-4 w-4" /> {t("room.silent")}
-          </h2>
-          <p className="text-xs text-muted-foreground">{t("room.silentHint")}</p>
-          <ul className="mt-3 space-y-2">
-            {phrases.map((p) => (
-              <li key={p.src}>
-                <button
-                  onClick={() => setTranslation(p.tr)}
-                  className="flex w-full items-center justify-between rounded-2xl bg-secondary/60 p-3 text-start text-sm transition-smooth hover:bg-primary-soft"
-                >
-                  <span className="font-medium">{p.src}</span>
-                  <Languages className="h-4 w-4 text-primary" />
-                </button>
-              </li>
-            ))}
-          </ul>
-          {translation && (
-            <div className="mt-3 animate-fade-in rounded-2xl border border-gold/40 bg-gold-soft/50 p-3 font-arabic text-base">
-              {translation}
+          {isAdmin && adminOpen && (
+            <div className="mt-3 animate-fade-in">
+              <AdminPanel
+                turnLength={turnLength}
+                onTurnLengthChange={(s) => {
+                  setTurnLength(s);
+                  setTimeLeft(s);
+                  toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`);
+                }}
+                onResetTimer={() => setTimeLeft(turnLength)}
+                onExtendTimer={() => setTimeLeft((s) => s + 30)}
+                onMuteAll={() => {
+                  setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u)));
+                  toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted");
+                }}
+                onWatchAd={() => {
+                  toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
+                  setTimeout(() => {
+                    setSessionExtraMin((m) => m + 15);
+                    toast.success(lang === "ar" ? "+15 دقيقة للجلسة!" : "+15 min added!", { id: "ad" });
+                  }, 1500);
+                }}
+                onOpenSettings={() => setSettingsOpen(true)}
+              />
+              {requests.length > 0 && (
+                <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
+              )}
             </div>
           )}
         </section>
 
-        {/* Challenge */}
-        <section className="mt-5 overflow-hidden rounded-3xl bg-gradient-hero p-5 text-primary-foreground shadow-elegant">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-gold" />
-                <h2 className="text-base font-bold">{t("room.challenge")}</h2>
+        {/* Compact tabbed interaction panel directly under seats */}
+        <Tabs defaultValue="chat" className="mt-4">
+          <TabsList className="grid w-full grid-cols-4 rounded-full bg-card shadow-soft p-1 h-auto">
+            <TabsTrigger value="chat" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
+              <MessageSquare className="h-3.5 w-3.5" /> {lang === "ar" ? "دردشة" : "Chat"}
+            </TabsTrigger>
+            <TabsTrigger value="people" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
+              <Users className="h-3.5 w-3.5" /> {listeners.length}
+            </TabsTrigger>
+            <TabsTrigger value="translate" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
+              <Languages className="h-3.5 w-3.5" /> {lang === "ar" ? "ترجمة" : "Translate"}
+            </TabsTrigger>
+            <TabsTrigger value="tools" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
+              <Wand2 className="h-3.5 w-3.5" /> {lang === "ar" ? "أدوات" : "Tools"}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="chat" className="mt-3">
+            <ChatBox isAdmin={isAdmin} />
+          </TabsContent>
+
+          <TabsContent value="people" className="mt-3">
+            <section className="rounded-3xl bg-card p-4 shadow-soft">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  {t("room.listeners")} · {listeners.length}
+                </h2>
+                <button
+                  onClick={requestSeat}
+                  className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
+                >
+                  <Hand className="h-3.5 w-3.5" /> {t("room.raise")}
+                </button>
               </div>
-              <p className="mt-1 text-sm text-primary-foreground/80">{t("room.challengeHint")}</p>
+              <div className="flex flex-wrap gap-2">
+                {listeners.map((l) => (
+                  <div key={l.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs">
+                    <span>{l.flag}</span>
+                    <span className="font-medium">{l.name}</span>
+                  </div>
+                ))}
+                <button className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
+                  <Plus className="h-3 w-3" /> {t("room.invite")}
+                </button>
+              </div>
+            </section>
+          </TabsContent>
+
+          <TabsContent value="translate" className="mt-3">
+            <section className="rounded-3xl bg-card p-4 shadow-soft">
+              <h2 className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <Languages className="h-3.5 w-3.5" /> {t("room.silent")}
+              </h2>
+              <p className="text-[11px] text-muted-foreground">{t("room.silentHint")}</p>
+              <ul className="mt-2 space-y-1.5">
+                {phrases.map((p) => (
+                  <li key={p.src}>
+                    <button
+                      onClick={() => setTranslation(p.tr)}
+                      className="flex w-full items-center justify-between rounded-2xl bg-secondary/60 p-2.5 text-start text-sm transition-smooth hover:bg-primary-soft"
+                    >
+                      <span className="font-medium">{p.src}</span>
+                      <Languages className="h-4 w-4 text-primary" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              {translation && (
+                <div className="mt-2 animate-fade-in rounded-2xl border border-gold/40 bg-gold-soft/50 p-2.5 font-arabic text-sm">
+                  {translation}
+                </div>
+              )}
+            </section>
+          </TabsContent>
+
+          <TabsContent value="tools" className="mt-3">
+            <section className="overflow-hidden rounded-3xl bg-gradient-hero p-4 text-primary-foreground shadow-elegant">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-gold" />
+                    <h2 className="text-sm font-bold">{t("room.challenge")}</h2>
+                  </div>
+                  <p className="mt-1 text-xs text-primary-foreground/80">{t("room.challengeHint")}</p>
+                </div>
+                <button className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
+                  {t("room.send")}
+                </button>
+              </div>
+            </section>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <ShareButton roomKey={room.key} password={customRoom?.password} />
+              <GiftButton />
             </div>
-            <button className="rounded-full bg-gradient-gold px-4 py-2 text-sm font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
-              {t("room.send")}
-            </button>
-          </div>
-        </section>
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Bottom action bar */}
