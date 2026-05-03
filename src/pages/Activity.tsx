@@ -227,6 +227,28 @@ const Activity = () => {
                     {f.translation}
                   </p>
                 )}
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {REACTIONS.map((r) => {
+                    const count = reactions[f.id]?.[r.id] || 0;
+                    const mine = myReaction[f.id] === r.id;
+                    return (
+                      <button
+                        key={r.id}
+                        onClick={() => react(f.id, r.id)}
+                        className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition-smooth ${
+                          mine
+                            ? "bg-primary-soft text-primary ring-1 ring-primary"
+                            : "bg-secondary text-muted-foreground hover:bg-primary-soft hover:text-primary"
+                        }`}
+                        aria-label={lang === "ar" ? r.labelAr : r.label}
+                      >
+                        <span>{r.emoji}</span>
+                        <span>{lang === "ar" ? r.labelAr : r.label}</span>
+                        {count > 0 && <span className="tabular-nums">{count}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className="mt-3 flex items-center justify-between">
                   <button
                     onClick={() => toggleComments(f.id)}
