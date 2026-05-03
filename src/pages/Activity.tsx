@@ -12,12 +12,22 @@ const NOTIFICATIONS = [
   { id: "n3", icon: "✨", title: { en: "New level unlocked", ar: "فُتح مستوى جديد" }, body: { en: "You reached Tree 🌳 (Level 3)", ar: "وصلت إلى شجرة 🌳 (المستوى ٣)" }, time: "1h" },
 ];
 
+const REACTIONS = [
+  { id: "brilliant", emoji: "💡", label: "Brilliant", labelAr: "رائع" },
+  { id: "helpful", emoji: "🙌", label: "Helpful", labelAr: "مفيد" },
+  { id: "fire", emoji: "🔥", label: "Fire", labelAr: "ناري" },
+  { id: "love", emoji: "❤️", label: "Love", labelAr: "أحببته" },
+] as const;
+type ReactionId = typeof REACTIONS[number]["id"];
+
 const Activity = () => {
   const { t, lang } = useI18n();
   const [tip, setTip] = useState("");
   const [facts, setFacts] = useState<FactItem[]>(FACTS);
   const [voted, setVoted] = useState<Record<string, "up" | "down" | undefined>>({});
   const [downvotes, setDownvotes] = useState<Record<string, number>>({});
+  const [reactions, setReactions] = useState<Record<string, Record<ReactionId, number>>>({});
+  const [myReaction, setMyReaction] = useState<Record<string, ReactionId | undefined>>({});
   const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string }[]>>({
     f1: [{ id: "c1", user: "Hassan", text: lang === "ar" ? "تستخدم أيضاً 'إزيّك' مع التشديد" : "Also used as 'Ezzayyak' with emphasis" }],
   });
