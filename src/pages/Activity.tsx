@@ -12,12 +12,22 @@ const NOTIFICATIONS = [
   { id: "n3", icon: "✨", title: { en: "New level unlocked", ar: "فُتح مستوى جديد" }, body: { en: "You reached Tree 🌳 (Level 3)", ar: "وصلت إلى شجرة 🌳 (المستوى ٣)" }, time: "1h" },
 ];
 
+const REACTIONS = [
+  { id: "brilliant", emoji: "💡", label: "Brilliant", labelAr: "رائع" },
+  { id: "helpful", emoji: "🙌", label: "Helpful", labelAr: "مفيد" },
+  { id: "fire", emoji: "🔥", label: "Fire", labelAr: "ناري" },
+  { id: "love", emoji: "❤️", label: "Love", labelAr: "أحببته" },
+] as const;
+type ReactionId = typeof REACTIONS[number]["id"];
+
 const Activity = () => {
   const { t, lang } = useI18n();
   const [tip, setTip] = useState("");
   const [facts, setFacts] = useState<FactItem[]>(FACTS);
   const [voted, setVoted] = useState<Record<string, "up" | "down" | undefined>>({});
   const [downvotes, setDownvotes] = useState<Record<string, number>>({});
+  const [reactions, setReactions] = useState<Record<string, Record<ReactionId, number>>>({});
+  const [myReaction, setMyReaction] = useState<Record<string, ReactionId | undefined>>({});
   const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string }[]>>({
     f1: [{ id: "c1", user: "Hassan", text: lang === "ar" ? "تستخدم أيضاً 'إزيّك' مع التشديد" : "Also used as 'Ezzayyak' with emphasis" }],
   });
@@ -76,6 +86,20 @@ const Activity = () => {
     setDraftComment((d) => ({ ...d, [id]: "" }));
   };
 
+  const react = (id: string, rid: ReactionId) => {
+    const prev = myReaction[id];
+    setReactions((r) => {
+      const cur = { ...(r[id] || ({} as Record<ReactionId, number>)) };
+      if (prev === rid) {
+        cur[rid] = Math.max(0, (cur[rid] || 1) - 1);
+        return { ...r, [id]: cur };
+      }
+      if (prev) cur[prev] = Math.max(0, (cur[prev] || 1) - 1);
+      cur[rid] = (cur[rid] || 0) + 1;
+      return { ...r, [id]: cur };
+    });
+    setMyReaction((m) => ({ ...m, [id]: prev === rid ? undefined : rid }));
+  };
 
   const share = async (item: FactItem) => {
     try {
@@ -203,6 +227,28 @@ const Activity = () => {
                     {f.translation}
                   </p>
                 )}
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {REACTIONS.map((r) => {
+                    const count = reactions[f.id]?.[r.id] || 0;
+                    const mine = myReaction[f.id] === r.id;
+                    return (
+                      <button
+                        key={r.id}
+                        onClick={() => react(f.id, r.id)}
+                        className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition-smooth ${
+                          mine
+                            ? "bg-primary-soft text-primary ring-1 ring-primary"
+                            : "bg-secondary text-muted-foreground hover:bg-primary-soft hover:text-primary"
+                        }`}
+                        aria-label={lang === "ar" ? r.labelAr : r.label}
+                      >
+                        <span>{r.emoji}</span>
+                        <span>{lang === "ar" ? r.labelAr : r.label}</span>
+                        {count > 0 && <span className="tabular-nums">{count}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className="mt-3 flex items-center justify-between">
                   <button
                     onClick={() => toggleComments(f.id)}

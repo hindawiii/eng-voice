@@ -1,4 +1,4 @@
-import { Coins, Crown, Play, Settings, Share2, TrendingUp } from "lucide-react";
+import { Coins, Crown, Gift, MapPin, Play, Settings, Share2, TrendingUp, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ProBadge } from "@/components/ProBadge";
@@ -9,12 +9,24 @@ const USER = {
   name: "Yusuf Al-Amin",
   handle: "@yusuf",
   flag: "🇸🇩",
+  country: { en: "Sudan", ar: "السودان" },
+  city: { en: "Khartoum", ar: "الخرطوم" },
+  gender: "male" as "male" | "female",
   xp: 1340,
   lp: 1240,
   level: 3,
   streak: 12,
   pro: false,
 };
+
+const RECEIVED_GIFTS = [
+  { id: "g1", emoji: "🌹", from: "Layla", count: 12 },
+  { id: "g2", emoji: "👑", from: "Hans", count: 2 },
+  { id: "g3", emoji: "💎", from: "Min", count: 1 },
+  { id: "g4", emoji: "🍀", from: "Léa", count: 5 },
+  { id: "g5", emoji: "⭐", from: "Aria", count: 7 },
+  { id: "g6", emoji: "🔥", from: "Emir", count: 3 },
+];
 
 const Profile = () => {
   const { t, lang } = useI18n();
@@ -57,8 +69,20 @@ const Profile = () => {
                 {USER.pro && <ProBadge />}
               </div>
               <p className="text-sm text-muted-foreground">{USER.handle}</p>
-              <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-gold-foreground">
-                🔥 {USER.streak}-{t("profile.streak")}
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                <span className="flex items-center gap-1 font-semibold text-gold-foreground">
+                  🔥 {USER.streak}-{t("profile.streak")}
+                </span>
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <User className="h-3 w-3" />
+                  {USER.gender === "male"
+                    ? lang === "ar" ? "ذكر" : "Male"
+                    : lang === "ar" ? "أنثى" : "Female"}
+                </span>
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <MapPin className="h-3 w-3" />
+                  {USER.flag} {USER.city[lang]}, {USER.country[lang]}
+                </span>
               </div>
             </div>
             <button className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-smooth hover:bg-primary hover:text-primary-foreground">
@@ -101,6 +125,36 @@ const Profile = () => {
                 <Coins className="h-3.5 w-3.5 text-gold" /> {t("profile.lp")}
               </div>
               <p className="mt-1 text-2xl font-black text-gold-foreground">{USER.lp.toLocaleString()}</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Gifts received */}
+        <section className="rounded-3xl bg-card p-5 shadow-soft">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              <Gift className="h-4 w-4 text-gold" />
+              {lang === "ar" ? "هدايا مُستلمة" : "Gifts Received"}
+            </h3>
+            <span className="rounded-full bg-gold-soft px-2.5 py-0.5 text-[11px] font-bold text-gold-foreground">
+              {RECEIVED_GIFTS.reduce((s, g) => s + g.count, 0)}
+            </span>
+          </div>
+          <div className="-mx-5 overflow-x-auto px-5">
+            <div className="flex gap-2.5 pb-1">
+              {RECEIVED_GIFTS.map((g) => (
+                <div
+                  key={g.id}
+                  className="flex shrink-0 flex-col items-center gap-1 rounded-2xl border border-border bg-gradient-to-br from-gold-soft/60 to-card p-3 transition-spring hover:scale-105"
+                  style={{ minWidth: "76px" }}
+                >
+                  <span className="text-3xl">{g.emoji}</span>
+                  <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-gold-foreground">
+                    ×{g.count}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">{g.from}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>
