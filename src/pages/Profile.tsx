@@ -69,8 +69,20 @@ const Profile = () => {
                 {USER.pro && <ProBadge />}
               </div>
               <p className="text-sm text-muted-foreground">{USER.handle}</p>
-              <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-gold-foreground">
-                🔥 {USER.streak}-{t("profile.streak")}
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                <span className="flex items-center gap-1 font-semibold text-gold-foreground">
+                  🔥 {USER.streak}-{t("profile.streak")}
+                </span>
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <User className="h-3 w-3" />
+                  {USER.gender === "male"
+                    ? lang === "ar" ? "ذكر" : "Male"
+                    : lang === "ar" ? "أنثى" : "Female"}
+                </span>
+                <span className="flex items-center gap-1 text-muted-foreground">
+                  <MapPin className="h-3 w-3" />
+                  {USER.flag} {USER.city[lang]}, {USER.country[lang]}
+                </span>
               </div>
             </div>
             <button className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-muted-foreground transition-smooth hover:bg-primary hover:text-primary-foreground">
