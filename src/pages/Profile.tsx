@@ -9,12 +9,24 @@ const USER = {
   name: "Yusuf Al-Amin",
   handle: "@yusuf",
   flag: "🇸🇩",
+  country: { en: "Sudan", ar: "السودان" },
+  city: { en: "Khartoum", ar: "الخرطوم" },
+  gender: "male" as "male" | "female",
   xp: 1340,
   lp: 1240,
   level: 3,
   streak: 12,
   pro: false,
 };
+
+const RECEIVED_GIFTS = [
+  { id: "g1", emoji: "🌹", from: "Layla", count: 12 },
+  { id: "g2", emoji: "👑", from: "Hans", count: 2 },
+  { id: "g3", emoji: "💎", from: "Min", count: 1 },
+  { id: "g4", emoji: "🍀", from: "Léa", count: 5 },
+  { id: "g5", emoji: "⭐", from: "Aria", count: 7 },
+  { id: "g6", emoji: "🔥", from: "Emir", count: 3 },
+];
 
 const Profile = () => {
   const { t, lang } = useI18n();
