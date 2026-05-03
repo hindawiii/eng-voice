@@ -93,10 +93,28 @@ const Room = () => {
     return arr;
   });
 
-  // Speaker timer
-  const [turnLength, setTurnLength] = useState(180);
-  const [timeLeft, setTimeLeft] = useState(180);
+  // Speaker timer (persisted per room)
+  const TIMER_KEY = `lingvoice.roomTimer.${room.key}`;
+  const restored = (() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = localStorage.getItem(TIMER_KEY);
+      return raw ? (JSON.parse(raw) as { turnLength: number; timeLeft: number }) : null;
+    } catch {
+      return null;
+    }
+  })();
+  const [turnLength, setTurnLength] = useState(restored?.turnLength ?? 180);
+  const [timeLeft, setTimeLeft] = useState(restored?.timeLeft ?? restored?.turnLength ?? 180);
   const activeSpeakerIdx = useMemo(() => seats.findIndex((s) => s?.speaking), [seats]);
+
+  // Persist timer
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(TIMER_KEY, JSON.stringify({ turnLength, timeLeft }));
+    } catch {}
+  }, [turnLength, timeLeft, TIMER_KEY]);
 
   const [topicIdx, setTopicIdx] = useState(0);
   const [topicTime, setTopicTime] = useState(TOPIC_INTERVAL);
