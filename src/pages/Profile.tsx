@@ -1,4 +1,4 @@
-import { Coins, Crown, Play, Settings, Share2, TrendingUp } from "lucide-react";
+import { Coins, Crown, Gift, MapPin, Play, Settings, Share2, TrendingUp, Venus, Mars } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ProBadge } from "@/components/ProBadge";
