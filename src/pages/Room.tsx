@@ -335,11 +335,6 @@ const Room = () => {
           </p>
         </div>
 
-        {/* Quick actions */}
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-          <ShareButton roomKey={room.key} password={customRoom?.password} />
-          <GiftButton />
-        </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-5 -mt-4">
