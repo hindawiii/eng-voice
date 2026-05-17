@@ -756,6 +756,45 @@ const Room = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Mini profile sheet */}
+      <MiniProfileSheet user={miniUser} onClose={() => setMiniUser(null)} />
+
+      {/* Floating reactions picker (long-press) */}
+      {reactionTargetIdx !== null && (
+        <div
+          className="fixed inset-0 z-[90] flex items-end justify-center bg-foreground/30 pb-32"
+          onClick={() => setReactionTargetIdx(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 rounded-full bg-card px-4 py-3 shadow-elegant animate-scale-in"
+          >
+            {REACTION_EMOJIS.map((emoji) => (
+              <button
+                key={emoji}
+                onClick={() => fireReaction(reactionTargetIdx, emoji)}
+                className="text-2xl transition-spring hover:scale-125"
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Flying reactions */}
+      <div className="pointer-events-none fixed bottom-32 left-1/2 z-[80] -translate-x-1/2">
+        {flyingReactions.map((f) => (
+          <span
+            key={f.id}
+            className="absolute bottom-0 text-3xl animate-float-up"
+            style={{ ["--rx" as any]: `${f.x}px` }}
+          >
+            {f.emoji}
+          </span>
+        ))}
+      </div>
     </div>
   );
 };
