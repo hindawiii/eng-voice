@@ -393,6 +393,29 @@ const Room = () => {
       </header>
 
       <main className="mx-auto max-w-2xl px-5 -mt-4">
+        {/* Session progress bar */}
+        <div className="mb-3 rounded-2xl bg-card p-3 shadow-soft">
+          <div className="flex items-center justify-between text-[11px] font-semibold">
+            <span className="flex items-center gap-1 text-muted-foreground">
+              <Timer className="h-3 w-3" /> {lang === "ar" ? "الجلسة" : "Session"}
+            </span>
+            <span className={cn("tabular-nums", sessionLow && "text-destructive")}>
+              {Math.floor(sessionRemaining / 60)}:{(sessionRemaining % 60).toString().padStart(2, "0")} {t("room.left")}
+            </span>
+          </div>
+          <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-secondary">
+            <div
+              className={cn("h-full transition-all", sessionLow ? "animate-session-blink" : "bg-gradient-gold")}
+              style={{ width: `${Math.max(0, (sessionRemaining / (SESSION_TOTAL + sessionExtraMin * 60)) * 100)}%` }}
+            />
+          </div>
+          {sessionLow && !isAdmin && (
+            <p className="mt-1 text-[10px] text-destructive">
+              {lang === "ar" ? "اقتراض الوقت متاح قريباً…" : "Borrow time available soon…"}
+            </p>
+          )}
+        </div>
+
         {/* Speakers grid — compact card */}
         <section className="rounded-3xl bg-card p-4 shadow-elegant">
           <div className="mb-3 flex items-center justify-between">
@@ -400,6 +423,17 @@ const Room = () => {
               <Mic className="h-3.5 w-3.5" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
             </h2>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setStageMode((v) => !v)}
+                className={cn(
+                  "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold transition-smooth",
+                  stageMode
+                    ? "bg-gradient-gold text-gold-foreground shadow-gold"
+                    : "bg-secondary text-muted-foreground hover:bg-primary-soft hover:text-primary"
+                )}
+              >
+                <Sparkles className="h-3 w-3" /> {lang === "ar" ? "وضع المسرح" : "Stage"}
+              </button>
               {activeSpeakerIdx !== -1 && (
                 <span className="flex items-center gap-1 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold text-gold-foreground tabular-nums">
                   <Timer className="h-3 w-3" />
@@ -418,18 +452,87 @@ const Room = () => {
               )}
             </div>
           </div>
-          <div className="grid grid-cols-4 gap-y-3 gap-x-1">
-            {seats.map((u, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => isAdmin && u && setSeatMenuIdx(i)}
-                className={cn("rounded-xl p-1", isAdmin && u && "transition-smooth hover:bg-secondary cursor-pointer")}
-              >
-                <Seat user={u} index={i} timeLeft={u?.speaking ? timeLeft : undefined} />
-              </button>
-            ))}
-          </div>
+
+          {stageMode ? (
+            <div className="flex flex-col items-center gap-4 py-3">
+              {(() => {
+                const starIdx = activeSpeakerIdx !== -1 ? activeSpeakerIdx : seats.findIndex(Boolean);
+                const star = starIdx !== -1 ? seats[starIdx] : undefined;
+                if (!star) return <p className="text-xs text-muted-foreground">{lang === "ar" ? "لا يوجد متحدث" : "No speaker"}</p>;
+                return (
+                  <button
+                    onMouseDown={() => startLongPress(starIdx)}
+                    onMouseUp={cancelLongPress}
+                    onMouseLeave={cancelLongPress}
+                    onTouchStart={() => startLongPress(starIdx)}
+                    onTouchEnd={cancelLongPress}
+                    onClick={() => handleSeatPress(starIdx)}
+                    className="relative flex flex-col items-center"
+                  >
+                    <div className="relative">
+                      <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-primary text-3xl font-bold text-primary-foreground speaker-ring speaker-ring-active">
+                        {star.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <span className="absolute -top-2 -end-2 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-gold text-base shadow-gold">🌟</span>
+                    </div>
+                    <p className="mt-2 font-bold text-sm">{star.name} {star.flag}</p>
+                    {seatReactionCounts[starIdx] ? (
+                      <span className="text-[11px] text-muted-foreground">❤️ {seatReactionCounts[starIdx]}</span>
+                    ) : null}
+                  </button>
+                );
+              })()}
+              <div className="flex gap-3">
+                {seats.filter(Boolean).slice(0, 3).map((u) => (
+                  <div key={u!.id} className="flex flex-col items-center">
+                    <div className="relative">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">
+                        {u!.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <span className="absolute -bottom-1 -end-1 text-xs">👔</span>
+                    </div>
+                    <p className="text-[10px] mt-0.5">{u!.name}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap justify-center gap-1.5 pt-1">
+                {listeners.map((l) => (
+                  <button
+                    key={l.id}
+                    onClick={() => setMiniUser({ id: l.id, name: l.name, flag: l.flag })}
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-xs"
+                    title={l.name}
+                  >
+                    {l.flag}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-y-3 gap-x-1">
+              {seats.map((u, i) => (
+                <div key={i} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => handleSeatPress(i)}
+                    onMouseDown={() => startLongPress(i)}
+                    onMouseUp={cancelLongPress}
+                    onMouseLeave={cancelLongPress}
+                    onTouchStart={() => startLongPress(i)}
+                    onTouchEnd={cancelLongPress}
+                    className={cn("w-full rounded-xl p-1", u && "transition-smooth hover:bg-secondary cursor-pointer")}
+                  >
+                    <Seat user={u} index={i} timeLeft={u?.speaking ? timeLeft : undefined} />
+                  </button>
+                  {seatReactionCounts[i] ? (
+                    <span className="absolute top-0 end-0 rounded-full bg-card px-1.5 text-[10px] font-bold shadow-soft">
+                      ❤️{seatReactionCounts[i]}
+                    </span>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
 
           {isAdmin && adminOpen && (
             <div className="mt-3 animate-fade-in">
