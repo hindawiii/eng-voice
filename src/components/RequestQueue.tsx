@@ -20,15 +20,34 @@ export const RequestQueue = ({ requests, onApprove, onReject }: Props) => {
 
   return (
     <section className="mt-5 rounded-3xl border border-gold/40 bg-gold-soft/40 p-5">
-      <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gold-foreground">
-        <Hand className="h-4 w-4" /> {lang === "ar" ? "طلبات التحدث" : "Speak Requests"} · {requests.length}
-      </h2>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-gold-foreground">
+          <Hand className="h-4 w-4" /> {lang === "ar" ? "طلبات التحدث" : "Speak Requests"} · {requests.length}
+        </h2>
+        <div className="flex gap-1.5">
+          <button
+            onClick={() => requests.forEach((r) => onApprove(r.id))}
+            className="rounded-full bg-success px-2.5 py-1 text-[10px] font-bold text-success-foreground hover:scale-105 transition-spring"
+          >
+            {lang === "ar" ? "قبول الكل" : "Approve all"}
+          </button>
+          <button
+            onClick={() => requests.forEach((r) => onReject(r.id))}
+            className="rounded-full bg-destructive/15 px-2.5 py-1 text-[10px] font-bold text-destructive hover:bg-destructive hover:text-destructive-foreground transition-smooth"
+          >
+            {lang === "ar" ? "رفض الكل" : "Reject all"}
+          </button>
+        </div>
+      </div>
       <ul className="space-y-2">
-        {requests.map((r) => (
+        {requests.map((r, idx) => (
           <li key={r.id} className="flex items-center justify-between rounded-2xl bg-card p-3 shadow-soft">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-base">
+              <span className="relative flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-base">
                 {r.flag}
+                <span className="absolute -top-2 -start-2 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-primary text-[10px] font-bold text-primary-foreground shadow-soft">
+                  {idx + 1}
+                </span>
               </span>
               <div>
                 <p className="text-sm font-semibold">{r.name}</p>
