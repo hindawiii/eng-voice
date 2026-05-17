@@ -134,6 +134,57 @@ const Room = () => {
   const [newTopicInput, setNewTopicInput] = useState(customTopic);
   const [newPasswordInput, setNewPasswordInput] = useState(customRoom?.password || "");
 
+  // Stage mode + floating reactions + session clock
+  const [stageMode, setStageMode] = useState(false);
+  const [reactionTargetIdx, setReactionTargetIdx] = useState<number | null>(null);
+  const [seatReactionCounts, setSeatReactionCounts] = useState<Record<number, number>>({});
+  const [flyingReactions, setFlyingReactions] = useState<{ id: number; emoji: string; x: number }[]>([]);
+  const flyingIdRef = useRef(0);
+  const longPressRef = useRef<number | null>(null);
+  const [miniUser, setMiniUser] = useState<MiniProfileUser | null>(null);
+
+  const SESSION_KEY = `lingvoice.session.${room.key}`;
+  const sessionRestored = (() => {
+    if (typeof window === "undefined") return 0;
+    try { return Number(localStorage.getItem(SESSION_KEY) || 0); } catch { return 0; }
+  })();
+  const [sessionElapsed, setSessionElapsed] = useState(sessionRestored);
+  const sessionRemaining = Math.max(0, SESSION_TOTAL + sessionExtraMin * 60 - sessionElapsed);
+  const sessionLow = sessionRemaining < 5 * 60;
+  useEffect(() => {
+    const tk = setInterval(() => setSessionElapsed((s) => s + 1), 1000);
+    return () => clearInterval(tk);
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(SESSION_KEY, String(sessionElapsed)); } catch {}
+  }, [sessionElapsed, SESSION_KEY]);
+
+  const fireReaction = (idx: number, emoji: string) => {
+    const id = ++flyingIdRef.current;
+    const x = (Math.random() - 0.5) * 40;
+    setFlyingReactions((r) => [...r, { id, emoji, x }]);
+    setSeatReactionCounts((c) => ({ ...c, [idx]: (c[idx] || 0) + 1 }));
+    setTimeout(() => setFlyingReactions((r) => r.filter((x) => x.id !== id)), 1500);
+    setReactionTargetIdx(null);
+  };
+
+  const handleSeatPress = (i: number) => {
+    const u = seats[i];
+    if (!u) return;
+    if (isAdmin) setSeatMenuIdx(i);
+    else setMiniUser({ id: u.id, name: u.name, flag: u.flag, level: u.level });
+  };
+  const startLongPress = (i: number) => {
+    if (!seats[i]) return;
+    longPressRef.current = window.setTimeout(() => {
+      setReactionTargetIdx(i);
+      longPressRef.current = null;
+    }, 450);
+  };
+  const cancelLongPress = () => {
+    if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
+  };
+
   // Speaker rotation timer
   useEffect(() => {
     const tk = setInterval(() => {
