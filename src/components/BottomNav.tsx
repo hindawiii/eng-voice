@@ -1,4 +1,4 @@
-import { Home, Activity, User } from "lucide-react";
+import { Home, Activity, User, Gamepad2 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nProvider";
@@ -8,6 +8,7 @@ export const BottomNav = () => {
   const tabs = [
     { to: "/", label: t("nav.lounge"), icon: Home },
     { to: "/activity", label: t("nav.activity"), icon: Activity },
+    { to: "/play", label: t("nav.play"), icon: Gamepad2 },
     { to: "/profile", label: t("nav.profile"), icon: User },
   ];
 
