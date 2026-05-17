@@ -1,15 +1,23 @@
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Bell, MessageCircle, Send, Share2, Sparkles } from "lucide-react";
+import {
+  ArrowDown, ArrowUp, Bell, MessageCircle, Send, Share2, Sparkles,
+  FileText, Image as ImageIcon, Mic, Award, Lightbulb, Shield, Trophy, HelpCircle, Zap, X,
+} from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { LevelBadge } from "@/components/LevelBadge";
+import { MiniProfileSheet, MiniProfileUser } from "@/components/MiniProfileSheet";
 import { FACTS, FactItem } from "@/data/rooms";
 import { useI18n } from "@/i18n/I18nProvider";
 import { toast } from "sonner";
 
-const NOTIFICATIONS = [
-  { id: "n1", icon: "🏆", title: { en: "You earned 50 LP", ar: "ربحت ٥٠ ن.ت" }, body: { en: "Your tip about 'Sobremesa' got 25 upvotes!", ar: "حصلت نصيحتك عن 'Sobremesa' على ٢٥ تصويتاً!" }, time: "2m" },
-  { id: "n2", icon: "🎤", title: { en: "Layla invited you to speak", ar: "ليلى دعتك للتحدث" }, body: { en: "English Lounge · 'Weird foods' topic", ar: "صالون الإنجليزية · موضوع 'أطعمة غريبة'" }, time: "12m" },
-  { id: "n3", icon: "✨", title: { en: "New level unlocked", ar: "فُتح مستوى جديد" }, body: { en: "You reached Tree 🌳 (Level 3)", ar: "وصلت إلى شجرة 🌳 (المستوى ٣)" }, time: "1h" },
+type PostKind = "text" | "image" | "audio" | "achievement" | "tip";
+
+const KIND_TABS: { id: PostKind; emoji: string; en: string; ar: string; max: number }[] = [
+  { id: "text", emoji: "📝", en: "Text", ar: "نص", max: 500 },
+  { id: "image", emoji: "🖼️", en: "Image", ar: "صورة", max: 200 },
+  { id: "audio", emoji: "🎙️", en: "Audio", ar: "صوت", max: 100 },
+  { id: "achievement", emoji: "🏆", en: "Achievement", ar: "إنجاز", max: 0 },
+  { id: "tip", emoji: "💡", en: "Tip", ar: "نصيحة", max: 300 },
 ];
 
 const REACTIONS = [
@@ -20,26 +28,173 @@ const REACTIONS = [
 ] as const;
 type ReactionId = typeof REACTIONS[number]["id"];
 
+const NOTIFICATIONS = [
+  { id: "n1", icon: "🏆", title: { en: "You earned 50 LP", ar: "ربحت ٥٠ ن.ت" }, body: { en: "Tip got 25 upvotes!", ar: "حصلت نصيحتك على ٢٥ تصويتاً!" }, time: "2m" },
+  { id: "n2", icon: "🎤", title: { en: "Layla invited you to speak", ar: "ليلى دعتك للتحدث" }, body: { en: "English Lounge", ar: "صالون الإنجليزية" }, time: "12m" },
+];
+
+// ── Dynamic in-feed widgets ─────────────────────────────────────
+type Widget =
+  | { kind: "challenge"; id: string }
+  | { kind: "question"; id: string }
+  | { kind: "highlight"; id: string }
+  | { kind: "quicktip"; id: string };
+
+const WIDGETS: Widget[] = [
+  { kind: "challenge", id: "w1" },
+  { kind: "question", id: "w2" },
+  { kind: "highlight", id: "w3" },
+  { kind: "quicktip", id: "w4" },
+];
+
+const Waveform = () => (
+  <div className="flex items-center gap-0.5 h-6">
+    {Array.from({ length: 18 }).map((_, i) => (
+      <span
+        key={i}
+        className="waveform-bar w-0.5 rounded-full bg-primary"
+        style={{ height: `${30 + (i % 5) * 12}%`, animationDelay: `${i * 0.07}s` }}
+      />
+    ))}
+  </div>
+);
+
+const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
+  const [accepted, setAccepted] = useState(false);
+  const [count, setCount] = useState(124);
+  const [progress, setProgress] = useState(35);
+  return (
+    <div className="rounded-2xl border border-gold/40 bg-gradient-to-br from-gold-soft to-card p-4">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-foreground">
+        <Zap className="h-4 w-4 text-gold" /> {lang === "ar" ? "تحدي اليوم" : "Daily Challenge"}
+      </div>
+      <p className="mt-2 text-sm font-semibold">
+        {lang === "ar" ? "استخدم كلمة 'Sobremesa' في جملة كاملة." : "Use the word 'Sobremesa' in a full sentence."}
+      </p>
+      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-secondary">
+        <div className="h-full bg-gradient-gold transition-all duration-1000" style={{ width: `${progress}%` }} />
+      </div>
+      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+        <span>{count} {lang === "ar" ? "مشارك" : "joined"}</span>
+        <span className="tabular-nums">⏱ 12:34</span>
+      </div>
+      <div className="mt-3 flex gap-2">
+        <button
+          disabled={accepted}
+          onClick={() => {
+            setAccepted(true);
+            setCount((c) => c + 1);
+            setProgress((p) => Math.min(100, p + 10));
+            toast.success(lang === "ar" ? "+20 ن.ت" : "+20 LP");
+          }}
+          className="flex-1 rounded-full bg-gradient-primary px-3 py-1.5 text-xs font-bold text-primary-foreground disabled:opacity-50 transition-spring hover:scale-105"
+        >
+          {accepted ? (lang === "ar" ? "تم القبول" : "Accepted") : (lang === "ar" ? "اقبل التحدي" : "Accept Challenge")}
+        </button>
+        <button className="rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+          {lang === "ar" ? "تجاهل" : "Ignore"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const QuestionWidget = ({ lang }: { lang: "en" | "ar" }) => (
+  <div className="rounded-2xl border border-primary/30 bg-primary-soft p-4">
+    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+      <HelpCircle className="h-4 w-4" /> {lang === "ar" ? "سؤال الجماعة" : "Community Question"}
+    </div>
+    <p className="mt-2 text-sm font-semibold">
+      {lang === "ar" ? "ما أصعب صوت في لغتك الأم لغير الناطقين؟" : "What's the hardest sound in your native language for foreigners?"}
+    </p>
+    <div className="mt-3 flex gap-2">
+      <button className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-gradient-primary hover:text-primary-foreground">
+        🎙️ {lang === "ar" ? "سجّل" : "Record"}
+      </button>
+      <button className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-gradient-primary hover:text-primary-foreground">
+        ✍️ {lang === "ar" ? "اكتب" : "Write"}
+      </button>
+    </div>
+  </div>
+);
+
+const HighlightWidget = ({ lang, onView }: { lang: "en" | "ar"; onView: () => void }) => (
+  <div className="rounded-2xl border border-gold/40 bg-gradient-primary p-4 text-primary-foreground">
+    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
+      <Trophy className="h-4 w-4 text-gold" /> {lang === "ar" ? "إنجاز الأسبوع" : "Weekly Highlight"}
+    </div>
+    <button onClick={onView} className="mt-3 flex items-center gap-3 w-full text-start">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold text-2xl">🇸🇦</div>
+      <div>
+        <p className="font-bold">Layla</p>
+        <p className="text-xs opacity-80">{lang === "ar" ? "أعلى مشارك" : "Top contributor"}</p>
+      </div>
+    </button>
+    <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+      {[
+        { v: "12h", l: lang === "ar" ? "تحدث" : "Speaking" },
+        { v: "48", l: lang === "ar" ? "كلمات" : "Words" },
+        { v: "21", l: lang === "ar" ? "تصحيحات" : "Corrections" },
+      ].map((s) => (
+        <div key={s.l} className="rounded-xl bg-white/10 py-2">
+          <p className="font-bold text-sm">{s.v}</p>
+          <p className="text-[10px] opacity-80">{s.l}</p>
+        </div>
+      ))}
+    </div>
+    <button
+      onClick={() => toast.success(lang === "ar" ? "هنّأت ليلى! 🎉" : "Congrats sent! 🎉")}
+      className="mt-3 w-full rounded-full bg-gradient-gold py-1.5 text-xs font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105"
+    >
+      {lang === "ar" ? "هنّئ" : "Congratulate"}
+    </button>
+  </div>
+);
+
+const QuickTipWidget = ({ lang, onDismiss }: { lang: "en" | "ar"; onDismiss: () => void }) => (
+  <div className="rounded-2xl border border-border bg-card p-4">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        <Lightbulb className="h-4 w-4 text-gold" /> {lang === "ar" ? "نصيحة سريعة" : "Quick Tip"}
+      </div>
+      <button onClick={onDismiss} className="text-muted-foreground hover:text-foreground">
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+    <p className="mt-2 text-sm">
+      {lang === "ar" ? "كرر الكلمات الجديدة بصوت عالٍ ٣ مرات قبل النوم لتثبيتها." : "Repeat new words aloud 3× before sleep to lock them in."}
+    </p>
+    <div className="mt-3 flex gap-2 text-xs">
+      <button className="rounded-full bg-primary-soft px-3 py-1 font-bold text-primary">👍 {lang === "ar" ? "مفيد" : "Helpful"}</button>
+      <button className="rounded-full bg-secondary px-3 py-1 font-semibold text-muted-foreground">↗ {lang === "ar" ? "شارك" : "Share"}</button>
+    </div>
+  </div>
+);
+
 const Activity = () => {
   const { t, lang } = useI18n();
-  const [tip, setTip] = useState("");
+  const [kind, setKind] = useState<PostKind>("text");
+  const [text, setText] = useState("");
   const [facts, setFacts] = useState<FactItem[]>(FACTS);
   const [voted, setVoted] = useState<Record<string, "up" | "down" | undefined>>({});
   const [downvotes, setDownvotes] = useState<Record<string, number>>({});
   const [reactions, setReactions] = useState<Record<string, Record<ReactionId, number>>>({});
   const [myReaction, setMyReaction] = useState<Record<string, ReactionId | undefined>>({});
-  const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string }[]>>({
-    f1: [{ id: "c1", user: "Hassan", text: lang === "ar" ? "تستخدم أيضاً 'إزيّك' مع التشديد" : "Also used as 'Ezzayyak' with emphasis" }],
-  });
+  const [comments, setComments] = useState<Record<string, { id: string; user: string; text: string }[]>>({});
   const [openComments, setOpenComments] = useState<Record<string, boolean>>({});
   const [draftComment, setDraftComment] = useState<Record<string, string>>({});
+  const [dismissedTip, setDismissedTip] = useState(false);
+  const [miniUser, setMiniUser] = useState<MiniProfileUser | null>(null);
+
+  const activeKind = KIND_TABS.find((k) => k.id === kind)!;
+  const canPublish = kind === "achievement" || text.trim().length >= 2;
 
   const post = () => {
-    const trimmed = tip.trim().slice(0, 150);
-    if (trimmed.length < 4) {
-      toast.error(lang === "ar" ? "اكتب نصيحة أطول" : "Write a longer tip");
-      return;
-    }
+    if (!canPublish) return;
+    const content =
+      kind === "achievement"
+        ? lang === "ar" ? "🏆 أكملت سلسلة تعلّم ٧ أيام!" : "🏆 Completed 7-day learning streak!"
+        : text.trim().slice(0, activeKind.max);
     setFacts((f) => [
       {
         id: `f${Date.now()}`,
@@ -47,12 +202,12 @@ const Activity = () => {
         flag: "🌟",
         level: 3,
         language: lang === "ar" ? "Arabic" : "English",
-        fact: trimmed,
+        fact: `${activeKind.emoji} ${content}`,
         upvotes: 0,
       },
       ...f,
     ]);
-    setTip("");
+    setText("");
     toast.success(lang === "ar" ? "تم النشر" : "Posted!");
   };
 
@@ -62,27 +217,17 @@ const Activity = () => {
     setVoted((v) => ({ ...v, [id]: dir }));
     if (dir === "up") {
       setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: x.upvotes + 1 } : x)));
-      if (current === "down") {
-        setDownvotes((d) => ({ ...d, [id]: Math.max(0, (d[id] || 0) - 1) }));
-      }
+      if (current === "down") setDownvotes((d) => ({ ...d, [id]: Math.max(0, (d[id] || 0) - 1) }));
     } else {
       setDownvotes((d) => ({ ...d, [id]: (d[id] || 0) + 1 }));
-      if (current === "up") {
-        setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: Math.max(0, x.upvotes - 1) } : x)));
-      }
+      if (current === "up") setFacts((f) => f.map((x) => (x.id === id ? { ...x, upvotes: Math.max(0, x.upvotes - 1) } : x)));
     }
   };
 
-  const toggleComments = (id: string) =>
-    setOpenComments((o) => ({ ...o, [id]: !o[id] }));
-
   const submitComment = (id: string) => {
-    const text = (draftComment[id] || "").trim().slice(0, 200);
-    if (text.length < 2) return;
-    setComments((c) => ({
-      ...c,
-      [id]: [...(c[id] || []), { id: `c${Date.now()}`, user: "You", text }],
-    }));
+    const c = (draftComment[id] || "").trim().slice(0, 200);
+    if (c.length < 2) return;
+    setComments((cs) => ({ ...cs, [id]: [...(cs[id] || []), { id: `c${Date.now()}`, user: "You", text: c }] }));
     setDraftComment((d) => ({ ...d, [id]: "" }));
   };
 
@@ -90,10 +235,7 @@ const Activity = () => {
     const prev = myReaction[id];
     setReactions((r) => {
       const cur = { ...(r[id] || ({} as Record<ReactionId, number>)) };
-      if (prev === rid) {
-        cur[rid] = Math.max(0, (cur[rid] || 1) - 1);
-        return { ...r, [id]: cur };
-      }
+      if (prev === rid) { cur[rid] = Math.max(0, (cur[rid] || 1) - 1); return { ...r, [id]: cur }; }
       if (prev) cur[prev] = Math.max(0, (cur[prev] || 1) - 1);
       cur[rid] = (cur[rid] || 0) + 1;
       return { ...r, [id]: cur };
@@ -101,16 +243,25 @@ const Activity = () => {
     setMyReaction((m) => ({ ...m, [id]: prev === rid ? undefined : rid }));
   };
 
-  const share = async (item: FactItem) => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: "حِوار", text: item.fact });
-      } else {
-        await navigator.clipboard.writeText(item.fact);
-        toast.success(lang === "ar" ? "تم النسخ" : "Copied");
-      }
-    } catch {}
+  const renderWidget = (w: Widget) => {
+    switch (w.kind) {
+      case "challenge": return <ChallengeWidget lang={lang} />;
+      case "question": return <QuestionWidget lang={lang} />;
+      case "highlight": return <HighlightWidget lang={lang} onView={() => setMiniUser({ id: "u1", name: "Layla", flag: "🇸🇦", gender: "female", country: "Saudi Arabia", city: "Riyadh", level: 5 })} />;
+      case "quicktip": return dismissedTip ? null : <QuickTipWidget lang={lang} onDismiss={() => setDismissedTip(true)} />;
+    }
   };
+
+  // interleave widgets between every 2 facts
+  const feed: Array<{ type: "fact"; item: FactItem } | { type: "widget"; item: Widget }> = [];
+  facts.forEach((f, i) => {
+    feed.push({ type: "fact", item: f });
+    if (i < WIDGETS.length && (i + 1) % 2 === 0) feed.push({ type: "widget", item: WIDGETS[i / 2] });
+  });
+  // ensure any remaining widgets append at end
+  WIDGETS.slice(Math.floor(facts.length / 2)).forEach((w) => {
+    if (!feed.find((x) => x.type === "widget" && x.item.id === w.id)) feed.push({ type: "widget", item: w });
+  });
 
   return (
     <AppShell>
@@ -121,129 +272,182 @@ const Activity = () => {
             <Bell className="h-5 w-5" />
           </button>
         </div>
-        <p className="mt-1 text-sm text-primary-foreground/70">{t("activity.subtitle")}</p>
+        <p className="mt-1 text-sm text-primary-foreground/70">
+          {lang === "ar" ? "حائط حِوار الاجتماعي" : "Hewar social wall"}
+        </p>
       </header>
 
-      <div className="space-y-6 px-5 -mt-4">
-        {/* Composer */}
+      <div className="space-y-4 px-5 -mt-4">
+        {/* Composer with post-type tabs */}
         <section className="rounded-3xl bg-card p-4 shadow-elegant">
-          <h2 className="mb-3 flex items-center gap-2 px-1 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            <Sparkles className="h-4 w-4 text-gold" />
-            {lang === "ar" ? "شارك نصيحة لغوية" : "Share a language tip"}
-          </h2>
-          <textarea
-            value={tip}
-            onChange={(e) => setTip(e.target.value)}
-            maxLength={150}
-            rows={3}
-            placeholder={lang === "ar" ? "أخبرنا تعبيراً مفيداً تعلمته…" : "Share a phrase or idiom you learned…"}
-            className="w-full resize-none rounded-2xl border border-border bg-background p-3 text-sm outline-none transition-smooth focus:border-primary"
-          />
+          <div className="mb-3 flex gap-1 overflow-x-auto rounded-full bg-secondary p-1">
+            {KIND_TABS.map((k) => (
+              <button
+                key={k.id}
+                onClick={() => setKind(k.id)}
+                className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold transition-smooth ${
+                  kind === k.id ? "bg-gradient-primary text-primary-foreground shadow-soft" : "text-muted-foreground"
+                }`}
+              >
+                <span>{k.emoji}</span>
+                <span>{lang === "ar" ? k.ar : k.en}</span>
+              </button>
+            ))}
+          </div>
+
+          {kind === "achievement" ? (
+            <div className="rounded-2xl border border-gold/40 bg-gold-soft p-4 text-center">
+              <Award className="mx-auto h-8 w-8 text-gold" />
+              <p className="mt-2 text-sm font-bold">
+                {lang === "ar" ? "🏆 أكملت سلسلة تعلّم ٧ أيام!" : "🏆 Completed 7-day learning streak!"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {lang === "ar" ? "بطاقة مُنشأة تلقائياً" : "Auto-generated card"}
+              </p>
+            </div>
+          ) : kind === "audio" ? (
+            <div className="rounded-2xl border border-border bg-background p-4">
+              <div className="flex items-center gap-3">
+                <button className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground">
+                  <Mic className="h-4 w-4" />
+                </button>
+                <Waveform />
+                <span className="text-xs tabular-nums text-muted-foreground">0:12 / 1:00</span>
+              </div>
+              <input
+                autoFocus
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                maxLength={activeKind.max}
+                placeholder={lang === "ar" ? "وصف اختياري…" : "Optional caption…"}
+                className="mt-3 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              />
+            </div>
+          ) : kind === "image" ? (
+            <div className="space-y-2">
+              <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background p-6 text-sm text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
+                <ImageIcon className="h-5 w-5" /> {lang === "ar" ? "اختر صورة" : "Choose image"}
+              </button>
+              <input
+                autoFocus
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                maxLength={activeKind.max}
+                placeholder={lang === "ar" ? "تعليق على الصورة…" : "Image caption…"}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              />
+            </div>
+          ) : (
+            <textarea
+              autoFocus
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              maxLength={activeKind.max}
+              rows={3}
+              placeholder={
+                kind === "tip"
+                  ? lang === "ar" ? "شارك نصيحة لغوية مفيدة…" : "Share a useful language tip…"
+                  : lang === "ar" ? "ما الذي يدور في ذهنك؟" : "What's on your mind?"
+              }
+              className="w-full resize-none rounded-2xl border border-border bg-background p-3 text-sm outline-none focus:border-primary"
+            />
+          )}
+
           <div className="mt-2 flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">{tip.length}/150</span>
+            <span className="text-xs text-muted-foreground">
+              {kind === "achievement" ? "—" : `${text.length}/${activeKind.max}`}
+            </span>
             <button
               onClick={post}
-              className="flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-bold text-primary-foreground shadow-elegant transition-spring hover:scale-105"
+              disabled={!canPublish}
+              className="flex items-center gap-1.5 rounded-full bg-gradient-primary px-4 py-1.5 text-xs font-bold text-primary-foreground shadow-elegant transition-spring hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               <Send className="h-3.5 w-3.5" />
-              {lang === "ar" ? "نشر" : "Post"}
+              {lang === "ar" ? "نشر" : "Publish"}
             </button>
           </div>
         </section>
 
+        {/* Pinned guidelines */}
+        <section className="rounded-3xl border border-gold/30 bg-gradient-to-br from-gold-soft/60 to-card p-4">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-foreground">
+            <Shield className="h-4 w-4 text-gold" /> {lang === "ar" ? "إرشادات المجتمع" : "Community Guidelines"}
+          </div>
+          <ul className="mt-2 grid grid-cols-1 gap-1 text-xs text-foreground/80 sm:grid-cols-3">
+            <li>✅ {lang === "ar" ? "احترم الجميع" : "Respect everyone"}</li>
+            <li>🚫 {lang === "ar" ? "بدون إعلانات خارجية" : "No external ads"}</li>
+            <li>🗣️ {lang === "ar" ? "محتوى لغوي فقط" : "Language content only"}</li>
+          </ul>
+        </section>
+
         {/* Notifications */}
         <section className="rounded-3xl bg-card p-4 shadow-soft">
-          <h2 className="mb-3 flex items-center gap-2 px-1 text-sm font-bold uppercase tracking-wider text-muted-foreground">
+          <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
             <Bell className="h-4 w-4" /> {t("activity.notifications")}
           </h2>
           <ul className="space-y-2">
             {NOTIFICATIONS.map((n) => (
-              <li key={n.id} className="flex items-start gap-3 rounded-2xl bg-secondary/60 p-3 transition-smooth hover:bg-secondary">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-card text-lg shadow-soft">
-                  {n.icon}
-                </div>
+              <li key={n.id} className="flex items-start gap-3 rounded-2xl bg-secondary/60 p-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-card text-lg shadow-soft">{n.icon}</div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold">{n.title[lang]}</p>
                     <span className="text-xs text-muted-foreground">{n.time}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">{n.body[lang]}</p>
+                  <p className="text-xs text-muted-foreground">{n.body[lang]}</p>
                 </div>
               </li>
             ))}
           </ul>
         </section>
 
-        {/* Facts wall */}
-        <section className="rounded-3xl bg-card p-4 shadow-soft">
-          <h2 className="mb-3 flex items-center gap-2 px-1 text-sm font-bold uppercase tracking-wider text-muted-foreground">
-            <Sparkles className="h-4 w-4 text-gold" /> {t("activity.facts")}
-          </h2>
-          <ul className="space-y-3">
-            {facts.map((f) => (
-              <li key={f.id} className="rounded-2xl border border-border p-4 transition-smooth hover:shadow-soft">
+        {/* Feed (facts + widgets interleaved) */}
+        <section className="space-y-3">
+          {feed.map((entry, idx) =>
+            entry.type === "widget" ? (
+              <div key={`w-${entry.item.id}-${idx}`}>{renderWidget(entry.item)}</div>
+            ) : (
+              <article key={entry.item.id} className="rounded-2xl bg-card p-4 shadow-soft">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-base">{f.flag}</div>
+                  <button
+                    onClick={() => setMiniUser({ id: entry.item.id, name: entry.item.user, flag: entry.item.flag, level: entry.item.level })}
+                    className="flex items-center gap-2 text-start"
+                  >
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-base">{entry.item.flag}</div>
                     <div>
-                      <p className="text-sm font-semibold leading-tight">{f.user}</p>
+                      <p className="text-sm font-semibold leading-tight">{entry.item.user}</p>
                       <div className="flex items-center gap-1.5">
-                        <LevelBadge level={f.level} />
-                        <span className="text-xs text-muted-foreground">· {f.language}</span>
+                        <LevelBadge level={entry.item.level} />
+                        <span className="text-xs text-muted-foreground">· {entry.item.language}</span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                   <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => vote(f.id, "up")}
-                      className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition-smooth ${
-                        voted[f.id] === "up"
-                          ? "bg-gold text-primary-foreground"
-                          : "bg-gold-soft text-gold-foreground hover:bg-gold hover:text-primary-foreground"
-                      }`}
-                      aria-label={lang === "ar" ? "تصويت إيجابي" : "Upvote"}
-                    >
-                      <ArrowUp className="h-3.5 w-3.5" />
-                      {f.upvotes}
+                    <button onClick={() => vote(entry.item.id, "up")} className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition-smooth ${voted[entry.item.id] === "up" ? "bg-gold text-primary-foreground" : "bg-gold-soft text-gold-foreground hover:bg-gold hover:text-primary-foreground"}`}>
+                      <ArrowUp className="h-3.5 w-3.5" />{entry.item.upvotes}
                     </button>
-                    <button
-                      onClick={() => vote(f.id, "down")}
-                      className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition-smooth ${
-                        voted[f.id] === "down"
-                          ? "bg-destructive text-destructive-foreground"
-                          : "bg-secondary text-muted-foreground hover:bg-destructive/20 hover:text-destructive"
-                      }`}
-                      aria-label={lang === "ar" ? "تصويت سلبي" : "Downvote"}
-                    >
-                      <ArrowDown className="h-3.5 w-3.5" />
-                      {downvotes[f.id] || 0}
+                    <button onClick={() => vote(entry.item.id, "down")} className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold transition-smooth ${voted[entry.item.id] === "down" ? "bg-destructive text-destructive-foreground" : "bg-secondary text-muted-foreground hover:bg-destructive/20 hover:text-destructive"}`}>
+                      <ArrowDown className="h-3.5 w-3.5" />{downvotes[entry.item.id] || 0}
                     </button>
                   </div>
                 </div>
-                <p className="mt-3 font-arabic text-base leading-relaxed">{f.fact}</p>
-                {f.translation && (
+                <p className="mt-3 font-arabic text-base leading-relaxed">{entry.item.fact}</p>
+                {entry.item.translation && (
                   <p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground">
-                    <MessageCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    {f.translation}
+                    <MessageCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />{entry.item.translation}
                   </p>
                 )}
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {REACTIONS.map((r) => {
-                    const count = reactions[f.id]?.[r.id] || 0;
-                    const mine = myReaction[f.id] === r.id;
+                    const count = reactions[entry.item.id]?.[r.id] || 0;
+                    const mine = myReaction[entry.item.id] === r.id;
                     return (
                       <button
                         key={r.id}
-                        onClick={() => react(f.id, r.id)}
-                        className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition-smooth ${
-                          mine
-                            ? "bg-primary-soft text-primary ring-1 ring-primary"
-                            : "bg-secondary text-muted-foreground hover:bg-primary-soft hover:text-primary"
-                        }`}
-                        aria-label={lang === "ar" ? r.labelAr : r.label}
+                        onClick={() => react(entry.item.id, r.id)}
+                        className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold transition-smooth ${mine ? "bg-primary-soft text-primary ring-1 ring-primary" : "bg-secondary text-muted-foreground hover:bg-primary-soft hover:text-primary"}`}
                       >
                         <span>{r.emoji}</span>
-                        <span>{lang === "ar" ? r.labelAr : r.label}</span>
                         {count > 0 && <span className="tabular-nums">{count}</span>}
                       </button>
                     );
@@ -251,57 +455,45 @@ const Activity = () => {
                 </div>
                 <div className="mt-3 flex items-center justify-between">
                   <button
-                    onClick={() => toggleComments(f.id)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground transition-smooth hover:text-primary"
+                    onClick={() => setOpenComments((o) => ({ ...o, [entry.item.id]: !o[entry.item.id] }))}
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
                   >
-                    <MessageCircle className="h-3.5 w-3.5" />
-                    {(comments[f.id]?.length || 0)} {lang === "ar" ? "تعليقات" : "comments"}
+                    {openComments[entry.item.id] ? "▲" : "▼"} <MessageCircle className="h-3.5 w-3.5" />
+                    {(comments[entry.item.id]?.length || 0)} {lang === "ar" ? "تعليق" : "comments"}
                   </button>
-                  <button
-                    onClick={() => share(f)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground transition-smooth hover:text-primary"
-                  >
-                    <Share2 className="h-3.5 w-3.5" /> {lang === "ar" ? "مشاركة" : "Share"}
+                  <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary">
+                    <Share2 className="h-3.5 w-3.5" /> {lang === "ar" ? "شارك" : "Share"}
                   </button>
                 </div>
-
-                {openComments[f.id] && (
-                  <div className="mt-3 space-y-2 rounded-2xl bg-secondary/40 p-3">
-                    {(comments[f.id] || []).length === 0 && (
-                      <p className="text-xs text-muted-foreground">
-                        {lang === "ar" ? "كن أول من يعلّق" : "Be the first to comment"}
-                      </p>
-                    )}
-                    {(comments[f.id] || []).map((c) => (
+                {openComments[entry.item.id] && (
+                  <div className="mt-3 space-y-2 rounded-2xl bg-[#F8F9FA] p-3">
+                    {(comments[entry.item.id] || []).map((c) => (
                       <div key={c.id} className="rounded-xl bg-card p-2 text-sm">
-                        <span className="font-semibold text-primary">{c.user}: </span>
-                        <span>{c.text}</span>
+                        <span className="font-semibold text-primary">{c.user}: </span>{c.text}
                       </div>
                     ))}
                     <div className="flex items-center gap-2">
                       <input
-                        value={draftComment[f.id] || ""}
-                        onChange={(e) => setDraftComment((d) => ({ ...d, [f.id]: e.target.value }))}
-                        onKeyDown={(e) => e.key === "Enter" && submitComment(f.id)}
+                        value={draftComment[entry.item.id] || ""}
+                        onChange={(e) => setDraftComment((d) => ({ ...d, [entry.item.id]: e.target.value }))}
+                        onKeyDown={(e) => e.key === "Enter" && submitComment(entry.item.id)}
                         maxLength={200}
-                        placeholder={lang === "ar" ? "صحّح أو أضف ملاحظة…" : "Correct or add nuance…"}
+                        placeholder={lang === "ar" ? "صحّح أو علّق…" : "Correct or comment…"}
                         className="flex-1 rounded-full border border-border bg-background px-3 py-1.5 text-xs outline-none focus:border-primary"
                       />
-                      <button
-                        onClick={() => submitComment(f.id)}
-                        className="rounded-full bg-primary p-1.5 text-primary-foreground transition-smooth hover:scale-105"
-                        aria-label={lang === "ar" ? "إرسال" : "Send"}
-                      >
+                      <button onClick={() => submitComment(entry.item.id)} className="rounded-full bg-primary p-1.5 text-primary-foreground hover:scale-105 transition-spring">
                         <Send className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
                 )}
-              </li>
-            ))}
-          </ul>
+              </article>
+            )
+          )}
         </section>
       </div>
+
+      <MiniProfileSheet user={miniUser} onClose={() => setMiniUser(null)} />
     </AppShell>
   );
 };
