@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Flag, Hand, Languages, Lock, Mic, Sparkles, Timer, Zap, Plus, Crown, MicOff, UserMinus, X,
-  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users,
+  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Tv,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
@@ -13,6 +13,7 @@ import { RequestQueue, SpeakRequest } from "@/components/RequestQueue";
 import { AdminPanel } from "@/components/AdminPanel";
 import { GiftButton } from "@/components/GiftButton";
 import { ShareButton } from "@/components/ShareButton";
+import { MiniProfileSheet, MiniProfileUser } from "@/components/MiniProfileSheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,9 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nProvider";
 import { toast } from "sonner";
+
+const REACTION_EMOJIS = ["👏", "❤️", "🔥", "😂", "👍"] as const;
+const SESSION_TOTAL = 60 * 60; // 60 minutes
 
 const TOPICS_EN = [
   "Tell us about a weird food you've tried",
