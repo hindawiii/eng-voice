@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Flag, Hand, Languages, Lock, Mic, Sparkles, Timer, Zap, Plus, Crown, MicOff, UserMinus, X,
-  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Tv,
+  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
