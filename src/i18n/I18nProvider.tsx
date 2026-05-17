@@ -9,6 +9,7 @@ const DICT: Dict = {
   // Nav
   "nav.lounge": { en: "Lounge", ar: "الصالون" },
   "nav.activity": { en: "Activity", ar: "النشاط" },
+  "nav.play": { en: "Play", ar: "العب" },
   "nav.profile": { en: "Profile", ar: "الملف" },
 
   // Lounge
