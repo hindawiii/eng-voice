@@ -256,10 +256,13 @@ const Activity = () => {
   const feed: Array<{ type: "fact"; item: FactItem } | { type: "widget"; item: Widget }> = [];
   facts.forEach((f, i) => {
     feed.push({ type: "fact", item: f });
-    if (i < WIDGETS.length && (i + 1) % 2 === 0) feed.push({ type: "widget", item: WIDGETS[i / 2] });
+    if ((i + 1) % 2 === 0) {
+      const w = WIDGETS[Math.floor((i - 1) / 2)];
+      if (w) feed.push({ type: "widget", item: w });
+    }
   });
   // ensure any remaining widgets append at end
-  WIDGETS.slice(Math.floor(facts.length / 2)).forEach((w) => {
+  WIDGETS.forEach((w) => {
     if (!feed.find((x) => x.type === "widget" && x.item.id === w.id)) feed.push({ type: "widget", item: w });
   });
 
