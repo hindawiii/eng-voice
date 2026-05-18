@@ -337,7 +337,7 @@ const AccountPanel = ({ tx }: { tx: TX }) => {
           <Label className="text-xs">{tx("Preferred Language", "اللغة المفضلة")}</Label>
           <Segmented
             value={preferred}
-            onChange={setPreferred}
+            onChange={(v) => setPreferred(v)}
             options={[{ value: "ar", label: "العربية" }, { value: "en", label: "English" }]}
           />
         </div>
