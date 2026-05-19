@@ -795,9 +795,13 @@ const Room = () => {
               <ShareButton roomKey={room.key} password={customRoom?.password} />
               <GiftButton />
             </div>
+            <div className="mt-3">
+              <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
+            </div>
           </TabsContent>
         </Tabs>
       </main>
+
 
       {/* Bottom action bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-lg">
