@@ -147,6 +147,70 @@ const Room = () => {
   const [newTopicInput, setNewTopicInput] = useState(customTopic);
   const [newPasswordInput, setNewPasswordInput] = useState(customRoom?.password || "");
 
+  // === NEW: Timer Engine, AI noise, rating, recorder ===
+  const TIMER_CFG_KEY = `lingvoice.timerCfg.${room.key}`;
+  const [timerCfg, setTimerCfg] = useState<TimerConfig>(() => {
+    try {
+      const raw = localStorage.getItem(TIMER_CFG_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return { mode: "off", speakerSec: 180, sessionMin: 45 };
+  });
+  useEffect(() => {
+    try { localStorage.setItem(TIMER_CFG_KEY, JSON.stringify(timerCfg)); } catch {}
+  }, [timerCfg, TIMER_CFG_KEY]);
+  const [timerDialogOpen, setTimerDialogOpen] = useState(false);
+  const [aiNoise, setAiNoise] = useState(true);
+  const [ratingOpen, setRatingOpen] = useState(false);
+  const [tutorDownloadOpen, setTutorDownloadOpen] = useState(false);
+
+  const recorder = useTutorRecorder();
+
+  // Tutor entry fee: charge listener 10 LP once per room visit
+  useEffect(() => {
+    if (!isTutorRoom || isCustom === false) return;
+    const paidKey = `lingvoice.tutorPaid.${room.key}`;
+    if (sessionStorage.getItem(paidKey)) return;
+    if (isAdmin) { sessionStorage.setItem(paidKey, "1"); return; }
+    if (!spendLp(10)) {
+      toast.error(lang === "ar" ? "تحتاج 10 LP لدخول جلسة المرشد" : "Need 10 LP to enter tutor session");
+      navigate("/");
+      return;
+    }
+    sessionStorage.setItem(paidKey, "1");
+    // 7 LP to tutor balance (tracked separately), 3 LP platform commission
+    try {
+      const tk = `lingvoice.tutorEarnings.${room.key}`;
+      const cur = Number(localStorage.getItem(tk) || 0);
+      localStorage.setItem(tk, String(cur + 7));
+      const pk = "lingvoice.platformCommission";
+      localStorage.setItem(pk, String(Number(localStorage.getItem(pk) || 0) + 3));
+    } catch {}
+    toast.success(lang === "ar" ? "-10 LP · أهلاً في الجلسة" : "-10 LP · Welcome to session");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Tutor: auto-start recording on enter (admin only)
+  useEffect(() => {
+    if (!isTutorRoom || !isAdmin) return;
+    recorder.start().catch(() => {
+      toast.error(lang === "ar" ? "تعذّر بدء التسجيل" : "Recording unavailable");
+    });
+    return () => {
+      if (recorder.recording) recorder.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleLeaveRoom = async () => {
+    if (isTutorRoom && isAdmin && recorder.recording) {
+      await recorder.stop();
+      setTutorDownloadOpen(true);
+    } else {
+      setRatingOpen(true);
+    }
+  };
+
   // Stage mode + floating reactions + session clock
   const [stageMode, setStageMode] = useState(false);
   const [reactionTargetIdx, setReactionTargetIdx] = useState<number | null>(null);
