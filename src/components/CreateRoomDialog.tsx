@@ -153,7 +153,56 @@ export const CreateRoomDialog = () => {
               />
             </div>
           )}
+
+          {/* Tutor Mode */}
+          <div className={cn(
+            "rounded-2xl border p-3 space-y-3",
+            canTutor ? "border-emerald-500/40 bg-emerald-500/5" : "border-border bg-muted/30 opacity-70"
+          )}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <GraduationCap className="h-4 w-4 text-emerald-500" />
+                <div>
+                  <p className="text-sm font-semibold">
+                    {lang === "ar" ? "وضع المرشد" : "Tutor Mode"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {canTutor
+                      ? (lang === "ar" ? "جلسة تعليمية معتمدة" : "Certified learning session")
+                      : (lang === "ar" ? "يتطلب مستوى شجرة 🌳" : "Requires Tree 🌳 level")}
+                  </p>
+                </div>
+              </div>
+              <Switch
+                disabled={!canTutor}
+                checked={tutorMode}
+                onCheckedChange={setTutorMode}
+              />
+            </div>
+            {tutorMode && canTutor && (
+              <div className="flex gap-2">
+                {(["beginner", "intermediate", "advanced"] as Difficulty[]).map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDifficulty(d)}
+                    className={cn(
+                      "flex-1 rounded-full px-2 py-1.5 text-[11px] font-bold capitalize transition-smooth",
+                      difficulty === d
+                        ? "bg-emerald-500 text-white"
+                        : "bg-secondary text-muted-foreground"
+                    )}
+                  >
+                    {lang === "ar"
+                      ? d === "beginner" ? "مبتدئ" : d === "intermediate" ? "متوسط" : "متقدم"
+                      : d}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
