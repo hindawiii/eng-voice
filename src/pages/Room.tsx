@@ -71,7 +71,7 @@ const Room = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t, lang } = useI18n();
-  const { lp, add: addLp, spend: spendLp } = useWallet();
+  const { spend: spendLp } = useWallet();
 
   const publicRoom = ROOMS.find((r) => r.key === key);
   const customRoom: CustomRoom | undefined = !publicRoom && key ? getCustomRoom(key) : undefined;
@@ -168,7 +168,7 @@ const Room = () => {
 
   // Tutor entry fee: charge listener 10 LP once per room visit
   useEffect(() => {
-    if (!isTutorRoom || isCustom === false) return;
+    if (!isTutorRoom) return;
     const paidKey = `lingvoice.tutorPaid.${room.key}`;
     if (sessionStorage.getItem(paidKey)) return;
     if (isAdmin) { sessionStorage.setItem(paidKey, "1"); return; }
