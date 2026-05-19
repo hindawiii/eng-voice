@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Lock, Plus, Sparkles } from "lucide-react";
+import { GraduationCap, Lock, Plus, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,23 +9,36 @@ import { addCustomRoom, FLAGS_BY_LANG } from "@/data/customRooms";
 import { useI18n } from "@/i18n/I18nProvider";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const LANGS = Object.keys(FLAGS_BY_LANG);
 
+// In a real app, read from auth profile. Level >= 3 ('Tree') unlocks Tutor Mode.
+const CURRENT_USER_LEVEL = 3;
+const TUTOR_MIN_LEVEL = 3;
+
+type Difficulty = "beginner" | "intermediate" | "advanced";
+
 export const CreateRoomDialog = () => {
-  const { t, lang } = useI18n();
+  const { lang } = useI18n();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [language, setLanguage] = useState("English");
   const [topic, setTopic] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState("");
+  const [tutorMode, setTutorMode] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
+
+  const canTutor = CURRENT_USER_LEVEL >= TUTOR_MIN_LEVEL;
 
   const reset = () => {
     setLanguage("English");
     setTopic("");
     setIsPrivate(false);
     setPassword("");
+    setTutorMode(false);
+    setDifficulty("beginner");
   };
 
   const handleCreate = () => {
@@ -53,7 +66,9 @@ export const CreateRoomDialog = () => {
       liveUsers: 1,
       speakers: 1,
       createdAt: Date.now(),
-      accent: "from-[#1E3A5F] to-[#D4AF37]",
+      accent: tutorMode ? "from-emerald-700 to-[#D4AF37]" : "from-[#1E3A5F] to-[#D4AF37]",
+      tutorMode: tutorMode && canTutor,
+      difficulty: tutorMode && canTutor ? difficulty : undefined,
     });
     toast.success(lang === "ar" ? "تم إنشاء الغرفة" : "Room created");
     setOpen(false);
