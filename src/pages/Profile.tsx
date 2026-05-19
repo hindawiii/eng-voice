@@ -2,6 +2,8 @@ import { Coins, Crown, Gift, MapPin, Play, Settings, Share2, TrendingUp, User } 
 import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ProBadge } from "@/components/ProBadge";
+import { AdBoosterButton } from "@/components/AdBoosterButton";
+import { RoomScheduler } from "@/components/RoomScheduler";
 import { LEVELS } from "@/data/rooms";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -186,6 +188,9 @@ const Profile = () => {
           </div>
         </section>
 
+        {/* Daily allowance ledger */}
+        <AdBoosterButton />
+
         {/* Earn LP */}
         <section className="rounded-3xl bg-card p-5 shadow-soft">
           <h3 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">{t("profile.earnLp")}</h3>
@@ -200,6 +205,10 @@ const Profile = () => {
             <span className="rounded-full bg-gold px-3 py-1 text-xs font-bold text-gold-foreground">+25 {t("profile.lp")}</span>
           </button>
         </section>
+
+        {/* Scheduler */}
+        <RoomScheduler />
+
 
         {/* Pro upsell */}
         {!USER.pro && (

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Flag, Hand, Languages, Lock, Mic, Sparkles, Timer, Zap, Plus, Crown, MicOff, UserMinus, X,
-  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users,
+  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Download, GraduationCap, LogOut,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
@@ -14,6 +14,14 @@ import { AdminPanel } from "@/components/AdminPanel";
 import { GiftButton } from "@/components/GiftButton";
 import { ShareButton } from "@/components/ShareButton";
 import { MiniProfileSheet, MiniProfileUser } from "@/components/MiniProfileSheet";
+import { TimerEngineDialog, TimerConfig } from "@/components/TimerEngineDialog";
+import { SpeakerCountdown } from "@/components/SpeakerCountdown";
+import { LiveTranscriptionDrawer } from "@/components/LiveTranscriptionDrawer";
+import { SessionRatingModal } from "@/components/SessionRatingModal";
+import { AINoiseToggle } from "@/components/AINoiseToggle";
+import { CertifiedTutorBadge } from "@/components/CertifiedTutorBadge";
+import { useTutorRecorder } from "@/hooks/useTutorRecorder";
+import { useWallet } from "@/hooks/useWallet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -61,7 +69,9 @@ const TOPIC_INTERVAL = 300; // 5 min
 const Room = () => {
   const { key } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { t, lang } = useI18n();
+  const { spend: spendLp } = useWallet();
 
   const publicRoom = ROOMS.find((r) => r.key === key);
   const customRoom: CustomRoom | undefined = !publicRoom && key ? getCustomRoom(key) : undefined;
@@ -76,6 +86,9 @@ const Room = () => {
     topic: customRoom?.topic || "",
     topicAr: customRoom?.topicAr || "",
   } as any;
+
+  const isTutorRoom = !!customRoom?.tutorMode;
+  const tutorDifficulty = customRoom?.difficulty;
 
   // Custom rooms: creator is admin. Public rooms: simulate "you are admin" off.
   const isAdmin = isCustom;
@@ -134,6 +147,70 @@ const Room = () => {
   const [newTopicInput, setNewTopicInput] = useState(customTopic);
   const [newPasswordInput, setNewPasswordInput] = useState(customRoom?.password || "");
 
+  // === NEW: Timer Engine, AI noise, rating, recorder ===
+  const TIMER_CFG_KEY = `lingvoice.timerCfg.${room.key}`;
+  const [timerCfg, setTimerCfg] = useState<TimerConfig>(() => {
+    try {
+      const raw = localStorage.getItem(TIMER_CFG_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return { mode: "off", speakerSec: 180, sessionMin: 45 };
+  });
+  useEffect(() => {
+    try { localStorage.setItem(TIMER_CFG_KEY, JSON.stringify(timerCfg)); } catch {}
+  }, [timerCfg, TIMER_CFG_KEY]);
+  const [timerDialogOpen, setTimerDialogOpen] = useState(false);
+  const [aiNoise, setAiNoise] = useState(true);
+  const [ratingOpen, setRatingOpen] = useState(false);
+  const [tutorDownloadOpen, setTutorDownloadOpen] = useState(false);
+
+  const recorder = useTutorRecorder();
+
+  // Tutor entry fee: charge listener 10 LP once per room visit
+  useEffect(() => {
+    if (!isTutorRoom) return;
+    const paidKey = `lingvoice.tutorPaid.${room.key}`;
+    if (sessionStorage.getItem(paidKey)) return;
+    if (isAdmin) { sessionStorage.setItem(paidKey, "1"); return; }
+    if (!spendLp(10)) {
+      toast.error(lang === "ar" ? "تحتاج 10 LP لدخول جلسة المرشد" : "Need 10 LP to enter tutor session");
+      navigate("/");
+      return;
+    }
+    sessionStorage.setItem(paidKey, "1");
+    // 7 LP to tutor balance (tracked separately), 3 LP platform commission
+    try {
+      const tk = `lingvoice.tutorEarnings.${room.key}`;
+      const cur = Number(localStorage.getItem(tk) || 0);
+      localStorage.setItem(tk, String(cur + 7));
+      const pk = "lingvoice.platformCommission";
+      localStorage.setItem(pk, String(Number(localStorage.getItem(pk) || 0) + 3));
+    } catch {}
+    toast.success(lang === "ar" ? "-10 LP · أهلاً في الجلسة" : "-10 LP · Welcome to session");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Tutor: auto-start recording on enter (admin only)
+  useEffect(() => {
+    if (!isTutorRoom || !isAdmin) return;
+    recorder.start().catch(() => {
+      toast.error(lang === "ar" ? "تعذّر بدء التسجيل" : "Recording unavailable");
+    });
+    return () => {
+      if (recorder.recording) recorder.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleLeaveRoom = async () => {
+    if (isTutorRoom && isAdmin && recorder.recording) {
+      await recorder.stop();
+      setTutorDownloadOpen(true);
+    } else {
+      setRatingOpen(true);
+    }
+  };
+
   // Stage mode + floating reactions + session clock
   const [stageMode, setStageMode] = useState(false);
   const [reactionTargetIdx, setReactionTargetIdx] = useState<number | null>(null);
@@ -149,7 +226,10 @@ const Room = () => {
     try { return Number(localStorage.getItem(SESSION_KEY) || 0); } catch { return 0; }
   })();
   const [sessionElapsed, setSessionElapsed] = useState(sessionRestored);
-  const sessionRemaining = Math.max(0, SESSION_TOTAL + sessionExtraMin * 60 - sessionElapsed);
+  const _baseSessionTotal = timerCfg.mode === "session" && timerCfg.sessionMin
+    ? timerCfg.sessionMin * 60
+    : SESSION_TOTAL;
+  const sessionRemaining = Math.max(0, _baseSessionTotal + sessionExtraMin * 60 - sessionElapsed);
   const sessionLow = sessionRemaining < 5 * 60;
   useEffect(() => {
     const tk = setInterval(() => setSessionElapsed((s) => s + 1), 1000);
@@ -185,8 +265,17 @@ const Room = () => {
     if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
   };
 
-  // Speaker rotation timer
+  // Sync turnLength with timer engine config
   useEffect(() => {
+    if ((timerCfg.mode === "single" || timerCfg.mode === "cyclic") && timerCfg.speakerSec) {
+      setTurnLength(timerCfg.speakerSec);
+      setTimeLeft(timerCfg.speakerSec);
+    }
+  }, [timerCfg.mode, timerCfg.speakerSec]);
+
+  // Speaker rotation timer — respects timer engine mode
+  useEffect(() => {
+    if (timerCfg.mode === "off" || timerCfg.mode === "session") return;
     const tk = setInterval(() => {
       setTimeLeft((s) => {
         if (s > 1) return s - 1;
@@ -195,11 +284,14 @@ const Room = () => {
           if (idx === -1) return prev;
           const next = [...prev];
           next[idx] = { ...(next[idx] as SeatUser), speaking: false };
-          for (let i = 1; i <= prev.length; i++) {
-            const j = (idx + i) % prev.length;
-            if (next[j]) {
-              next[j] = { ...(next[j] as SeatUser), speaking: true };
-              break;
+          // Cyclic: auto-pass to next; Single: just mute
+          if (timerCfg.mode === "cyclic") {
+            for (let i = 1; i <= prev.length; i++) {
+              const j = (idx + i) % prev.length;
+              if (next[j]) {
+                next[j] = { ...(next[j] as SeatUser), speaking: true };
+                break;
+              }
             }
           }
           return next;
@@ -208,7 +300,18 @@ const Room = () => {
       });
     }, 1000);
     return () => clearInterval(tk);
-  }, [turnLength]);
+  }, [turnLength, timerCfg.mode]);
+
+  // Session total timer — graceful close at zero
+  useEffect(() => {
+    if (timerCfg.mode !== "session") return;
+    const remaining = _baseSessionTotal + sessionExtraMin * 60 - sessionElapsed;
+    if (remaining <= 0) {
+      toast.info(lang === "ar" ? "انتهت الجلسة" : "Session ended");
+      const tk = setTimeout(() => handleLeaveRoom(), 1500);
+      return () => clearTimeout(tk);
+    }
+  }, [sessionElapsed, timerCfg.mode, _baseSessionTotal, sessionExtraMin, lang]);
 
   // Topic rotation (only if no fixed custom topic)
   useEffect(() => {
@@ -351,9 +454,13 @@ const Room = () => {
       {/* Header */}
       <header className={cn("bg-gradient-to-br px-5 pb-8 pt-12 text-primary-foreground", room.accent)}>
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25">
+          <button
+            onClick={handleLeaveRoom}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
+            aria-label="Leave"
+          >
             <ArrowLeft className="h-5 w-5" />
-          </Link>
+          </button>
           <div className="text-center">
             <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 flex items-center justify-center gap-1">
               {isAdmin && <Crown className="h-3 w-3 text-gold" />}
@@ -362,10 +469,23 @@ const Room = () => {
                 <span className="ml-1 rounded-full bg-gold/30 px-1.5 text-[10px]">+{sessionExtraMin}m</span>
               )}
             </p>
-            <h1 className="text-lg font-bold flex items-center justify-center gap-1">
+            <h1 className="text-lg font-bold flex items-center justify-center gap-1 flex-wrap">
               {room.flag} {roomName}
               {requiresPassword && <Lock className="h-3.5 w-3.5 text-gold" />}
+              {isTutorRoom && <CertifiedTutorBadge />}
             </h1>
+            {isTutorRoom && tutorDifficulty && (
+              <p className="mt-1 text-[10px] uppercase tracking-wider text-primary-foreground/70">
+                {lang === "ar" ? "المستوى: " : "Level: "}
+                <span className="font-bold">{tutorDifficulty}</span>
+                {isAdmin && recorder.recording && (
+                  <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-destructive/30 px-1.5 text-[9px]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
+                    REC
+                  </span>
+                )}
+              </p>
+            )}
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive">
             <Flag className="h-4 w-4" />
@@ -398,6 +518,9 @@ const Room = () => {
           <div className="flex items-center justify-between text-[11px] font-semibold">
             <span className="flex items-center gap-1 text-muted-foreground">
               <Timer className="h-3 w-3" /> {lang === "ar" ? "الجلسة" : "Session"}
+              <span className="ml-1 rounded-full bg-secondary px-1.5 text-[9px] uppercase">
+                {timerCfg.mode === "off" ? "∞" : timerCfg.mode}
+              </span>
             </span>
             <span className={cn("tabular-nums", sessionLow && "text-destructive")}>
               {Math.floor(sessionRemaining / 60)}:{(sessionRemaining % 60).toString().padStart(2, "0")} {t("room.left")}
@@ -406,7 +529,7 @@ const Room = () => {
           <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-secondary">
             <div
               className={cn("h-full transition-all", sessionLow ? "animate-session-blink" : "bg-gradient-gold")}
-              style={{ width: `${Math.max(0, (sessionRemaining / (SESSION_TOTAL + sessionExtraMin * 60)) * 100)}%` }}
+              style={{ width: `${Math.max(0, (sessionRemaining / (_baseSessionTotal + sessionExtraMin * 60)) * 100)}%` }}
             />
           </div>
           {sessionLow && !isAdmin && (
@@ -434,21 +557,30 @@ const Room = () => {
               >
                 <Sparkles className="h-3 w-3" /> {lang === "ar" ? "وضع المسرح" : "Stage"}
               </button>
-              {activeSpeakerIdx !== -1 && (
-                <span className="flex items-center gap-1 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold text-gold-foreground tabular-nums">
-                  <Timer className="h-3 w-3" />
-                  {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
-                </span>
-              )}
+              {/* Speaker-only countdown: visible to active speaker (id starts with "me-") */}
+              {activeSpeakerIdx !== -1 &&
+                timerCfg.mode !== "off" && timerCfg.mode !== "session" &&
+                (seats[activeSpeakerIdx]?.id?.startsWith("me-") || isAdmin) && (
+                  <SpeakerCountdown seconds={timeLeft} />
+                )}
               {isAdmin && (
-                <button
-                  onClick={() => setAdminOpen((v) => !v)}
-                  className="flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
-                >
-                  <Crown className="h-3 w-3 text-gold" />
-                  {lang === "ar" ? "تحكم" : "Controls"}
-                  {adminOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                </button>
+                <>
+                  <button
+                    onClick={() => setTimerDialogOpen(true)}
+                    className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
+                    aria-label="Timer engine"
+                  >
+                    <Timer className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={() => setAdminOpen((v) => !v)}
+                    className="flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <Crown className="h-3 w-3 text-gold" />
+                    {lang === "ar" ? "تحكم" : "Controls"}
+                    {adminOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -565,6 +697,10 @@ const Room = () => {
           )}
         </section>
 
+        {/* Live transcription drawer */}
+        <LiveTranscriptionDrawer />
+
+
         {/* Compact tabbed interaction panel directly under seats */}
         <Tabs defaultValue="chat" className="mt-4">
           <TabsList className="grid w-full grid-cols-4 rounded-full bg-card shadow-soft p-1 h-auto">
@@ -659,24 +795,35 @@ const Room = () => {
               <ShareButton roomKey={room.key} password={customRoom?.password} />
               <GiftButton />
             </div>
+            <div className="mt-3">
+              <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
+            </div>
           </TabsContent>
         </Tabs>
       </main>
 
+
       {/* Bottom action bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-3">
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 px-5 py-3">
           <button
             onClick={requestSeat}
-            className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm font-semibold transition-smooth hover:bg-primary-soft"
+            className="flex items-center gap-2 rounded-full bg-secondary px-3 py-2.5 text-xs font-semibold transition-smooth hover:bg-primary-soft"
           >
             <Hand className="h-4 w-4" /> {t("room.requestSeat")}
           </button>
           <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-elegant transition-spring hover:scale-[1.02]">
             <Mic className="h-4 w-4" /> {t("room.tapSpeak")}
           </button>
+          <button
+            onClick={handleLeaveRoom}
+            className="flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-2.5 text-xs font-bold text-destructive transition-smooth hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
+
 
       {/* Seat action menu (admin) */}
       <Dialog open={seatMenuIdx !== null} onOpenChange={(o) => !o && setSeatMenuIdx(null)}>
@@ -795,8 +942,68 @@ const Room = () => {
           </span>
         ))}
       </div>
+
+      {/* Timer engine dialog (admin) */}
+      <TimerEngineDialog
+        open={timerDialogOpen}
+        onOpenChange={setTimerDialogOpen}
+        config={timerCfg}
+        onSave={(c) => {
+          setTimerCfg(c);
+          toast.success(lang === "ar" ? "تم تحديث المؤقت" : "Timer updated");
+        }}
+      />
+
+      {/* Session rating modal — on leave */}
+      <SessionRatingModal
+        open={ratingOpen}
+        onOpenChange={(o) => {
+          setRatingOpen(o);
+          if (!o) navigate("/");
+        }}
+        onSubmit={(r) => {
+          toast.success(lang === "ar" ? `شكراً! (${r}★)` : `Thanks! (${r}★)`);
+          navigate("/");
+        }}
+      />
+
+      {/* Tutor session: audio archive download */}
+      <Dialog open={tutorDownloadOpen} onOpenChange={(o) => {
+        setTutorDownloadOpen(o);
+        if (!o) { recorder.reset(); navigate("/"); }
+      }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-emerald-500" />
+              {lang === "ar" ? "احفظ الجلسة" : "Save Session"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {lang === "ar"
+              ? "تم تسجيل الجلسة محلياً على جهازك. حملها الآن قبل المغادرة."
+              : "The session was recorded locally on your device. Download it now before you leave."}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { recorder.reset(); setTutorDownloadOpen(false); navigate("/"); }}>
+              {lang === "ar" ? "تخطي" : "Skip"}
+            </Button>
+            {recorder.downloadUrl && (
+              <a
+                href={recorder.downloadUrl}
+                download={`tutor-session-${room.key}.webm`}
+                className="inline-flex items-center gap-2 rounded-md bg-gradient-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+              >
+                <Download className="h-4 w-4" />
+                {lang === "ar" ? "تحميل .webm" : "Download .webm"}
+              </a>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 export default Room;
