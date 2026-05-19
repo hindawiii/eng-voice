@@ -942,8 +942,68 @@ const Room = () => {
           </span>
         ))}
       </div>
+
+      {/* Timer engine dialog (admin) */}
+      <TimerEngineDialog
+        open={timerDialogOpen}
+        onOpenChange={setTimerDialogOpen}
+        config={timerCfg}
+        onSave={(c) => {
+          setTimerCfg(c);
+          toast.success(lang === "ar" ? "تم تحديث المؤقت" : "Timer updated");
+        }}
+      />
+
+      {/* Session rating modal — on leave */}
+      <SessionRatingModal
+        open={ratingOpen}
+        onOpenChange={(o) => {
+          setRatingOpen(o);
+          if (!o) navigate("/");
+        }}
+        onSubmit={(r) => {
+          toast.success(lang === "ar" ? `شكراً! (${r}★)` : `Thanks! (${r}★)`);
+          navigate("/");
+        }}
+      />
+
+      {/* Tutor session: audio archive download */}
+      <Dialog open={tutorDownloadOpen} onOpenChange={(o) => {
+        setTutorDownloadOpen(o);
+        if (!o) { recorder.reset(); navigate("/"); }
+      }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-emerald-500" />
+              {lang === "ar" ? "احفظ الجلسة" : "Save Session"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {lang === "ar"
+              ? "تم تسجيل الجلسة محلياً على جهازك. حملها الآن قبل المغادرة."
+              : "The session was recorded locally on your device. Download it now before you leave."}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { recorder.reset(); setTutorDownloadOpen(false); navigate("/"); }}>
+              {lang === "ar" ? "تخطي" : "Skip"}
+            </Button>
+            {recorder.downloadUrl && (
+              <a
+                href={recorder.downloadUrl}
+                download={`tutor-session-${room.key}.webm`}
+                className="inline-flex items-center gap-2 rounded-md bg-gradient-primary px-4 py-2 text-sm font-bold text-primary-foreground"
+              >
+                <Download className="h-4 w-4" />
+                {lang === "ar" ? "تحميل .webm" : "Download .webm"}
+              </a>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 export default Room;
