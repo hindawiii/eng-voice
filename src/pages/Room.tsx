@@ -697,6 +697,10 @@ const Room = () => {
           )}
         </section>
 
+        {/* Live transcription drawer */}
+        <LiveTranscriptionDrawer />
+
+
         {/* Compact tabbed interaction panel directly under seats */}
         <Tabs defaultValue="chat" className="mt-4">
           <TabsList className="grid w-full grid-cols-4 rounded-full bg-card shadow-soft p-1 h-auto">
