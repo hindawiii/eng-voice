@@ -303,9 +303,6 @@ const Room = () => {
   }, [turnLength, timerCfg.mode]);
 
   // Session total timer — graceful close at zero
-  const _baseSessionTotal = timerCfg.mode === "session" && timerCfg.sessionMin
-    ? timerCfg.sessionMin * 60
-    : SESSION_TOTAL;
   useEffect(() => {
     if (timerCfg.mode !== "session") return;
     const remaining = _baseSessionTotal + sessionExtraMin * 60 - sessionElapsed;
