@@ -226,7 +226,10 @@ const Room = () => {
     try { return Number(localStorage.getItem(SESSION_KEY) || 0); } catch { return 0; }
   })();
   const [sessionElapsed, setSessionElapsed] = useState(sessionRestored);
-  const sessionRemaining = Math.max(0, SESSION_TOTAL + sessionExtraMin * 60 - sessionElapsed);
+  const _baseSessionTotal = timerCfg.mode === "session" && timerCfg.sessionMin
+    ? timerCfg.sessionMin * 60
+    : SESSION_TOTAL;
+  const sessionRemaining = Math.max(0, _baseSessionTotal + sessionExtraMin * 60 - sessionElapsed);
   const sessionLow = sessionRemaining < 5 * 60;
   useEffect(() => {
     const tk = setInterval(() => setSessionElapsed((s) => s + 1), 1000);
