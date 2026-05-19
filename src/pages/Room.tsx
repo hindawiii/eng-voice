@@ -454,9 +454,13 @@ const Room = () => {
       {/* Header */}
       <header className={cn("bg-gradient-to-br px-5 pb-8 pt-12 text-primary-foreground", room.accent)}>
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25">
+          <button
+            onClick={handleLeaveRoom}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
+            aria-label="Leave"
+          >
             <ArrowLeft className="h-5 w-5" />
-          </Link>
+          </button>
           <div className="text-center">
             <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 flex items-center justify-center gap-1">
               {isAdmin && <Crown className="h-3 w-3 text-gold" />}
@@ -465,10 +469,23 @@ const Room = () => {
                 <span className="ml-1 rounded-full bg-gold/30 px-1.5 text-[10px]">+{sessionExtraMin}m</span>
               )}
             </p>
-            <h1 className="text-lg font-bold flex items-center justify-center gap-1">
+            <h1 className="text-lg font-bold flex items-center justify-center gap-1 flex-wrap">
               {room.flag} {roomName}
               {requiresPassword && <Lock className="h-3.5 w-3.5 text-gold" />}
+              {isTutorRoom && <CertifiedTutorBadge />}
             </h1>
+            {isTutorRoom && tutorDifficulty && (
+              <p className="mt-1 text-[10px] uppercase tracking-wider text-primary-foreground/70">
+                {lang === "ar" ? "المستوى: " : "Level: "}
+                <span className="font-bold">{tutorDifficulty}</span>
+                {isAdmin && recorder.recording && (
+                  <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-destructive/30 px-1.5 text-[9px]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-destructive animate-pulse" />
+                    REC
+                  </span>
+                )}
+              </p>
+            )}
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive">
             <Flag className="h-4 w-4" />
