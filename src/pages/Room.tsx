@@ -518,6 +518,9 @@ const Room = () => {
           <div className="flex items-center justify-between text-[11px] font-semibold">
             <span className="flex items-center gap-1 text-muted-foreground">
               <Timer className="h-3 w-3" /> {lang === "ar" ? "الجلسة" : "Session"}
+              <span className="ml-1 rounded-full bg-secondary px-1.5 text-[9px] uppercase">
+                {timerCfg.mode === "off" ? "∞" : timerCfg.mode}
+              </span>
             </span>
             <span className={cn("tabular-nums", sessionLow && "text-destructive")}>
               {Math.floor(sessionRemaining / 60)}:{(sessionRemaining % 60).toString().padStart(2, "0")} {t("room.left")}
@@ -526,7 +529,7 @@ const Room = () => {
           <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-secondary">
             <div
               className={cn("h-full transition-all", sessionLow ? "animate-session-blink" : "bg-gradient-gold")}
-              style={{ width: `${Math.max(0, (sessionRemaining / (SESSION_TOTAL + sessionExtraMin * 60)) * 100)}%` }}
+              style={{ width: `${Math.max(0, (sessionRemaining / (sessionTotalSec + sessionExtraMin * 60)) * 100)}%` }}
             />
           </div>
           {sessionLow && !isAdmin && (
