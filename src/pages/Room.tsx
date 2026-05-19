@@ -557,21 +557,30 @@ const Room = () => {
               >
                 <Sparkles className="h-3 w-3" /> {lang === "ar" ? "وضع المسرح" : "Stage"}
               </button>
-              {activeSpeakerIdx !== -1 && (
-                <span className="flex items-center gap-1 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold text-gold-foreground tabular-nums">
-                  <Timer className="h-3 w-3" />
-                  {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
-                </span>
-              )}
+              {/* Speaker-only countdown: visible to active speaker (id starts with "me-") */}
+              {activeSpeakerIdx !== -1 &&
+                timerCfg.mode !== "off" && timerCfg.mode !== "session" &&
+                (seats[activeSpeakerIdx]?.id?.startsWith("me-") || isAdmin) && (
+                  <SpeakerCountdown seconds={timeLeft} />
+                )}
               {isAdmin && (
-                <button
-                  onClick={() => setAdminOpen((v) => !v)}
-                  className="flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
-                >
-                  <Crown className="h-3 w-3 text-gold" />
-                  {lang === "ar" ? "تحكم" : "Controls"}
-                  {adminOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                </button>
+                <>
+                  <button
+                    onClick={() => setTimerDialogOpen(true)}
+                    className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
+                    aria-label="Timer engine"
+                  >
+                    <Timer className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={() => setAdminOpen((v) => !v)}
+                    className="flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <Crown className="h-3 w-3 text-gold" />
+                    {lang === "ar" ? "تحكم" : "Controls"}
+                    {adminOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  </button>
+                </>
               )}
             </div>
           </div>
