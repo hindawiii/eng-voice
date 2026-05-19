@@ -262,8 +262,17 @@ const Room = () => {
     if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
   };
 
-  // Speaker rotation timer
+  // Sync turnLength with timer engine config
   useEffect(() => {
+    if ((timerCfg.mode === "single" || timerCfg.mode === "cyclic") && timerCfg.speakerSec) {
+      setTurnLength(timerCfg.speakerSec);
+      setTimeLeft(timerCfg.speakerSec);
+    }
+  }, [timerCfg.mode, timerCfg.speakerSec]);
+
+  // Speaker rotation timer — respects timer engine mode
+  useEffect(() => {
+    if (timerCfg.mode === "off" || timerCfg.mode === "session") return;
     const tk = setInterval(() => {
       setTimeLeft((s) => {
         if (s > 1) return s - 1;
@@ -272,11 +281,14 @@ const Room = () => {
           if (idx === -1) return prev;
           const next = [...prev];
           next[idx] = { ...(next[idx] as SeatUser), speaking: false };
-          for (let i = 1; i <= prev.length; i++) {
-            const j = (idx + i) % prev.length;
-            if (next[j]) {
-              next[j] = { ...(next[j] as SeatUser), speaking: true };
-              break;
+          // Cyclic: auto-pass to next; Single: just mute
+          if (timerCfg.mode === "cyclic") {
+            for (let i = 1; i <= prev.length; i++) {
+              const j = (idx + i) % prev.length;
+              if (next[j]) {
+                next[j] = { ...(next[j] as SeatUser), speaking: true };
+                break;
+              }
             }
           }
           return next;
@@ -285,7 +297,21 @@ const Room = () => {
       });
     }, 1000);
     return () => clearInterval(tk);
-  }, [turnLength]);
+  }, [turnLength, timerCfg.mode]);
+
+  // Session total timer — graceful close at zero
+  const sessionTotalSec = timerCfg.mode === "session" && timerCfg.sessionMin
+    ? timerCfg.sessionMin * 60
+    : SESSION_TOTAL;
+  useEffect(() => {
+    if (timerCfg.mode !== "session") return;
+    const remaining = sessionTotalSec + sessionExtraMin * 60 - sessionElapsed;
+    if (remaining <= 0) {
+      toast.info(lang === "ar" ? "انتهت الجلسة" : "Session ended");
+      const tk = setTimeout(() => handleLeaveRoom(), 1500);
+      return () => clearTimeout(tk);
+    }
+  }, [sessionElapsed, timerCfg.mode, sessionTotalSec, sessionExtraMin, lang]);
 
   // Topic rotation (only if no fixed custom topic)
   useEffect(() => {
