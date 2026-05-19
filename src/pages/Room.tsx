@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Flag, Hand, Languages, Lock, Mic, Sparkles, Timer, Zap, Plus, Crown, MicOff, UserMinus, X,
-  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users,
+  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Download, GraduationCap, LogOut,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
@@ -14,6 +14,14 @@ import { AdminPanel } from "@/components/AdminPanel";
 import { GiftButton } from "@/components/GiftButton";
 import { ShareButton } from "@/components/ShareButton";
 import { MiniProfileSheet, MiniProfileUser } from "@/components/MiniProfileSheet";
+import { TimerEngineDialog, TimerConfig } from "@/components/TimerEngineDialog";
+import { SpeakerCountdown } from "@/components/SpeakerCountdown";
+import { LiveTranscriptionDrawer } from "@/components/LiveTranscriptionDrawer";
+import { SessionRatingModal } from "@/components/SessionRatingModal";
+import { AINoiseToggle } from "@/components/AINoiseToggle";
+import { CertifiedTutorBadge } from "@/components/CertifiedTutorBadge";
+import { useTutorRecorder } from "@/hooks/useTutorRecorder";
+import { useWallet } from "@/hooks/useWallet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
