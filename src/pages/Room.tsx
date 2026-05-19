@@ -805,18 +805,25 @@ const Room = () => {
 
       {/* Bottom action bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-2xl items-center justify-between gap-3 px-5 py-3">
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-2 px-5 py-3">
           <button
             onClick={requestSeat}
-            className="flex items-center gap-2 rounded-full bg-secondary px-4 py-2.5 text-sm font-semibold transition-smooth hover:bg-primary-soft"
+            className="flex items-center gap-2 rounded-full bg-secondary px-3 py-2.5 text-xs font-semibold transition-smooth hover:bg-primary-soft"
           >
             <Hand className="h-4 w-4" /> {t("room.requestSeat")}
           </button>
           <button className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-elegant transition-spring hover:scale-[1.02]">
             <Mic className="h-4 w-4" /> {t("room.tapSpeak")}
           </button>
+          <button
+            onClick={handleLeaveRoom}
+            className="flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-2.5 text-xs font-bold text-destructive transition-smooth hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
+
 
       {/* Seat action menu (admin) */}
       <Dialog open={seatMenuIdx !== null} onOpenChange={(o) => !o && setSeatMenuIdx(null)}>
