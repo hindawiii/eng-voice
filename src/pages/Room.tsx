@@ -69,7 +69,9 @@ const TOPIC_INTERVAL = 300; // 5 min
 const Room = () => {
   const { key } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { t, lang } = useI18n();
+  const { lp, add: addLp, spend: spendLp } = useWallet();
 
   const publicRoom = ROOMS.find((r) => r.key === key);
   const customRoom: CustomRoom | undefined = !publicRoom && key ? getCustomRoom(key) : undefined;
@@ -84,6 +86,9 @@ const Room = () => {
     topic: customRoom?.topic || "",
     topicAr: customRoom?.topicAr || "",
   } as any;
+
+  const isTutorRoom = !!customRoom?.tutorMode;
+  const tutorDifficulty = customRoom?.difficulty;
 
   // Custom rooms: creator is admin. Public rooms: simulate "you are admin" off.
   const isAdmin = isCustom;
