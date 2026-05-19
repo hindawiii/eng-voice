@@ -303,18 +303,18 @@ const Room = () => {
   }, [turnLength, timerCfg.mode]);
 
   // Session total timer — graceful close at zero
-  const sessionTotalSec = timerCfg.mode === "session" && timerCfg.sessionMin
+  const _baseSessionTotal = timerCfg.mode === "session" && timerCfg.sessionMin
     ? timerCfg.sessionMin * 60
     : SESSION_TOTAL;
   useEffect(() => {
     if (timerCfg.mode !== "session") return;
-    const remaining = sessionTotalSec + sessionExtraMin * 60 - sessionElapsed;
+    const remaining = _baseSessionTotal + sessionExtraMin * 60 - sessionElapsed;
     if (remaining <= 0) {
       toast.info(lang === "ar" ? "انتهت الجلسة" : "Session ended");
       const tk = setTimeout(() => handleLeaveRoom(), 1500);
       return () => clearTimeout(tk);
     }
-  }, [sessionElapsed, timerCfg.mode, sessionTotalSec, sessionExtraMin, lang]);
+  }, [sessionElapsed, timerCfg.mode, _baseSessionTotal, sessionExtraMin, lang]);
 
   // Topic rotation (only if no fixed custom topic)
   useEffect(() => {
@@ -532,7 +532,7 @@ const Room = () => {
           <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-secondary">
             <div
               className={cn("h-full transition-all", sessionLow ? "animate-session-blink" : "bg-gradient-gold")}
-              style={{ width: `${Math.max(0, (sessionRemaining / (sessionTotalSec + sessionExtraMin * 60)) * 100)}%` }}
+              style={{ width: `${Math.max(0, (sessionRemaining / (_baseSessionTotal + sessionExtraMin * 60)) * 100)}%` }}
             />
           </div>
           {sessionLow && !isAdmin && (
