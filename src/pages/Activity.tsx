@@ -270,8 +270,24 @@ const Activity = () => {
       </header>
 
       <div className="space-y-4 px-5 -mt-4">
+        {/* PINNED HERO — community widgets at the very top */}
+        <section className="-mx-5 overflow-x-auto px-5 pt-1 sticky top-0 z-10 bg-background/80 backdrop-blur-sm">
+          <div className="flex gap-3 snap-x snap-mandatory pb-2">
+            {WIDGETS.map((w) => {
+              const node = renderWidget(w);
+              if (!node) return null;
+              return (
+                <div key={w.id} className="snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[48%]">
+                  {node}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {/* Composer with post-type tabs */}
-        <section className="rounded-3xl bg-card p-4 shadow-elegant">
+        <section className="rounded-3xl bg-card p-4 shadow-elegant border border-border">
+
           <div className="mb-3 flex gap-1 overflow-x-auto rounded-full bg-secondary p-1">
             {KIND_TABS.map((k) => (
               <button
