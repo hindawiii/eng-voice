@@ -393,13 +393,26 @@ const Activity = () => {
           </ul>
         </section>
 
-        {/* Feed (facts + widgets interleaved) */}
+        {/* PINNED HERO — sticky carousel of all 4 community widgets */}
+        <section className="-mx-5 overflow-x-auto px-5 pt-1">
+          <div className="flex gap-3 snap-x snap-mandatory pb-2">
+            {WIDGETS.map((w) => {
+              const node = renderWidget(w);
+              if (!node) return null;
+              return (
+                <div key={w.id} className="snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[48%]">
+                  {node}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Feed (chronological user posts only) */}
         <section className="space-y-3">
-          {feed.map((entry, idx) =>
-            entry.type === "widget" ? (
-              <div key={`w-${entry.item.id}-${idx}`}>{renderWidget(entry.item)}</div>
-            ) : (
-              <article key={entry.item.id} className="rounded-2xl bg-card p-4 shadow-soft">
+          {feed.map((entry) => (
+              <article key={entry.item.id} className="rounded-2xl bg-card p-4 shadow-soft border border-border">
+
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => setMiniUser({ id: entry.item.id, name: entry.item.user, flag: entry.item.flag, level: entry.item.level })}
