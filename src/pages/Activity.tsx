@@ -409,20 +409,8 @@ const Activity = () => {
           </ul>
         </section>
 
-        {/* PINNED HERO — sticky carousel of all 4 community widgets */}
-        <section className="-mx-5 overflow-x-auto px-5 pt-1">
-          <div className="flex gap-3 snap-x snap-mandatory pb-2">
-            {WIDGETS.map((w) => {
-              const node = renderWidget(w);
-              if (!node) return null;
-              return (
-                <div key={w.id} className="snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[48%]">
-                  {node}
-                </div>
-              );
-            })}
-          </div>
-        </section>
+
+
 
         {/* Feed (chronological user posts only) */}
         <section className="space-y-3">
