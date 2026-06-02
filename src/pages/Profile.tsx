@@ -114,21 +114,22 @@ const Profile = () => {
             )}
           </div>
 
-          {/* Stats */}
+          {/* Stats — high-contrast, no muted backgrounds */}
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-border p-4">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-                <TrendingUp className="h-3.5 w-3.5" /> {t("profile.xp")}
+            <div className="rounded-2xl border border-border bg-[hsl(220_39%_11%)] p-4">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider font-bold text-white/80">
+                <TrendingUp className="h-3.5 w-3.5 text-white" /> {t("profile.xp")}
               </div>
-              <p className="mt-1 text-2xl font-black">{USER.xp.toLocaleString()}</p>
+              <p className="mt-1 text-2xl font-black text-white">{USER.xp.toLocaleString()}</p>
             </div>
-            <div className="rounded-2xl border border-border bg-gold-soft/40 p-4">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-2xl border border-gold/40 bg-[hsl(220_39%_11%)] p-4 shadow-gold">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider font-bold text-gold">
                 <Coins className="h-3.5 w-3.5 text-gold" /> {t("profile.lp")}
               </div>
-              <p className="mt-1 text-2xl font-black text-gold-foreground">{USER.lp.toLocaleString()}</p>
+              <p className="mt-1 text-2xl font-black text-gold">{USER.lp.toLocaleString()}</p>
             </div>
           </div>
+
         </section>
 
         {/* Gifts received */}

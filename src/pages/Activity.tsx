@@ -252,19 +252,8 @@ const Activity = () => {
     }
   };
 
-  // interleave widgets between every 2 facts
-  const feed: Array<{ type: "fact"; item: FactItem } | { type: "widget"; item: Widget }> = [];
-  facts.forEach((f, i) => {
-    feed.push({ type: "fact", item: f });
-    if ((i + 1) % 2 === 0) {
-      const w = WIDGETS[Math.floor((i - 1) / 2)];
-      if (w) feed.push({ type: "widget", item: w });
-    }
-  });
-  // ensure any remaining widgets append at end
-  WIDGETS.forEach((w) => {
-    if (!feed.find((x) => x.type === "widget" && x.item.id === w.id)) feed.push({ type: "widget", item: w });
-  });
+  // Feed is now ONLY user posts — widgets live in pinned hero carousel above
+  const feed: Array<{ type: "fact"; item: FactItem }> = facts.map((f) => ({ type: "fact", item: f }));
 
   return (
     <AppShell>
@@ -281,8 +270,24 @@ const Activity = () => {
       </header>
 
       <div className="space-y-4 px-5 -mt-4">
+        {/* PINNED HERO — community widgets at the very top */}
+        <section className="-mx-5 overflow-x-auto px-5 pt-1 sticky top-0 z-10 bg-background/80 backdrop-blur-sm">
+          <div className="flex gap-3 snap-x snap-mandatory pb-2">
+            {WIDGETS.map((w) => {
+              const node = renderWidget(w);
+              if (!node) return null;
+              return (
+                <div key={w.id} className="snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[48%]">
+                  {node}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         {/* Composer with post-type tabs */}
-        <section className="rounded-3xl bg-card p-4 shadow-elegant">
+        <section className="rounded-3xl bg-card p-4 shadow-elegant border border-border">
+
           <div className="mb-3 flex gap-1 overflow-x-auto rounded-full bg-secondary p-1">
             {KIND_TABS.map((k) => (
               <button
@@ -404,13 +409,14 @@ const Activity = () => {
           </ul>
         </section>
 
-        {/* Feed (facts + widgets interleaved) */}
+
+
+
+        {/* Feed (chronological user posts only) */}
         <section className="space-y-3">
-          {feed.map((entry, idx) =>
-            entry.type === "widget" ? (
-              <div key={`w-${entry.item.id}-${idx}`}>{renderWidget(entry.item)}</div>
-            ) : (
-              <article key={entry.item.id} className="rounded-2xl bg-card p-4 shadow-soft">
+          {feed.map((entry) => (
+              <article key={entry.item.id} className="rounded-2xl bg-card p-4 shadow-soft border border-border">
+
                 <div className="flex items-center justify-between">
                   <button
                     onClick={() => setMiniUser({ id: entry.item.id, name: entry.item.user, flag: entry.item.flag, level: entry.item.level })}
@@ -491,9 +497,9 @@ const Activity = () => {
                   </div>
                 )}
               </article>
-            )
-          )}
+          ))}
         </section>
+
       </div>
 
       <MiniProfileSheet user={miniUser} onClose={() => setMiniUser(null)} />
