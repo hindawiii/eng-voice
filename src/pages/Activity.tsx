@@ -493,9 +493,9 @@ const Activity = () => {
                   </div>
                 )}
               </article>
-            )
-          )}
+          ))}
         </section>
+
       </div>
 
       <MiniProfileSheet user={miniUser} onClose={() => setMiniUser(null)} />
