@@ -252,19 +252,8 @@ const Activity = () => {
     }
   };
 
-  // interleave widgets between every 2 facts
-  const feed: Array<{ type: "fact"; item: FactItem } | { type: "widget"; item: Widget }> = [];
-  facts.forEach((f, i) => {
-    feed.push({ type: "fact", item: f });
-    if ((i + 1) % 2 === 0) {
-      const w = WIDGETS[Math.floor((i - 1) / 2)];
-      if (w) feed.push({ type: "widget", item: w });
-    }
-  });
-  // ensure any remaining widgets append at end
-  WIDGETS.forEach((w) => {
-    if (!feed.find((x) => x.type === "widget" && x.item.id === w.id)) feed.push({ type: "widget", item: w });
-  });
+  // Feed is now ONLY user posts — widgets live in pinned hero carousel above
+  const feed: Array<{ type: "fact"; item: FactItem }> = facts.map((f) => ({ type: "fact", item: f }));
 
   return (
     <AppShell>
