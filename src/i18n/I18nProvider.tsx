@@ -70,7 +70,7 @@ const DICT: Dict = {
   "settings.privacy": { en: "Privacy and Safety", ar: "الخصوصية والأمان" },
   "settings.privacySub": { en: "Blocked users, reports, data", ar: "المحظورون، البلاغات، البيانات" },
   "settings.about": { en: "About the App", ar: "حول التطبيق" },
-  "settings.aboutSub": { en: "LingVoice · v1.0.0", ar: "حِوار · الإصدار ١٫٠٫٠" },
+  "settings.aboutSub": { en: "Engvoice · v1.0.0", ar: "Engvoice · الإصدار ١٫٠٫٠" },
   "settings.logout": { en: "Log Out", ar: "تسجيل الخروج" },
   "settings.logoutSub": { en: "Sign out of this device", ar: "تسجيل الخروج من هذا الجهاز" },
   "settings.comingSoon": { en: "Coming soon", ar: "قريباً" },
