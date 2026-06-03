@@ -7,7 +7,7 @@ type Dict = Record<string, { en: string; ar: string }>;
 // Central translation dictionary. Keys are stable identifiers.
 const DICT: Dict = {
   // Nav
-  "nav.lounge": { en: "Lounge", ar: "الصالون" },
+  "nav.lounge": { en: "Rooms", ar: "غرف" },
   "nav.activity": { en: "Activity", ar: "النشاط" },
   "nav.play": { en: "Play", ar: "العب" },
   "nav.profile": { en: "Profile", ar: "الملف" },
@@ -15,7 +15,7 @@ const DICT: Dict = {
   // Lounge
   "lounge.search": { en: "Search rooms, languages, topics…", ar: "ابحث عن غرف، لغات، مواضيع…" },
   "lounge.live": { en: "speakers practicing right now", ar: "متحدثاً يتدربون الآن" },
-  "lounge.title": { en: "Lounge", ar: "الصالون" },
+  "lounge.title": { en: "Rooms", ar: "غرف" },
   "lounge.subtitle": { en: "8 rooms · live", ar: "٨ غرف · مباشر" },
   "lounge.lp": { en: "LP", ar: "ن.ت" },
 
