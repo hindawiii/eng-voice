@@ -134,21 +134,20 @@ export const CreateRoomDialog = () => {
 
   return (
     <>
+      <button
+        onClick={handleTriggerClick}
+        className={cn(
+          "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold shadow-gold transition-spring",
+          canHost
+            ? "bg-gradient-gold text-gold-foreground hover:scale-105"
+            : "bg-secondary text-muted-foreground"
+        )}
+      >
+        {canHost ? <Plus className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+        {lang === "ar" ? "إنشاء غرفة" : "Create Room"}
+      </button>
+
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset(); }}>
-        <DialogTrigger asChild>
-          <button
-            onClick={handleTriggerClick}
-            className={cn(
-              "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold shadow-gold transition-spring",
-              canHost
-                ? "bg-gradient-gold text-gold-foreground hover:scale-105"
-                : "bg-secondary text-muted-foreground"
-            )}
-          >
-            {canHost ? <Plus className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-            {lang === "ar" ? "إنشاء غرفة" : "Create Room"}
-          </button>
-        </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
