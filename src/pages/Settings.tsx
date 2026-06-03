@@ -190,7 +190,7 @@ const Settings = () => {
         </Section>
 
         <p className="pt-2 text-center text-[11px] text-muted-foreground">
-          حِوار · LingVoice © {new Date().getFullYear()} · v1.0.0
+          Engvoice © {new Date().getFullYear()} · v1.0.0
         </p>
       </div>
     </AppShell>

@@ -17,6 +17,7 @@ export interface CustomRoom {
   accent: string;
   tutorMode?: boolean;
   difficulty?: "beginner" | "intermediate" | "advanced";
+  status?: "active" | "closed";
 }
 
 const STORAGE_KEY = "lingvoice.customRooms";
@@ -37,10 +38,18 @@ const write = (rooms: CustomRoom[]) => {
   listeners.forEach((l) => l());
 };
 
-export const addCustomRoom = (room: CustomRoom) => write([room, ...read()]);
+export const addCustomRoom = (room: CustomRoom) =>
+  write([{ ...room, status: room.status ?? "active" }, ...read()]);
 
 export const getCustomRoom = (key: string) =>
   read().find((r) => r.key === key);
+
+export const getActiveRoomByCreator = (creatorId: string) =>
+  read().find((r) => r.creatorId === creatorId && (r.status ?? "active") === "active");
+
+export const closeRoom = (key: string) => {
+  write(read().map((r) => (r.key === key ? { ...r, status: "closed" } : r)));
+};
 
 export const useCustomRooms = () => {
   const [rooms, setRooms] = useState<CustomRoom[]>(read);

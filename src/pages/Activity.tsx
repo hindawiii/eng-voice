@@ -265,7 +265,7 @@ const Activity = () => {
           </button>
         </div>
         <p className="mt-1 text-sm text-primary-foreground/70">
-          {lang === "ar" ? "حائط حِوار الاجتماعي" : "Hewar social wall"}
+          {lang === "ar" ? "حائط Engvoice الاجتماعي" : "Engvoice social wall"}
         </p>
       </header>
 

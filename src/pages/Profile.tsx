@@ -4,6 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { ProBadge } from "@/components/ProBadge";
 import { AdBoosterButton } from "@/components/AdBoosterButton";
 import { RoomScheduler } from "@/components/RoomScheduler";
+import { GpsLocationCard } from "@/components/GpsLocationCard";
+import { BeginnerMissions } from "@/components/BeginnerMissions";
 import { LEVELS } from "@/data/rooms";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -54,6 +56,12 @@ const Profile = () => {
       </header>
 
       <div className="space-y-5 px-5 -mt-14">
+        {/* GPS Location — top zone */}
+        <GpsLocationCard />
+
+        {/* Beginner Missions onboarding */}
+        <BeginnerMissions />
+
         {/* Identity card */}
         <section className="rounded-3xl bg-card p-6 shadow-elegant">
           <div className="flex items-center gap-4">
