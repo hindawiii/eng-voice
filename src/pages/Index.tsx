@@ -17,8 +17,8 @@ const Index = () => {
       <header className="bg-gradient-hero px-6 pb-10 pt-12 text-primary-foreground">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-arabic text-3xl font-black tracking-tight">حِوار</h1>
-            <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground/70">LingVoice</p>
+            <h1 className="text-3xl font-black tracking-tight">Engvoice</h1>
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-primary-foreground/70">{lang === "ar" ? "محادثات حية" : "Live voice rooms"}</p>
           </div>
           <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 backdrop-blur">
             <Coins className="h-4 w-4 text-gold" />
