@@ -4,6 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { ProBadge } from "@/components/ProBadge";
 import { AdBoosterButton } from "@/components/AdBoosterButton";
 import { RoomScheduler } from "@/components/RoomScheduler";
+import { GpsLocationCard } from "@/components/GpsLocationCard";
+import { BeginnerMissions } from "@/components/BeginnerMissions";
 import { LEVELS } from "@/data/rooms";
 import { useI18n } from "@/i18n/I18nProvider";
 
