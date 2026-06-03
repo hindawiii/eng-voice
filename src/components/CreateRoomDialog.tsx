@@ -48,9 +48,8 @@ export const CreateRoomDialog = () => {
     setDifficulty("beginner");
   };
 
-  const handleTriggerClick = (e: React.MouseEvent) => {
+  const handleTriggerClick = () => {
     if (!canHost) {
-      e.preventDefault();
       toast.error(
         lang === "ar"
           ? `أكمل مهام البداية أولاً (${completed}/${total}) للوصول لمستوى نبتة 🌿`
@@ -58,12 +57,12 @@ export const CreateRoomDialog = () => {
       );
       return;
     }
-    // Single-active-room guard
     const existing = getActiveRoomByCreator(CURRENT_USER_ID);
     if (existing) {
-      e.preventDefault();
       setConflictKey(existing.key);
+      return;
     }
+    setOpen(true);
   };
 
   const instantiateRoom = () => {
