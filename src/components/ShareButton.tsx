@@ -13,10 +13,10 @@ export const ShareButton = ({ roomKey, password }: Props) => {
   const share = async () => {
     const base = `${window.location.origin}/room/${roomKey}`;
     const url = password ? `${base}?pw=${encodeURIComponent(password)}` : base;
-    const text = lang === "ar" ? "انضم إلى غرفة حِوار" : "Join my LingVoice room";
+    const text = lang === "ar" ? "انضم إلى غرفتي في Engvoice" : "Join my Engvoice room";
     try {
       if (navigator.share) {
-        await navigator.share({ title: "حِوار", text, url });
+        await navigator.share({ title: "Engvoice", text, url });
       } else {
         await navigator.clipboard.writeText(url);
         toast.success(lang === "ar" ? "تم نسخ الرابط" : "Link copied");
