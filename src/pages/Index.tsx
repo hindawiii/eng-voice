@@ -9,7 +9,7 @@ import { useI18n } from "@/i18n/I18nProvider";
 
 const Index = () => {
   const { t, lang } = useI18n();
-  const customRooms = useCustomRooms();
+  const customRooms = useCustomRooms().filter((r) => (r.status ?? "active") === "active");
 
   return (
     <AppShell>
