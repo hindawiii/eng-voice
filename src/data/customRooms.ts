@@ -17,6 +17,7 @@ export interface CustomRoom {
   accent: string;
   tutorMode?: boolean;
   difficulty?: "beginner" | "intermediate" | "advanced";
+  status?: "active" | "closed";
 }
 
 const STORAGE_KEY = "lingvoice.customRooms";
