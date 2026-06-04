@@ -1,11 +1,10 @@
 import { Search, Sparkles, Coins, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
-import { RoomCard } from "@/components/RoomCard";
 import { CreateRoomDialog } from "@/components/CreateRoomDialog";
-import { ROOMS } from "@/data/rooms";
 import { useCustomRooms } from "@/data/customRooms";
 import { useI18n } from "@/i18n/I18nProvider";
+import { AcademyHub } from "@/components/academy/AcademyHub";
 
 const Index = () => {
   const { t, lang } = useI18n();
@@ -90,18 +89,10 @@ const Index = () => {
         </section>
       )}
 
-      {/* Public rooms */}
-      <section className={customRooms.length > 0 ? "px-5 mt-5" : "px-5 -mt-6"}>
-        <div className="rounded-3xl bg-card p-4 shadow-elegant">
-          <div className="mb-3 flex items-baseline justify-between px-1">
-            <h2 className="text-lg font-bold">{t("lounge.title")}</h2>
-            <span className="text-xs text-muted-foreground">{t("lounge.subtitle")}</span>
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {ROOMS.map((room) => (
-              <RoomCard key={room.key} room={room} />
-            ))}
-          </div>
+      {/* Academy Hub */}
+      <section className={customRooms.length > 0 ? "mt-5" : "-mt-6"}>
+        <div className="rounded-3xl bg-[#070A13] pb-2 shadow-elegant">
+          <AcademyHub />
         </div>
       </section>
     </AppShell>
