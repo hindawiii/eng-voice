@@ -1,11 +1,10 @@
 import { Search, Sparkles, Coins, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
-import { RoomCard } from "@/components/RoomCard";
 import { CreateRoomDialog } from "@/components/CreateRoomDialog";
-import { ROOMS } from "@/data/rooms";
 import { useCustomRooms } from "@/data/customRooms";
 import { useI18n } from "@/i18n/I18nProvider";
+import { AcademyHub } from "@/components/academy/AcademyHub";
 
 const Index = () => {
   const { t, lang } = useI18n();
