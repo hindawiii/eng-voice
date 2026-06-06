@@ -42,7 +42,6 @@ type Widget =
 
 const WIDGETS: Widget[] = [
   { kind: "challenge", id: "w1" },
-  { kind: "question", id: "w2" },
   { kind: "highlight", id: "w3" },
   { kind: "quicktip", id: "w4" },
 ];
