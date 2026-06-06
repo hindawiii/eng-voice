@@ -58,26 +58,32 @@ const Waveform = () => (
   </div>
 );
 
+const CARD_BASE =
+  "h-full flex flex-col rounded-2xl border border-slate-800 bg-[#111827] p-3 text-white overflow-hidden";
+
 const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
   const [accepted, setAccepted] = useState(false);
   const [count, setCount] = useState(124);
   const [progress, setProgress] = useState(35);
   return (
-    <div className="rounded-2xl border border-gold/40 bg-gradient-to-br from-gold-soft to-card p-4">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gold-foreground">
-        <Zap className="h-4 w-4 text-gold" /> {lang === "ar" ? "تحدي اليوم" : "Daily Challenge"}
+    <div className={CARD_BASE}>
+      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+        <Zap className="h-3.5 w-3.5" /> {lang === "ar" ? "تحدي اليوم" : "Daily Challenge"}
       </div>
-      <p className="mt-2 text-sm font-semibold">
-        {lang === "ar" ? "استخدم كلمة 'Sobremesa' في جملة كاملة." : "Use the word 'Sobremesa' in a full sentence."}
+      <p className="mt-1.5 text-xs font-semibold line-clamp-2 text-white">
+        {lang === "ar" ? "استخدم كلمة 'Sobremesa' في جملة كاملة." : "Use 'Sobremesa' in a full sentence."}
       </p>
-      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-secondary">
-        <div className="h-full bg-gradient-gold transition-all duration-1000" style={{ width: `${progress}%` }} />
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+        <div
+          className="h-full transition-all duration-1000"
+          style={{ width: `${progress}%`, background: "linear-gradient(90deg,#FBBF24,#F59E0B)" }}
+        />
       </div>
-      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+      <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400">
         <span>{count} {lang === "ar" ? "مشارك" : "joined"}</span>
-        <span className="tabular-nums">⏱ 12:34</span>
+        <span className="tabular-nums text-[#FBBF24]">⏱ 12:34</span>
       </div>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-auto pt-2 flex gap-1.5">
         <button
           disabled={accepted}
           onClick={() => {
@@ -86,12 +92,10 @@ const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
             setProgress((p) => Math.min(100, p + 10));
             toast.success(lang === "ar" ? "+20 ن.ت" : "+20 LP");
           }}
-          className="flex-1 rounded-full bg-gradient-primary px-3 py-1.5 text-xs font-bold text-primary-foreground disabled:opacity-50 transition-spring hover:scale-105"
+          className="flex-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-[#111827] disabled:opacity-50 transition-spring hover:scale-105"
+          style={{ background: "linear-gradient(90deg,#FBBF24,#F59E0B)" }}
         >
-          {accepted ? (lang === "ar" ? "تم القبول" : "Accepted") : (lang === "ar" ? "اقبل التحدي" : "Accept Challenge")}
-        </button>
-        <button className="rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-          {lang === "ar" ? "تجاهل" : "Ignore"}
+          {accepted ? (lang === "ar" ? "تم القبول" : "Accepted") : (lang === "ar" ? "اقبل التحدي" : "Accept")}
         </button>
       </div>
     </div>
@@ -99,51 +103,48 @@ const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
 };
 
 const QuestionWidget = ({ lang }: { lang: "en" | "ar" }) => (
-  <div className="rounded-2xl border border-primary/30 bg-primary-soft p-4">
-    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
-      <HelpCircle className="h-4 w-4" /> {lang === "ar" ? "سؤال الجماعة" : "Community Question"}
+  <div className={CARD_BASE}>
+    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+      <HelpCircle className="h-3.5 w-3.5" /> {lang === "ar" ? "سؤال الجماعة" : "Community Q"}
     </div>
-    <p className="mt-2 text-sm font-semibold">
-      {lang === "ar" ? "ما أصعب صوت في لغتك الأم لغير الناطقين؟" : "What's the hardest sound in your native language for foreigners?"}
+    <p className="mt-1.5 text-xs font-semibold line-clamp-3 text-white">
+      {lang === "ar" ? "ما أصعب صوت في لغتك الأم لغير الناطقين؟" : "Hardest sound in your native language?"}
     </p>
-    <div className="mt-3 flex gap-2">
-      <button className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-gradient-primary hover:text-primary-foreground">
-        🎙️ {lang === "ar" ? "سجّل" : "Record"}
-      </button>
-      <button className="flex-1 flex items-center justify-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-gradient-primary hover:text-primary-foreground">
-        ✍️ {lang === "ar" ? "اكتب" : "Write"}
-      </button>
+    <div className="mt-auto pt-2 flex gap-1.5">
+      <button className="flex-1 rounded-full bg-slate-800 px-3 py-1.5 text-[11px] font-bold text-white">🎙️ {lang === "ar" ? "سجّل" : "Record"}</button>
+      <button className="flex-1 rounded-full bg-slate-800 px-3 py-1.5 text-[11px] font-bold text-white">✍️ {lang === "ar" ? "اكتب" : "Write"}</button>
     </div>
   </div>
 );
 
 const HighlightWidget = ({ lang, onView }: { lang: "en" | "ar"; onView: () => void }) => (
-  <div className="rounded-2xl border border-gold/40 bg-gradient-primary p-4 text-primary-foreground">
-    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-      <Trophy className="h-4 w-4 text-gold" /> {lang === "ar" ? "إنجاز الأسبوع" : "Weekly Highlight"}
+  <div className={CARD_BASE}>
+    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+      <Trophy className="h-3.5 w-3.5" /> {lang === "ar" ? "إنجاز الأسبوع" : "Weekly Highlight"}
     </div>
-    <button onClick={onView} className="mt-3 flex items-center gap-3 w-full text-start">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold text-2xl">🇸🇦</div>
-      <div>
-        <p className="font-bold">Layla</p>
-        <p className="text-xs opacity-80">{lang === "ar" ? "أعلى مشارك" : "Top contributor"}</p>
+    <button onClick={onView} className="mt-1.5 flex items-center gap-2 text-start">
+      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FBBF24] text-lg text-[#111827]">🇸🇦</div>
+      <div className="min-w-0">
+        <p className="font-bold text-sm text-white truncate">Layla</p>
+        <p className="text-[10px] text-slate-400 truncate">{lang === "ar" ? "أعلى مشارك" : "Top contributor"}</p>
       </div>
     </button>
-    <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+    <div className="mt-2 grid grid-cols-3 gap-1 text-center">
       {[
-        { v: "12h", l: lang === "ar" ? "تحدث" : "Speaking" },
-        { v: "48", l: lang === "ar" ? "كلمات" : "Words" },
-        { v: "21", l: lang === "ar" ? "تصحيحات" : "Corrections" },
+        { v: "12h", l: lang === "ar" ? "تحدث" : "Talk" },
+        { v: "48", l: lang === "ar" ? "كلمة" : "Words" },
+        { v: "21", l: lang === "ar" ? "تصحيح" : "Fixes" },
       ].map((s) => (
-        <div key={s.l} className="rounded-xl bg-white/10 py-2">
-          <p className="font-bold text-sm">{s.v}</p>
-          <p className="text-[10px] opacity-80">{s.l}</p>
+        <div key={s.l} className="rounded-lg bg-slate-800/70 py-1">
+          <p className="font-bold text-xs text-[#FBBF24] tabular-nums">{s.v}</p>
+          <p className="text-[9px] text-slate-400">{s.l}</p>
         </div>
       ))}
     </div>
     <button
       onClick={() => toast.success(lang === "ar" ? "هنّأت ليلى! 🎉" : "Congrats sent! 🎉")}
-      className="mt-3 w-full rounded-full bg-gradient-gold py-1.5 text-xs font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105"
+      className="mt-auto rounded-full py-1.5 text-[11px] font-bold text-[#111827]"
+      style={{ background: "linear-gradient(90deg,#FBBF24,#F59E0B)" }}
     >
       {lang === "ar" ? "هنّئ" : "Congratulate"}
     </button>
@@ -151,21 +152,21 @@ const HighlightWidget = ({ lang, onView }: { lang: "en" | "ar"; onView: () => vo
 );
 
 const QuickTipWidget = ({ lang, onDismiss }: { lang: "en" | "ar"; onDismiss: () => void }) => (
-  <div className="rounded-2xl border border-border bg-card p-4">
+  <div className={CARD_BASE}>
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        <Lightbulb className="h-4 w-4 text-gold" /> {lang === "ar" ? "نصيحة سريعة" : "Quick Tip"}
+      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+        <Lightbulb className="h-3.5 w-3.5" /> {lang === "ar" ? "نصيحة سريعة" : "Quick Tip"}
       </div>
-      <button onClick={onDismiss} className="text-muted-foreground hover:text-foreground">
-        <X className="h-4 w-4" />
+      <button onClick={onDismiss} className="text-slate-400 hover:text-white">
+        <X className="h-3.5 w-3.5" />
       </button>
     </div>
-    <p className="mt-2 text-sm">
+    <p className="mt-1.5 text-xs text-white line-clamp-3">
       {lang === "ar" ? "كرر الكلمات الجديدة بصوت عالٍ ٣ مرات قبل النوم لتثبيتها." : "Repeat new words aloud 3× before sleep to lock them in."}
     </p>
-    <div className="mt-3 flex gap-2 text-xs">
-      <button className="rounded-full bg-primary-soft px-3 py-1 font-bold text-primary">👍 {lang === "ar" ? "مفيد" : "Helpful"}</button>
-      <button className="rounded-full bg-secondary px-3 py-1 font-semibold text-muted-foreground">↗ {lang === "ar" ? "شارك" : "Share"}</button>
+    <div className="mt-auto pt-2 flex gap-1.5 text-[11px]">
+      <button className="rounded-full bg-slate-800 px-3 py-1 font-bold text-[#FBBF24]">👍 {lang === "ar" ? "مفيد" : "Helpful"}</button>
+      <button className="rounded-full bg-slate-800 px-3 py-1 font-semibold text-white">↗ {lang === "ar" ? "شارك" : "Share"}</button>
     </div>
   </div>
 );
