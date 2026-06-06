@@ -270,14 +270,17 @@ const Activity = () => {
       </header>
 
       <div className="space-y-4 px-5 -mt-4">
-        {/* PINNED HERO — community widgets at the very top */}
-        <section className="-mx-5 overflow-x-auto px-5 pt-1 sticky top-0 z-10 bg-background/80 backdrop-blur-sm">
-          <div className="flex gap-3 snap-x snap-mandatory pb-2">
+        {/* Hero carousel — scrolls naturally with the feed (NOT sticky) */}
+        <section className="-mx-5 px-5">
+          <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scrollbar-hide">
             {WIDGETS.map((w) => {
               const node = renderWidget(w);
               if (!node) return null;
               return (
-                <div key={w.id} className="snap-start shrink-0 w-[88%] sm:w-[60%] md:w-[48%]">
+                <div
+                  key={w.id}
+                  className="snap-start shrink-0 w-[260px] sm:w-[280px] h-[180px]"
+                >
                   {node}
                 </div>
               );
