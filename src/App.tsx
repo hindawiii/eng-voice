@@ -9,6 +9,7 @@ import Profile from "./pages/Profile.tsx";
 import Room from "./pages/Room.tsx";
 import Play from "./pages/Play.tsx";
 import Settings from "./pages/Settings.tsx";
+import Messages from "./pages/Messages.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { I18nProvider } from "./i18n/I18nProvider";
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/room/:key" element={<Room />} />
           <Route path="/play" element={<Play />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/messages" element={<Messages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
