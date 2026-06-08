@@ -802,10 +802,26 @@ const SupportPanel = ({ tx }: { tx: TX }) => {
           {tx("Legal & Corporate", "القانوني والمؤسسي")}
         </p>
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("About", "حول التطبيق")} note="v1.0.0" />
-          <LegalLink icon={<Shield className="h-3.5 w-3.5" />} label={tx("Privacy Policy", "سياسة الخصوصية")} />
-          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("Terms of Service", "شروط الاستخدام")} />
-          <LegalLink icon={<Users className="h-3.5 w-3.5" />} label={tx("Credits", "الفريق")} />
+          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("About", "حول التطبيق")} note="v1.0.0"
+            body={tx(
+              "Engvoice is a premium voice-first language exchange community built to connect learners worldwide through live rooms, AI translation, tutor sessions and gamified learning. Version 1.0.0.",
+              "Engvoice مجتمع متميّز لتبادل اللغات صوتياً، يربط المتعلمين حول العالم عبر غرف مباشرة، ترجمة ذكية، جلسات مرشدين، وتعلّم تفاعلي. الإصدار ١٫٠٫٠."
+            )} />
+          <LegalLink icon={<Shield className="h-3.5 w-3.5" />} label={tx("Privacy Policy", "سياسة الخصوصية")}
+            body={tx(
+              "We respect your privacy. Engvoice stores your profile and learning data securely and never sells personal information. Voice sessions are processed only to enable conversation; transcripts may be cached on-device for translation. You can wipe your data at any time from Settings → Wipe Chat History.",
+              "نحترم خصوصيتك. يحفظ Engvoice ملفك الشخصي وبيانات التعلّم بشكل آمن ولا يبيع أي معلومات شخصية. تُعالَج جلسات الصوت فقط لتمكين المحادثة، وقد تُخزَّن النصوص محلياً للترجمة. يمكنك حذف بياناتك في أي وقت من الإعدادات → حذف سجل المحادثات."
+            )} />
+          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("Terms of Service", "شروط الاستخدام")}
+            body={tx(
+              "By using Engvoice you agree to interact respectfully, avoid hate speech, harassment or illegal content, and respect copyright. Voice rooms may be moderated; violating community rules can result in suspension. Engvoice is provided as-is without warranty.",
+              "باستخدامك Engvoice فإنك توافق على التعامل باحترام، وتجنّب خطاب الكراهية، التحرش، أو المحتوى غير القانوني، واحترام حقوق النشر. قد تخضع الغرف للإشراف، وانتهاك قواعد المجتمع قد يؤدي إلى الإيقاف. يُقدَّم Engvoice كما هو دون أي ضمان."
+            )} />
+          <LegalLink icon={<Users className="h-3.5 w-3.5" />} label={tx("Credits", "الفريق")}
+            body={tx(
+              "Engvoice is crafted by a small team passionate about languages and human connection. Special thanks to our beta community, native-speaker tutors, and open-source contributors.",
+              "صُمّم Engvoice على يد فريق صغير شغوف باللغات والتواصل الإنساني. شكر خاص لمجتمعنا التجريبي، المرشدين الناطقين الأصليين، والمساهمين في المصادر المفتوحة."
+            )} />
         </div>
 
         <div className="pt-2">
