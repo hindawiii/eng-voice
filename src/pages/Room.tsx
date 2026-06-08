@@ -531,9 +531,25 @@ const Room = () => {
               </span>
             )}
           </div>
-          <p className="mt-2 text-base font-semibold">
-            {isCustom && customTopic ? customTopic : TOPICS[topicIdx]}
+          <p className="mt-2 text-base font-semibold text-foreground leading-relaxed break-words">
+            {generatedTopic ?? (isCustom && customTopic ? customTopic : TOPICS[topicIdx])}
           </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => { setGeneratedTopic(generateTopic(lang)); toast.success(lang === "ar" ? "موضوع جديد ⚡" : "New topic ⚡"); }}
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3 py-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> {lang === "ar" ? "توليد موضوع ⚡" : "Generate topic ⚡"}
+            </button>
+            {generatedTopic && (
+              <button
+                onClick={() => setGeneratedTopic(null)}
+                className="rounded-full bg-secondary px-3 py-1.5 text-[11px] font-semibold text-muted-foreground hover:bg-secondary/70"
+              >
+                {lang === "ar" ? "إعادة للموضوع الأصلي" : "Reset"}
+              </button>
+            )}
+          </div>
         </div>
 
       </header>
