@@ -15,8 +15,6 @@ type PostKind = "text" | "image" | "audio" | "achievement" | "tip";
 const KIND_TABS: { id: PostKind; emoji: string; en: string; ar: string; max: number }[] = [
   { id: "text", emoji: "📝", en: "Text", ar: "نص", max: 500 },
   { id: "image", emoji: "🖼️", en: "Image", ar: "صورة", max: 200 },
-  { id: "audio", emoji: "🎙️", en: "Audio", ar: "صوت", max: 100 },
-  { id: "achievement", emoji: "🏆", en: "Achievement", ar: "إنجاز", max: 0 },
   { id: "tip", emoji: "💡", en: "Tip", ar: "نصيحة", max: 300 },
 ];
 
