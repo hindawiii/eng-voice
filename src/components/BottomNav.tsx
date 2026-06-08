@@ -5,10 +5,11 @@ import { useI18n } from "@/i18n/I18nProvider";
 
 export const BottomNav = () => {
   const { t } = useI18n();
+  // Order: النشاط | الرسائل | غرف | العب | الملف
   const tabs = [
-    { to: "/", label: t("nav.lounge"), icon: MessagesSquare },
     { to: "/activity", label: t("nav.activity"), icon: Activity },
     { to: "/messages", label: "الرسائل", icon: Send },
+    { to: "/", label: t("nav.lounge"), icon: MessagesSquare },
     { to: "/play", label: t("nav.play"), icon: Gamepad2 },
     { to: "/profile", label: t("nav.profile"), icon: User },
   ];
