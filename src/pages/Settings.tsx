@@ -320,18 +320,7 @@ const AccountPanel = ({ tx }: { tx: TX }) => {
     const payload = { name, bio, preferred, avatar, phone, updatedAt: new Date().toISOString() };
     try {
       localStorage.setItem(PROFILE_KEY, JSON.stringify(payload));
-      // Best-effort cloud sync (no-op if Lovable Cloud not yet enabled)
-      try {
-        const mod: any = await import(/* @vite-ignore */ "@/integrations/supabase/client" as string).catch(() => null);
-        if (mod?.supabase) {
-          const { data: { user } } = await mod.supabase.auth.getUser();
-          if (user) {
-            await mod.supabase.from("profiles").upsert({
-              id: user.id, name, bio, preferred_lang: preferred, avatar_url: avatar, phone,
-            });
-          }
-        }
-      } catch { /* ignore */ }
+      // Cloud sync is wired through Lovable Cloud once enabled; persisted locally for now.
       toast({ title: tx("Profile saved", "تم حفظ الملف") });
     } catch {
       toast({ title: tx("Save failed", "فشل الحفظ"), variant: "destructive" });
