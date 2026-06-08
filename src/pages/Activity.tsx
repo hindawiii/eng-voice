@@ -361,6 +361,31 @@ const Activity = () => {
           </ul>
         </section>
 
+        {/* Achievement timeline (relocated from composer) */}
+        <section className="rounded-3xl border border-[#FBBF24]/40 bg-[#111827] p-4 text-white shadow-elegant">
+          <div className="flex items-center gap-2">
+            <Award className="h-5 w-5 text-[#FBBF24] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#FBBF24]">
+              {lang === "ar" ? "خط زمن الإنجازات" : "Achievements Timeline"}
+            </h2>
+          </div>
+          <ol className="mt-3 space-y-3 border-s-2 border-[#FBBF24]/30 ps-4">
+            {[
+              { t: lang === "ar" ? "أكملت سلسلة ٧ أيام" : "Completed 7-day streak", d: lang === "ar" ? "اليوم" : "Today", icon: "🏆" },
+              { t: lang === "ar" ? "تعلّمت ٥٠ كلمة جديدة" : "Learned 50 new words", d: lang === "ar" ? "أمس" : "Yesterday", icon: "📚" },
+              { t: lang === "ar" ? "أول غرفة فرنسية" : "First French room", d: lang === "ar" ? "هذا الأسبوع" : "This week", icon: "🇫🇷" },
+            ].map((a, i) => (
+              <li key={i} className="relative">
+                <span className="absolute -start-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#FBBF24] text-[10px] shadow-[0_0_10px_rgba(251,191,36,0.6)]">
+                  {a.icon}
+                </span>
+                <p className="text-sm font-bold text-white">{a.t}</p>
+                <p className="text-[11px] text-slate-400">{a.d}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         {/* Notifications */}
         <section className="rounded-3xl bg-card p-4 shadow-soft">
           <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-muted-foreground">
