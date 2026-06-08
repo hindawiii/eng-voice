@@ -479,15 +479,16 @@ const Room = () => {
     <div className="min-h-screen bg-gradient-room pb-32">
       {/* Header */}
       <header className={cn("bg-gradient-to-br px-5 pb-8 pt-12 text-primary-foreground", room.accent)}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <button
-            onClick={handleLeaveRoom}
+            onClick={() => setMinimized(true)}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
-            aria-label="Leave"
+            aria-label="Minimize"
+            title={lang === "ar" ? "تصغير" : "Minimize"}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ChevronDown className="h-5 w-5" />
           </button>
-          <div className="text-center">
+          <div className="text-center flex-1 min-w-0">
             <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 flex items-center justify-center gap-1">
               {isAdmin && <Crown className="h-3 w-3 text-gold" />}
               {t("room.live")}
@@ -513,9 +514,26 @@ const Room = () => {
               </p>
             )}
           </div>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive">
-            <Flag className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            {isAdmin && (
+              <button
+                onClick={() => setAdminOpen(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
+                aria-label={lang === "ar" ? "تحكم" : "Controls"}
+                title={lang === "ar" ? "تحكم" : "Controls"}
+              >
+                <Cog className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              onClick={handleLeaveRoom}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive"
+              aria-label={lang === "ar" ? "خروج" : "Exit"}
+              title={lang === "ar" ? "خروج" : "Exit"}
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Topic card */}
@@ -524,7 +542,7 @@ const Room = () => {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-foreground">
               <Sparkles className="h-3 w-3" /> {t("room.topic")}
             </span>
-            {!(isCustom && customTopic) && (
+            {!(isCustom && customTopic) && !generatedTopic && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
                 <Timer className="h-3 w-3" />
                 {Math.floor(topicTime / 60)}:{(topicTime % 60).toString().padStart(2, "0")}
