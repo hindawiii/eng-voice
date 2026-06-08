@@ -5,6 +5,7 @@ import {
   MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Download, GraduationCap, LogOut,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
 import { getCustomRoom, CustomRoom } from "@/data/customRooms";
 import { Seat } from "@/components/Seat";
