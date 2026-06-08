@@ -716,35 +716,6 @@ const Room = () => {
             </div>
           )}
 
-          {isAdmin && adminOpen && (
-            <div className="mt-3 animate-fade-in">
-              <AdminPanel
-                turnLength={turnLength}
-                onTurnLengthChange={(s) => {
-                  setTurnLength(s);
-                  setTimeLeft(s);
-                  toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`);
-                }}
-                onResetTimer={() => setTimeLeft(turnLength)}
-                onExtendTimer={() => setTimeLeft((s) => s + 30)}
-                onMuteAll={() => {
-                  setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u)));
-                  toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted");
-                }}
-                onWatchAd={() => {
-                  toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
-                  setTimeout(() => {
-                    setSessionExtraMin((m) => m + 15);
-                    toast.success(lang === "ar" ? "+15 دقيقة للجلسة!" : "+15 min added!", { id: "ad" });
-                  }, 1500);
-                }}
-                onOpenSettings={() => setSettingsOpen(true)}
-              />
-              {requests.length > 0 && (
-                <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
-              )}
-            </div>
-          )}
         </section>
 
         {/* Live transcription drawer */}
