@@ -304,35 +304,7 @@ const Activity = () => {
             ))}
           </div>
 
-          {kind === "achievement" ? (
-            <div className="rounded-2xl border border-gold/40 bg-gold-soft p-4 text-center">
-              <Award className="mx-auto h-8 w-8 text-gold" />
-              <p className="mt-2 text-sm font-bold">
-                {lang === "ar" ? "🏆 أكملت سلسلة تعلّم ٧ أيام!" : "🏆 Completed 7-day learning streak!"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {lang === "ar" ? "بطاقة مُنشأة تلقائياً" : "Auto-generated card"}
-              </p>
-            </div>
-          ) : kind === "audio" ? (
-            <div className="rounded-2xl border border-border bg-background p-4">
-              <div className="flex items-center gap-3">
-                <button className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground">
-                  <Mic className="h-4 w-4" />
-                </button>
-                <Waveform />
-                <span className="text-xs tabular-nums text-muted-foreground">0:12 / 1:00</span>
-              </div>
-              <input
-                autoFocus
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                maxLength={activeKind.max}
-                placeholder={lang === "ar" ? "وصف اختياري…" : "Optional caption…"}
-                className="mt-3 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-              />
-            </div>
-          ) : kind === "image" ? (
+          {kind === "image" ? (
             <div className="space-y-2">
               <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background p-6 text-sm text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
                 <ImageIcon className="h-5 w-5" /> {lang === "ar" ? "اختر صورة" : "Choose image"}
