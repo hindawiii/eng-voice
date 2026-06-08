@@ -881,16 +881,37 @@ const SupportPanel = ({ tx }: { tx: TX }) => {
   );
 };
 
-const LegalLink = ({ icon, label, note }: { icon: React.ReactNode; label: string; note?: string }) => (
-  <button
-    onClick={() => toast({ title: label })}
-    className="flex items-center gap-2 rounded-lg bg-background px-2 py-2 text-start transition-smooth hover:bg-primary-soft"
-  >
-    <span className="text-primary">{icon}</span>
-    <span className="flex-1 truncate font-semibold">{label}</span>
-    {note && <span className="text-[10px] text-muted-foreground">{note}</span>}
-  </button>
-);
+const LegalLink = ({ icon, label, note, body }: { icon: React.ReactNode; label: string; note?: string; body?: string }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-2 rounded-lg bg-background px-2 py-2 text-start transition-smooth hover:bg-primary-soft"
+      >
+        <span className="text-primary">{icon}</span>
+        <span className="flex-1 truncate font-semibold text-foreground dark:text-slate-100">{label}</span>
+        {note && <span className="text-[10px] text-muted-foreground">{note}</span>}
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-foreground dark:text-slate-100">
+              <span className="text-primary">{icon}</span>
+              {label}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto text-sm leading-relaxed text-foreground dark:text-slate-100 whitespace-pre-wrap">
+            {body ?? ""}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setOpen(false)}>{label.startsWith("ح") || label.startsWith("س") || label.startsWith("ش") || label.startsWith("ا") || label === "الفريق" ? "إغلاق" : "Close"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 const SessionPanel = ({ tx }: { tx: TX }) => {
   const [logoutOpen, setLogoutOpen] = useState(false);
