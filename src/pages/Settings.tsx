@@ -320,9 +320,9 @@ const AccountPanel = ({ tx }: { tx: TX }) => {
     const payload = { name, bio, preferred, avatar, phone, updatedAt: new Date().toISOString() };
     try {
       localStorage.setItem(PROFILE_KEY, JSON.stringify(payload));
-      // Best-effort cloud sync (no-op if Supabase not enabled)
+      // Best-effort cloud sync (no-op if Lovable Cloud not yet enabled)
       try {
-        const mod: any = await import("@/integrations/supabase/client").catch(() => null);
+        const mod: any = await import(/* @vite-ignore */ "@/integrations/supabase/client" as string).catch(() => null);
         if (mod?.supabase) {
           const { data: { user } } = await mod.supabase.auth.getUser();
           if (user) {
