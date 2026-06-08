@@ -15,8 +15,6 @@ type PostKind = "text" | "image" | "audio" | "achievement" | "tip";
 const KIND_TABS: { id: PostKind; emoji: string; en: string; ar: string; max: number }[] = [
   { id: "text", emoji: "📝", en: "Text", ar: "نص", max: 500 },
   { id: "image", emoji: "🖼️", en: "Image", ar: "صورة", max: 200 },
-  { id: "audio", emoji: "🎙️", en: "Audio", ar: "صوت", max: 100 },
-  { id: "achievement", emoji: "🏆", en: "Achievement", ar: "إنجاز", max: 0 },
   { id: "tip", emoji: "💡", en: "Tip", ar: "نصيحة", max: 300 },
 ];
 
@@ -306,35 +304,7 @@ const Activity = () => {
             ))}
           </div>
 
-          {kind === "achievement" ? (
-            <div className="rounded-2xl border border-gold/40 bg-gold-soft p-4 text-center">
-              <Award className="mx-auto h-8 w-8 text-gold" />
-              <p className="mt-2 text-sm font-bold">
-                {lang === "ar" ? "🏆 أكملت سلسلة تعلّم ٧ أيام!" : "🏆 Completed 7-day learning streak!"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {lang === "ar" ? "بطاقة مُنشأة تلقائياً" : "Auto-generated card"}
-              </p>
-            </div>
-          ) : kind === "audio" ? (
-            <div className="rounded-2xl border border-border bg-background p-4">
-              <div className="flex items-center gap-3">
-                <button className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground">
-                  <Mic className="h-4 w-4" />
-                </button>
-                <Waveform />
-                <span className="text-xs tabular-nums text-muted-foreground">0:12 / 1:00</span>
-              </div>
-              <input
-                autoFocus
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                maxLength={activeKind.max}
-                placeholder={lang === "ar" ? "وصف اختياري…" : "Optional caption…"}
-                className="mt-3 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary"
-              />
-            </div>
-          ) : kind === "image" ? (
+          {kind === "image" ? (
             <div className="space-y-2">
               <button className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-background p-6 text-sm text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
                 <ImageIcon className="h-5 w-5" /> {lang === "ar" ? "اختر صورة" : "Choose image"}
@@ -366,7 +336,7 @@ const Activity = () => {
 
           <div className="mt-2 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
-              {kind === "achievement" ? "—" : `${text.length}/${activeKind.max}`}
+              {`${text.length}/${activeKind.max}`}
             </span>
             <button
               onClick={post}
@@ -389,6 +359,31 @@ const Activity = () => {
             <li>🚫 {lang === "ar" ? "بدون إعلانات خارجية" : "No external ads"}</li>
             <li>🗣️ {lang === "ar" ? "محتوى لغوي فقط" : "Language content only"}</li>
           </ul>
+        </section>
+
+        {/* Achievement timeline (relocated from composer) */}
+        <section className="rounded-3xl border border-[#FBBF24]/40 bg-[#111827] p-4 text-white shadow-elegant">
+          <div className="flex items-center gap-2">
+            <Award className="h-5 w-5 text-[#FBBF24] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#FBBF24]">
+              {lang === "ar" ? "خط زمن الإنجازات" : "Achievements Timeline"}
+            </h2>
+          </div>
+          <ol className="mt-3 space-y-3 border-s-2 border-[#FBBF24]/30 ps-4">
+            {[
+              { t: lang === "ar" ? "أكملت سلسلة ٧ أيام" : "Completed 7-day streak", d: lang === "ar" ? "اليوم" : "Today", icon: "🏆" },
+              { t: lang === "ar" ? "تعلّمت ٥٠ كلمة جديدة" : "Learned 50 new words", d: lang === "ar" ? "أمس" : "Yesterday", icon: "📚" },
+              { t: lang === "ar" ? "أول غرفة فرنسية" : "First French room", d: lang === "ar" ? "هذا الأسبوع" : "This week", icon: "🇫🇷" },
+            ].map((a, i) => (
+              <li key={i} className="relative">
+                <span className="absolute -start-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#FBBF24] text-[10px] shadow-[0_0_10px_rgba(251,191,36,0.6)]">
+                  {a.icon}
+                </span>
+                <p className="text-sm font-bold text-white">{a.t}</p>
+                <p className="text-[11px] text-slate-400">{a.d}</p>
+              </li>
+            ))}
+          </ol>
         </section>
 
         {/* Notifications */}

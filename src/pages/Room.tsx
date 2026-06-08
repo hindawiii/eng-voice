@@ -5,6 +5,7 @@ import {
   MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Download, GraduationCap, LogOut,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
 import { getCustomRoom, CustomRoom } from "@/data/customRooms";
 import { Seat } from "@/components/Seat";
@@ -31,22 +32,46 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { toast } from "sonner";
 
 const REACTION_EMOJIS = ["👏", "❤️", "🔥", "😂", "👍"] as const;
-const SESSION_TOTAL = 60 * 60; // 60 minutes
+const SESSION_TOTAL = 90 * 60; // 90 minutes (extended ceiling)
+const MAX_SESSION_MIN = 90;
 
-const TOPICS_EN = [
+const TOPIC_SEEDS_EN = [
   "Tell us about a weird food you've tried",
   "Describe your perfect Sunday morning",
   "A small habit that changed your life",
   "Your favorite city to walk in",
   "What song reminds you of childhood?",
+  "A book that shifted how you think",
+  "The best advice you ignored",
+  "An app you can't live without",
+  "Your dream language to master next",
+  "A skill you'd teach in 60 seconds",
 ];
-const TOPICS_AR = [
+const TOPIC_SEEDS_AR = [
   "أخبرنا عن طعام غريب جربته",
   "صف صباح الأحد المثالي",
   "عادة صغيرة غيّرت حياتك",
   "مدينتك المفضلة للمشي",
   "أي أغنية تذكرك بطفولتك؟",
+  "كتاب غيّر طريقة تفكيرك",
+  "أفضل نصيحة تجاهلتها",
+  "تطبيق لا يمكنك العيش بدونه",
+  "اللغة التي تحلم بإتقانها",
+  "مهارة تعلّمها في ٦٠ ثانية",
 ];
+const TOPIC_VERBS_EN = ["Share", "Explain", "Compare", "Debate", "Imagine", "Describe"];
+const TOPIC_VERBS_AR = ["شارك", "اشرح", "قارن", "ناقش", "تخيّل", "صف"];
+const TOPIC_NOUNS_EN = ["a memory", "a turning point", "a daily ritual", "a guilty pleasure", "a future plan", "a cultural quirk"];
+const TOPIC_NOUNS_AR = ["ذكرى", "نقطة تحوّل", "طقساً يومياً", "متعة سرية", "خطة مستقبلية", "غرابة ثقافية"];
+const generateTopic = (lang: "en" | "ar") => {
+  const verbs = lang === "ar" ? TOPIC_VERBS_AR : TOPIC_VERBS_EN;
+  const nouns = lang === "ar" ? TOPIC_NOUNS_AR : TOPIC_NOUNS_EN;
+  const v = verbs[Math.floor(Math.random() * verbs.length)];
+  const n = nouns[Math.floor(Math.random() * nouns.length)];
+  return lang === "ar" ? `${v} ${n} غيّرتك` : `${v} ${n} that changed you`;
+};
+const TOPICS_EN = TOPIC_SEEDS_EN;
+const TOPICS_AR = TOPIC_SEEDS_AR;
 
 const INITIAL_LISTENERS = [
   { id: "l1", flag: "🇩🇪", name: "Hans" },
@@ -137,6 +162,8 @@ const Room = () => {
 
   const [topicIdx, setTopicIdx] = useState(0);
   const [topicTime, setTopicTime] = useState(TOPIC_INTERVAL);
+  const [generatedTopic, setGeneratedTopic] = useState<string | null>(null);
+  const [minimized, setMinimized] = useState(false);
 
   const [requests, setRequests] = useState<SpeakRequest[]>(isAdmin ? INITIAL_REQUESTS : []);
   const [listeners, setListeners] = useState(INITIAL_LISTENERS);
@@ -453,15 +480,16 @@ const Room = () => {
     <div className="min-h-screen bg-gradient-room pb-32">
       {/* Header */}
       <header className={cn("bg-gradient-to-br px-5 pb-8 pt-12 text-primary-foreground", room.accent)}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <button
-            onClick={handleLeaveRoom}
+            onClick={() => setMinimized(true)}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
-            aria-label="Leave"
+            aria-label="Minimize"
+            title={lang === "ar" ? "تصغير" : "Minimize"}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ChevronDown className="h-5 w-5" />
           </button>
-          <div className="text-center">
+          <div className="text-center flex-1 min-w-0">
             <p className="text-xs font-medium uppercase tracking-widest text-primary-foreground/70 flex items-center justify-center gap-1">
               {isAdmin && <Crown className="h-3 w-3 text-gold" />}
               {t("room.live")}
@@ -487,9 +515,26 @@ const Room = () => {
               </p>
             )}
           </div>
-          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive">
-            <Flag className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            {isAdmin && (
+              <button
+                onClick={() => setAdminOpen(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
+                aria-label={lang === "ar" ? "تحكم" : "Controls"}
+                title={lang === "ar" ? "تحكم" : "Controls"}
+              >
+                <Cog className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              onClick={handleLeaveRoom}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive"
+              aria-label={lang === "ar" ? "خروج" : "Exit"}
+              title={lang === "ar" ? "خروج" : "Exit"}
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Topic card */}
@@ -498,16 +543,32 @@ const Room = () => {
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-foreground">
               <Sparkles className="h-3 w-3" /> {t("room.topic")}
             </span>
-            {!(isCustom && customTopic) && (
+            {!(isCustom && customTopic) && !generatedTopic && (
               <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
                 <Timer className="h-3 w-3" />
                 {Math.floor(topicTime / 60)}:{(topicTime % 60).toString().padStart(2, "0")}
               </span>
             )}
           </div>
-          <p className="mt-2 text-base font-semibold">
-            {isCustom && customTopic ? customTopic : TOPICS[topicIdx]}
+          <p className="mt-2 text-base font-semibold text-foreground leading-relaxed break-words">
+            {generatedTopic ?? (isCustom && customTopic ? customTopic : TOPICS[topicIdx])}
           </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => { setGeneratedTopic(generateTopic(lang)); toast.success(lang === "ar" ? "موضوع جديد ⚡" : "New topic ⚡"); }}
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3 py-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105"
+            >
+              <Sparkles className="h-3.5 w-3.5" /> {lang === "ar" ? "توليد موضوع ⚡" : "Generate topic ⚡"}
+            </button>
+            {generatedTopic && (
+              <button
+                onClick={() => setGeneratedTopic(null)}
+                className="rounded-full bg-secondary px-3 py-1.5 text-[11px] font-semibold text-muted-foreground hover:bg-secondary/70"
+              >
+                {lang === "ar" ? "إعادة للموضوع الأصلي" : "Reset"}
+              </button>
+            )}
+          </div>
         </div>
 
       </header>
@@ -564,23 +625,13 @@ const Room = () => {
                   <SpeakerCountdown seconds={timeLeft} />
                 )}
               {isAdmin && (
-                <>
-                  <button
-                    onClick={() => setTimerDialogOpen(true)}
-                    className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
-                    aria-label="Timer engine"
-                  >
-                    <Timer className="h-3 w-3" />
-                  </button>
-                  <button
-                    onClick={() => setAdminOpen((v) => !v)}
-                    className="flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <Crown className="h-3 w-3 text-gold" />
-                    {lang === "ar" ? "تحكم" : "Controls"}
-                    {adminOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                  </button>
-                </>
+                <button
+                  onClick={() => setTimerDialogOpen(true)}
+                  className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
+                  aria-label="Timer engine"
+                >
+                  <Timer className="h-3 w-3" />
+                </button>
               )}
             </div>
           </div>
@@ -666,35 +717,6 @@ const Room = () => {
             </div>
           )}
 
-          {isAdmin && adminOpen && (
-            <div className="mt-3 animate-fade-in">
-              <AdminPanel
-                turnLength={turnLength}
-                onTurnLengthChange={(s) => {
-                  setTurnLength(s);
-                  setTimeLeft(s);
-                  toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`);
-                }}
-                onResetTimer={() => setTimeLeft(turnLength)}
-                onExtendTimer={() => setTimeLeft((s) => s + 30)}
-                onMuteAll={() => {
-                  setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u)));
-                  toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted");
-                }}
-                onWatchAd={() => {
-                  toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
-                  setTimeout(() => {
-                    setSessionExtraMin((m) => m + 15);
-                    toast.success(lang === "ar" ? "+15 دقيقة للجلسة!" : "+15 min added!", { id: "ad" });
-                  }, 1500);
-                }}
-                onOpenSettings={() => setSettingsOpen(true)}
-              />
-              {requests.length > 0 && (
-                <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
-              )}
-            </div>
-          )}
         </section>
 
         {/* Live transcription drawer */}
@@ -1001,6 +1023,92 @@ const Room = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Admin Controls Sheet (slide-out drawer) */}
+      <Sheet open={adminOpen && isAdmin} onOpenChange={setAdminOpen}>
+        <SheetContent side={lang === "ar" ? "right" : "left"} className="w-[88vw] sm:w-[420px] overflow-y-auto bg-[#111827] text-white border-l border-slate-800">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2 text-[#FBBF24]">
+              <Crown className="h-4 w-4" /> {lang === "ar" ? "تحكم الغرفة" : "Room Controls"}
+            </SheetTitle>
+            <SheetDescription className="text-slate-400">
+              {lang === "ar" ? "إدارة المتحدثين، المؤقت، والمشرفين." : "Manage speakers, timer, and moderators."}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-4 space-y-4">
+            <AdminPanel
+              turnLength={turnLength}
+              onTurnLengthChange={(s) => { setTurnLength(s); setTimeLeft(s); toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`); }}
+              onResetTimer={() => setTimeLeft(turnLength)}
+              onExtendTimer={() => setTimeLeft((s) => s + 30)}
+              onMuteAll={() => { setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u))); toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted"); }}
+              onWatchAd={() => {
+                toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
+                setTimeout(() => {
+                  setSessionExtraMin((m) => Math.min(MAX_SESSION_MIN, m + 15));
+                  toast.success(lang === "ar" ? "+15 دقيقة!" : "+15 min!", { id: "ad" });
+                }, 1500);
+              }}
+              onOpenSettings={() => setSettingsOpen(true)}
+            />
+            {requests.length > 0 && (
+              <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
+            )}
+
+            {/* Host migration */}
+            <div className="rounded-2xl border border-[#FBBF24]/30 bg-[#0B101D] p-3">
+              <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#FBBF24]">
+                <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "تفويض الإدارة" : "Transfer host"}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400">
+                {lang === "ar" ? "اختر مشاركاً لتسليمه حقوق المشرف قبل المغادرة." : "Pick a participant to receive admin rights before you leave."}
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-1.5">
+                {[...seats.filter(Boolean).map((u) => ({ id: u!.id, name: u!.name, flag: u!.flag })), ...listeners].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => { toast.success(lang === "ar" ? `تم تفويض ${p.name} كمشرف` : `${p.name} is now host`); setAdminOpen(false); }}
+                    className="flex items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-slate-700"
+                  >
+                    <span>{p.flag}</span><span className="truncate">{p.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Floating minimized audio dock — stays connected while browsing */}
+      {minimized && (
+        <div className="fixed bottom-20 inset-x-3 z-[60] mx-auto max-w-md rounded-2xl border border-[#FBBF24]/40 bg-[#111827]/95 px-3 py-2.5 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-xs font-extrabold text-white">{room.flag} {roomName}</p>
+              <p className="truncate text-[10px] text-slate-400 tabular-nums">
+                {Math.floor(sessionRemaining / 60)}:{(sessionRemaining % 60).toString().padStart(2, "0")} {lang === "ar" ? "متبقٍ" : "left"}
+              </p>
+            </div>
+            <button
+              onClick={() => setMinimized(false)}
+              className="rounded-full bg-[#FBBF24] px-3 py-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.5)]"
+            >
+              {lang === "ar" ? "افتح" : "Open"}
+            </button>
+            <button
+              onClick={handleLeaveRoom}
+              className="rounded-full bg-destructive/20 p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              aria-label={lang === "ar" ? "خروج" : "Leave"}
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

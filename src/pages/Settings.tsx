@@ -288,22 +288,49 @@ const Segmented = <T extends string>({
 
 type TX = (en: string, ar: string) => string;
 
+const PROFILE_KEY = "engvoice.profile.v1";
+
 const AccountPanel = ({ tx }: { tx: TX }) => {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [name, setName] = useState("Yusuf");
-  const [preferred, setPreferred] = useState<"ar" | "en">("ar");
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const initial = (() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem(PROFILE_KEY) : null;
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
+  const [name, setName] = useState<string>(initial?.name ?? "Yusuf");
+  const [bio, setBio] = useState<string>(initial?.bio ?? "");
+  const [preferred, setPreferred] = useState<"ar" | "en">(initial?.preferred ?? "ar");
+  const [avatar, setAvatar] = useState<string | null>(initial?.avatar ?? null);
   const [cur, setCur] = useState(""); const [nw, setNw] = useState(""); const [cf, setCf] = useState("");
   const [showCur, setShowCur] = useState(false); const [showNw, setShowNw] = useState(false); const [showCf, setShowCf] = useState(false);
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState<string>(initial?.phone ?? "");
+  const [saving, setSaving] = useState(false);
 
   const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) setAvatar(URL.createObjectURL(f));
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatar(String(reader.result));
+    reader.readAsDataURL(f);
+  };
+
+  const saveProfile = async () => {
+    setSaving(true);
+    const payload = { name, bio, preferred, avatar, phone, updatedAt: new Date().toISOString() };
+    try {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(payload));
+      // Cloud sync is wired through Lovable Cloud once enabled; persisted locally for now.
+      toast({ title: tx("Profile saved", "تم حفظ الملف") });
+    } catch {
+      toast({ title: tx("Save failed", "فشل الحفظ"), variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 text-foreground dark:text-slate-100">
       {/* Edit Profile */}
       <div className="space-y-3">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -329,23 +356,25 @@ const AccountPanel = ({ tx }: { tx: TX }) => {
             <input ref={fileRef} type="file" accept="image/*" hidden onChange={onAvatar} />
           </div>
           <div className="flex-1 space-y-2">
-            <Label className="text-xs">{tx("Name", "الاسم")}</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={40} />
+            <Label className="text-xs text-foreground dark:text-slate-100">{tx("Name", "الاسم")}</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={40} className="text-foreground dark:text-slate-100" />
           </div>
         </div>
         <div className="space-y-2">
-          <Label className="text-xs">{tx("Preferred Language", "اللغة المفضلة")}</Label>
+          <Label className="text-xs text-foreground dark:text-slate-100">{tx("Bio", "نبذة")}</Label>
+          <Textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={160} rows={2}
+            className="text-foreground dark:text-slate-100" placeholder={tx("A few words about you…", "نبذة قصيرة…")} />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-xs text-foreground dark:text-slate-100">{tx("Preferred Language", "اللغة المفضلة")}</Label>
           <Segmented
             value={preferred}
             onChange={(v) => setPreferred(v)}
             options={[{ value: "ar", label: "العربية" }, { value: "en", label: "English" }]}
           />
         </div>
-        <Button
-          size="sm"
-          onClick={() => toast({ title: tx("Profile saved", "تم حفظ الملف") })}
-        >
-          {tx("Save Profile", "حفظ الملف")}
+        <Button size="sm" disabled={saving} onClick={saveProfile}>
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : tx("Save Profile", "حفظ الملف")}
         </Button>
       </div>
 
@@ -773,10 +802,26 @@ const SupportPanel = ({ tx }: { tx: TX }) => {
           {tx("Legal & Corporate", "القانوني والمؤسسي")}
         </p>
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("About", "حول التطبيق")} note="v1.0.0" />
-          <LegalLink icon={<Shield className="h-3.5 w-3.5" />} label={tx("Privacy Policy", "سياسة الخصوصية")} />
-          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("Terms of Service", "شروط الاستخدام")} />
-          <LegalLink icon={<Users className="h-3.5 w-3.5" />} label={tx("Credits", "الفريق")} />
+          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("About", "حول التطبيق")} note="v1.0.0"
+            body={tx(
+              "Engvoice is a premium voice-first language exchange community built to connect learners worldwide through live rooms, AI translation, tutor sessions and gamified learning. Version 1.0.0.",
+              "Engvoice مجتمع متميّز لتبادل اللغات صوتياً، يربط المتعلمين حول العالم عبر غرف مباشرة، ترجمة ذكية، جلسات مرشدين، وتعلّم تفاعلي. الإصدار ١٫٠٫٠."
+            )} />
+          <LegalLink icon={<Shield className="h-3.5 w-3.5" />} label={tx("Privacy Policy", "سياسة الخصوصية")}
+            body={tx(
+              "We respect your privacy. Engvoice stores your profile and learning data securely and never sells personal information. Voice sessions are processed only to enable conversation; transcripts may be cached on-device for translation. You can wipe your data at any time from Settings → Wipe Chat History.",
+              "نحترم خصوصيتك. يحفظ Engvoice ملفك الشخصي وبيانات التعلّم بشكل آمن ولا يبيع أي معلومات شخصية. تُعالَج جلسات الصوت فقط لتمكين المحادثة، وقد تُخزَّن النصوص محلياً للترجمة. يمكنك حذف بياناتك في أي وقت من الإعدادات → حذف سجل المحادثات."
+            )} />
+          <LegalLink icon={<FileText className="h-3.5 w-3.5" />} label={tx("Terms of Service", "شروط الاستخدام")}
+            body={tx(
+              "By using Engvoice you agree to interact respectfully, avoid hate speech, harassment or illegal content, and respect copyright. Voice rooms may be moderated; violating community rules can result in suspension. Engvoice is provided as-is without warranty.",
+              "باستخدامك Engvoice فإنك توافق على التعامل باحترام، وتجنّب خطاب الكراهية، التحرش، أو المحتوى غير القانوني، واحترام حقوق النشر. قد تخضع الغرف للإشراف، وانتهاك قواعد المجتمع قد يؤدي إلى الإيقاف. يُقدَّم Engvoice كما هو دون أي ضمان."
+            )} />
+          <LegalLink icon={<Users className="h-3.5 w-3.5" />} label={tx("Credits", "الفريق")}
+            body={tx(
+              "Engvoice is crafted by a small team passionate about languages and human connection. Special thanks to our beta community, native-speaker tutors, and open-source contributors.",
+              "صُمّم Engvoice على يد فريق صغير شغوف باللغات والتواصل الإنساني. شكر خاص لمجتمعنا التجريبي، المرشدين الناطقين الأصليين، والمساهمين في المصادر المفتوحة."
+            )} />
         </div>
 
         <div className="pt-2">
@@ -836,16 +881,37 @@ const SupportPanel = ({ tx }: { tx: TX }) => {
   );
 };
 
-const LegalLink = ({ icon, label, note }: { icon: React.ReactNode; label: string; note?: string }) => (
-  <button
-    onClick={() => toast({ title: label })}
-    className="flex items-center gap-2 rounded-lg bg-background px-2 py-2 text-start transition-smooth hover:bg-primary-soft"
-  >
-    <span className="text-primary">{icon}</span>
-    <span className="flex-1 truncate font-semibold">{label}</span>
-    {note && <span className="text-[10px] text-muted-foreground">{note}</span>}
-  </button>
-);
+const LegalLink = ({ icon, label, note, body }: { icon: React.ReactNode; label: string; note?: string; body?: string }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-2 rounded-lg bg-background px-2 py-2 text-start transition-smooth hover:bg-primary-soft"
+      >
+        <span className="text-primary">{icon}</span>
+        <span className="flex-1 truncate font-semibold text-foreground dark:text-slate-100">{label}</span>
+        {note && <span className="text-[10px] text-muted-foreground">{note}</span>}
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-foreground dark:text-slate-100">
+              <span className="text-primary">{icon}</span>
+              {label}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto text-sm leading-relaxed text-foreground dark:text-slate-100 whitespace-pre-wrap">
+            {body ?? ""}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setOpen(false)}>{label.startsWith("ح") || label.startsWith("س") || label.startsWith("ش") || label.startsWith("ا") || label === "الفريق" ? "إغلاق" : "Close"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 const SessionPanel = ({ tx }: { tx: TX }) => {
   const [logoutOpen, setLogoutOpen] = useState(false);
