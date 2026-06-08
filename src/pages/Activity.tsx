@@ -336,7 +336,7 @@ const Activity = () => {
 
           <div className="mt-2 flex items-center justify-between">
             <span className="text-xs text-muted-foreground">
-              {kind === "achievement" ? "—" : `${text.length}/${activeKind.max}`}
+              {`${text.length}/${activeKind.max}`}
             </span>
             <button
               onClick={post}
