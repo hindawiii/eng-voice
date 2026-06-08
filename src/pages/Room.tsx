@@ -624,23 +624,13 @@ const Room = () => {
                   <SpeakerCountdown seconds={timeLeft} />
                 )}
               {isAdmin && (
-                <>
-                  <button
-                    onClick={() => setTimerDialogOpen(true)}
-                    className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
-                    aria-label="Timer engine"
-                  >
-                    <Timer className="h-3 w-3" />
-                  </button>
-                  <button
-                    onClick={() => setAdminOpen((v) => !v)}
-                    className="flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-[11px] font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <Crown className="h-3 w-3 text-gold" />
-                    {lang === "ar" ? "تحكم" : "Controls"}
-                    {adminOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                  </button>
-                </>
+                <button
+                  onClick={() => setTimerDialogOpen(true)}
+                  className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
+                  aria-label="Timer engine"
+                >
+                  <Timer className="h-3 w-3" />
+                </button>
               )}
             </div>
           </div>
