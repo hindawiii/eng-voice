@@ -1023,6 +1023,92 @@ const Room = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Admin Controls Sheet (slide-out drawer) */}
+      <Sheet open={adminOpen && isAdmin} onOpenChange={setAdminOpen}>
+        <SheetContent side={lang === "ar" ? "right" : "left"} className="w-[88vw] sm:w-[420px] overflow-y-auto bg-[#111827] text-white border-l border-slate-800">
+          <SheetHeader>
+            <SheetTitle className="flex items-center gap-2 text-[#FBBF24]">
+              <Crown className="h-4 w-4" /> {lang === "ar" ? "تحكم الغرفة" : "Room Controls"}
+            </SheetTitle>
+            <SheetDescription className="text-slate-400">
+              {lang === "ar" ? "إدارة المتحدثين، المؤقت، والمشرفين." : "Manage speakers, timer, and moderators."}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-4 space-y-4">
+            <AdminPanel
+              turnLength={turnLength}
+              onTurnLengthChange={(s) => { setTurnLength(s); setTimeLeft(s); toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`); }}
+              onResetTimer={() => setTimeLeft(turnLength)}
+              onExtendTimer={() => setTimeLeft((s) => s + 30)}
+              onMuteAll={() => { setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u))); toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted"); }}
+              onWatchAd={() => {
+                toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
+                setTimeout(() => {
+                  setSessionExtraMin((m) => Math.min(MAX_SESSION_MIN, m + 15));
+                  toast.success(lang === "ar" ? "+15 دقيقة!" : "+15 min!", { id: "ad" });
+                }, 1500);
+              }}
+              onOpenSettings={() => setSettingsOpen(true)}
+            />
+            {requests.length > 0 && (
+              <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
+            )}
+
+            {/* Host migration */}
+            <div className="rounded-2xl border border-[#FBBF24]/30 bg-[#0B101D] p-3">
+              <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#FBBF24]">
+                <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "تفويض الإدارة" : "Transfer host"}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400">
+                {lang === "ar" ? "اختر مشاركاً لتسليمه حقوق المشرف قبل المغادرة." : "Pick a participant to receive admin rights before you leave."}
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-1.5">
+                {[...seats.filter(Boolean).map((u) => ({ id: u!.id, name: u!.name, flag: u!.flag })), ...listeners].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => { toast.success(lang === "ar" ? `تم تفويض ${p.name} كمشرف` : `${p.name} is now host`); setAdminOpen(false); }}
+                    className="flex items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-slate-700"
+                  >
+                    <span>{p.flag}</span><span className="truncate">{p.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Floating minimized audio dock — stays connected while browsing */}
+      {minimized && (
+        <div className="fixed bottom-20 inset-x-3 z-[60] mx-auto max-w-md rounded-2xl border border-[#FBBF24]/40 bg-[#111827]/95 px-3 py-2.5 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
+              <span className="relative h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="truncate text-xs font-extrabold text-white">{room.flag} {roomName}</p>
+              <p className="truncate text-[10px] text-slate-400 tabular-nums">
+                {Math.floor(sessionRemaining / 60)}:{(sessionRemaining % 60).toString().padStart(2, "0")} {lang === "ar" ? "متبقٍ" : "left"}
+              </p>
+            </div>
+            <button
+              onClick={() => setMinimized(false)}
+              className="rounded-full bg-[#FBBF24] px-3 py-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.5)]"
+            >
+              {lang === "ar" ? "افتح" : "Open"}
+            </button>
+            <button
+              onClick={handleLeaveRoom}
+              className="rounded-full bg-destructive/20 p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              aria-label={lang === "ar" ? "خروج" : "Leave"}
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
