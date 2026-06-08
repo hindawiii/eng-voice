@@ -34,20 +34,43 @@ const REACTION_EMOJIS = ["👏", "❤️", "🔥", "😂", "👍"] as const;
 const SESSION_TOTAL = 90 * 60; // 90 minutes (extended ceiling)
 const MAX_SESSION_MIN = 90;
 
-const TOPICS_EN = [
+const TOPIC_SEEDS_EN = [
   "Tell us about a weird food you've tried",
   "Describe your perfect Sunday morning",
   "A small habit that changed your life",
   "Your favorite city to walk in",
   "What song reminds you of childhood?",
+  "A book that shifted how you think",
+  "The best advice you ignored",
+  "An app you can't live without",
+  "Your dream language to master next",
+  "A skill you'd teach in 60 seconds",
 ];
-const TOPICS_AR = [
+const TOPIC_SEEDS_AR = [
   "أخبرنا عن طعام غريب جربته",
   "صف صباح الأحد المثالي",
   "عادة صغيرة غيّرت حياتك",
   "مدينتك المفضلة للمشي",
   "أي أغنية تذكرك بطفولتك؟",
+  "كتاب غيّر طريقة تفكيرك",
+  "أفضل نصيحة تجاهلتها",
+  "تطبيق لا يمكنك العيش بدونه",
+  "اللغة التي تحلم بإتقانها",
+  "مهارة تعلّمها في ٦٠ ثانية",
 ];
+const TOPIC_VERBS_EN = ["Share", "Explain", "Compare", "Debate", "Imagine", "Describe"];
+const TOPIC_VERBS_AR = ["شارك", "اشرح", "قارن", "ناقش", "تخيّل", "صف"];
+const TOPIC_NOUNS_EN = ["a memory", "a turning point", "a daily ritual", "a guilty pleasure", "a future plan", "a cultural quirk"];
+const TOPIC_NOUNS_AR = ["ذكرى", "نقطة تحوّل", "طقساً يومياً", "متعة سرية", "خطة مستقبلية", "غرابة ثقافية"];
+const generateTopic = (lang: "en" | "ar") => {
+  const verbs = lang === "ar" ? TOPIC_VERBS_AR : TOPIC_VERBS_EN;
+  const nouns = lang === "ar" ? TOPIC_NOUNS_AR : TOPIC_NOUNS_EN;
+  const v = verbs[Math.floor(Math.random() * verbs.length)];
+  const n = nouns[Math.floor(Math.random() * nouns.length)];
+  return lang === "ar" ? `${v} ${n} غيّرتك` : `${v} ${n} that changed you`;
+};
+const TOPICS_EN = TOPIC_SEEDS_EN;
+const TOPICS_AR = TOPIC_SEEDS_AR;
 
 const INITIAL_LISTENERS = [
   { id: "l1", flag: "🇩🇪", name: "Hans" },
