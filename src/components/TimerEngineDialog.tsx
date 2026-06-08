@@ -21,7 +21,7 @@ interface Props {
 }
 
 const SPEAKER_OPTS = [180, 240, 300]; // 3, 4, 5 min
-const SESSION_OPTS = [30, 45, 60];
+const SESSION_OPTS = [30, 45, 60, 75, 90];
 
 export const TimerEngineDialog = ({ open, onOpenChange, config, onSave }: Props) => {
   const { lang } = useI18n();
