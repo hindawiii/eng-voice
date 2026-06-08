@@ -31,7 +31,8 @@ import { useI18n } from "@/i18n/I18nProvider";
 import { toast } from "sonner";
 
 const REACTION_EMOJIS = ["👏", "❤️", "🔥", "😂", "👍"] as const;
-const SESSION_TOTAL = 60 * 60; // 60 minutes
+const SESSION_TOTAL = 90 * 60; // 90 minutes (extended ceiling)
+const MAX_SESSION_MIN = 90;
 
 const TOPICS_EN = [
   "Tell us about a weird food you've tried",
