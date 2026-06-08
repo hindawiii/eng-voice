@@ -288,22 +288,60 @@ const Segmented = <T extends string>({
 
 type TX = (en: string, ar: string) => string;
 
+const PROFILE_KEY = "engvoice.profile.v1";
+
 const AccountPanel = ({ tx }: { tx: TX }) => {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [name, setName] = useState("Yusuf");
-  const [preferred, setPreferred] = useState<"ar" | "en">("ar");
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const initial = (() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem(PROFILE_KEY) : null;
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  })();
+  const [name, setName] = useState<string>(initial?.name ?? "Yusuf");
+  const [bio, setBio] = useState<string>(initial?.bio ?? "");
+  const [preferred, setPreferred] = useState<"ar" | "en">(initial?.preferred ?? "ar");
+  const [avatar, setAvatar] = useState<string | null>(initial?.avatar ?? null);
   const [cur, setCur] = useState(""); const [nw, setNw] = useState(""); const [cf, setCf] = useState("");
   const [showCur, setShowCur] = useState(false); const [showNw, setShowNw] = useState(false); const [showCf, setShowCf] = useState(false);
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState<string>(initial?.phone ?? "");
+  const [saving, setSaving] = useState(false);
 
   const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
-    if (f) setAvatar(URL.createObjectURL(f));
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatar(String(reader.result));
+    reader.readAsDataURL(f);
+  };
+
+  const saveProfile = async () => {
+    setSaving(true);
+    const payload = { name, bio, preferred, avatar, phone, updatedAt: new Date().toISOString() };
+    try {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(payload));
+      // Best-effort cloud sync (no-op if Supabase not enabled)
+      try {
+        const mod: any = await import("@/integrations/supabase/client").catch(() => null);
+        if (mod?.supabase) {
+          const { data: { user } } = await mod.supabase.auth.getUser();
+          if (user) {
+            await mod.supabase.from("profiles").upsert({
+              id: user.id, name, bio, preferred_lang: preferred, avatar_url: avatar, phone,
+            });
+          }
+        }
+      } catch { /* ignore */ }
+      toast({ title: tx("Profile saved", "تم حفظ الملف") });
+    } catch {
+      toast({ title: tx("Save failed", "فشل الحفظ"), variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 text-foreground dark:text-slate-100">
       {/* Edit Profile */}
       <div className="space-y-3">
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -329,23 +367,25 @@ const AccountPanel = ({ tx }: { tx: TX }) => {
             <input ref={fileRef} type="file" accept="image/*" hidden onChange={onAvatar} />
           </div>
           <div className="flex-1 space-y-2">
-            <Label className="text-xs">{tx("Name", "الاسم")}</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={40} />
+            <Label className="text-xs text-foreground dark:text-slate-100">{tx("Name", "الاسم")}</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={40} className="text-foreground dark:text-slate-100" />
           </div>
         </div>
         <div className="space-y-2">
-          <Label className="text-xs">{tx("Preferred Language", "اللغة المفضلة")}</Label>
+          <Label className="text-xs text-foreground dark:text-slate-100">{tx("Bio", "نبذة")}</Label>
+          <Textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={160} rows={2}
+            className="text-foreground dark:text-slate-100" placeholder={tx("A few words about you…", "نبذة قصيرة…")} />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-xs text-foreground dark:text-slate-100">{tx("Preferred Language", "اللغة المفضلة")}</Label>
           <Segmented
             value={preferred}
             onChange={(v) => setPreferred(v)}
             options={[{ value: "ar", label: "العربية" }, { value: "en", label: "English" }]}
           />
         </div>
-        <Button
-          size="sm"
-          onClick={() => toast({ title: tx("Profile saved", "تم حفظ الملف") })}
-        >
-          {tx("Save Profile", "حفظ الملف")}
+        <Button size="sm" disabled={saving} onClick={saveProfile}>
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : tx("Save Profile", "حفظ الملف")}
         </Button>
       </div>
 
