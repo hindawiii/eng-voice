@@ -19,8 +19,8 @@ export const AcademyHub = () => {
       <div className="space-y-4 px-4 pt-4">
         {/* Flag-only pills with fade edges */}
         <div className="relative -mx-1">
-          <div className="pointer-events-none absolute inset-y-0 start-0 w-8 z-10 bg-gradient-to-e from-background to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 end-0 w-8 z-10 bg-gradient-to-w from-background to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 z-10 bg-gradient-to-r from-background to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-background to-transparent" />
           <div className="no-scrollbar overflow-x-auto px-1">
             <div className="flex gap-2 min-w-max py-1">
               {items.map((l) => {
