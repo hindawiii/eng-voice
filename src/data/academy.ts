@@ -280,3 +280,12 @@ export const generateRandomPhrase = (langKey: string): VocabItem => {
   const pick = pool[Math.floor(Math.random() * pool.length)];
   return { text: pick.en, ar: pick.ar };
 };
+
+// Fallback data for newly added corners (it/pt/tr/ko) — mirror English until localized content lands
+["it", "pt", "tr", "ko"].forEach((k) => {
+  if (!LETTERS[k]) LETTERS[k] = LETTERS.en;
+  if (!VOCAB[k]) VOCAB[k] = VOCAB.en;
+  if (!GRAMMAR[k]) GRAMMAR[k] = GRAMMAR.en;
+  if (!QUIZZES[k]) QUIZZES[k] = QUIZZES.en;
+  if (!TEMPLATES[k]) TEMPLATES[k] = TEMPLATES.en;
+});
