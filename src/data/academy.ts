@@ -8,14 +8,24 @@ export interface AcademyLang {
 }
 
 export const ACADEMY_LANGS: AcademyLang[] = [
-  { key: "en", labelAr: "ركن الإنجليزية", flag: "🇬🇧", bcp47: "en-US", code: "en", name: "English" },
-  { key: "fr", labelAr: "ركن الفرنسية", flag: "🇫🇷", bcp47: "fr-FR", code: "fr", name: "Français" },
-  { key: "es", labelAr: "ركن الإسبانية", flag: "🇪🇸", bcp47: "es-ES", code: "es", name: "Español" },
-  { key: "ar", labelAr: "ركن العربية الفصحى", flag: "🇸🇦", bcp47: "ar-SA", code: "ar", name: "العربية" },
-  { key: "de", labelAr: "ركن الألمانية", flag: "🇩🇪", bcp47: "de-DE", code: "de", name: "Deutsch" },
-  { key: "zh", labelAr: "ركن الصينية", flag: "🇨🇳", bcp47: "zh-CN", code: "zh", name: "中文" },
-  { key: "ja", labelAr: "ركن اليابانية", flag: "🇯🇵", bcp47: "ja-JP", code: "ja", name: "日本語" },
+  { key: "en", labelAr: "الإنجليزية", flag: "🇬🇧", bcp47: "en-US", code: "en", name: "English" },
+  { key: "fr", labelAr: "الفرنسية", flag: "🇫🇷", bcp47: "fr-FR", code: "fr", name: "Français" },
+  { key: "es", labelAr: "الإسبانية", flag: "🇪🇸", bcp47: "es-ES", code: "es", name: "Español" },
+  { key: "ar", labelAr: "العربية", flag: "🇸🇦", bcp47: "ar-SA", code: "ar", name: "العربية" },
+  { key: "de", labelAr: "الألمانية", flag: "🇩🇪", bcp47: "de-DE", code: "de", name: "Deutsch" },
+  { key: "it", labelAr: "الإيطالية", flag: "🇮🇹", bcp47: "it-IT", code: "it", name: "Italiano" },
+  { key: "pt", labelAr: "البرتغالية", flag: "🇧🇷", bcp47: "pt-BR", code: "pt", name: "Português" },
+  { key: "tr", labelAr: "التركية", flag: "🇹🇷", bcp47: "tr-TR", code: "tr", name: "Türkçe" },
+  { key: "ko", labelAr: "الكورية", flag: "🇰🇷", bcp47: "ko-KR", code: "ko", name: "한국어" },
+  { key: "zh", labelAr: "الصينية", flag: "🇨🇳", bcp47: "zh-CN", code: "zh", name: "中文" },
+  { key: "ja", labelAr: "اليابانية", flag: "🇯🇵", bcp47: "ja-JP", code: "ja", name: "日本語" },
 ];
+
+// Live online counts per corner (deterministic mock — replace with realtime later)
+export const LANG_ONLINE: Record<string, number> = {
+  all: 680, en: 142, fr: 88, es: 64, de: 45, ja: 32,
+  ar: 120, ko: 28, it: 35, zh: 56, pt: 41, tr: 38,
+};
 
 export interface VocabItem { text: string; ar: string }
 
