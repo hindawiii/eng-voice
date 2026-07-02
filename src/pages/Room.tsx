@@ -720,8 +720,25 @@ const Room = () => {
 
         </section>
 
+        {/* Listeners bar — directly under speakers */}
+        <div className="mt-3">
+          <ListenersBar
+            listeners={listeners.map((l, i) => ({
+              id: l.id,
+              name: l.name,
+              flag: l.flag,
+              premium: i % 4 === 0,
+              muted: i === 2,
+            }))}
+            onSelect={(l) => setMiniUser({ id: l.id, name: l.name, flag: l.flag })}
+            onInvite={() => toast.success(lang === "ar" ? "أُرسلت دعوة" : "Invite sent")}
+          />
+        </div>
+
         {/* Live transcription drawer */}
         <LiveTranscriptionDrawer />
+
+
 
 
         {/* Compact tabbed interaction panel directly under seats */}
