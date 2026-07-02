@@ -59,20 +59,20 @@
     --success: 152 60% 48%;
     --success-foreground: 0 0% 100%;
 
-    --border: 215 25% 17%;           /* #1F2937 */
-    --input: 215 25% 17%;
-    --ring: 43 96% 56%;
+    --border: 0 0% 100% / 0.1;       /* rgba white 10% via utility below */
+    --input: 222 29% 15%;
+    --ring: 37 91% 55%;
 
     --radius: 1rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(220 39% 11%), hsl(214 70% 32%));
-    --gradient-gold: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
-    --gradient-hero: linear-gradient(160deg, hsl(225 46% 5%) 0%, hsl(220 39% 11%) 55%, hsl(214 60% 25%) 100%);
-    --gradient-room: linear-gradient(180deg, hsl(225 46% 5%) 0%, hsl(220 39% 9%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(215 24% 8%), hsl(214 70% 32%));
+    --gradient-gold: linear-gradient(135deg, hsl(37 91% 55%), hsl(33 100% 65%));
+    --gradient-hero: linear-gradient(160deg, hsl(216 39% 5%) 0%, hsl(215 24% 8%) 55%, hsl(214 60% 22%) 100%);
+    --gradient-room: linear-gradient(180deg, hsl(216 39% 5%) 0%, hsl(215 24% 7%) 100%);
 
-    --shadow-elegant: 0 10px 30px -12px hsl(0 0% 0% / 0.55);
-    --shadow-soft: 0 4px 16px -6px hsl(0 0% 0% / 0.45);
-    --shadow-gold: 0 8px 24px -8px hsl(43 96% 56% / 0.45);
+    --shadow-elegant: 0 10px 30px -12px hsl(0 0% 0% / 0.6);
+    --shadow-soft: 0 4px 16px -6px hsl(0 0% 0% / 0.5);
+    --shadow-gold: 0 8px 24px -8px hsl(37 91% 55% / 0.45);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
