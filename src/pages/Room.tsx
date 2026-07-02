@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
 import { getCustomRoom, CustomRoom } from "@/data/customRooms";
 import { Seat } from "@/components/Seat";
+import { ListenersBar } from "@/components/ListenersBar";
 import { ChatBox } from "@/components/ChatBox";
 import { RequestQueue, SpeakRequest } from "@/components/RequestQueue";
 import { AdminPanel } from "@/components/AdminPanel";
