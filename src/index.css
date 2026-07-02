@@ -10,34 +10,48 @@
 
 @layer base {
   :root {
-    /* Permanent Ultimate Dark Theme — obsidian midnight */
-    --background: 225 46% 5%;        /* #070A13 */
-    --foreground: 0 0% 100%;
+    /* Permanent Ultimate Dark Theme — obsidian midnight (v2 contrast-tuned) */
+    --background: 216 39% 5%;        /* #070A10 base */
+    --foreground: 210 27% 96%;       /* #F0F4F8 text-primary */
 
-    --card: 220 39% 11%;             /* #111827 */
-    --card-foreground: 0 0% 100%;
+    --card: 215 24% 8%;              /* #0D1117 bg-primary */
+    --card-foreground: 210 27% 96%;
 
-    --popover: 220 39% 11%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 215 24% 12%;          /* #151B24 bg-secondary */
+    --popover-foreground: 210 27% 96%;
 
     --primary: 214 70% 58%;
     --primary-foreground: 0 0% 100%;
     --primary-glow: 214 80% 68%;
     --primary-soft: 220 35% 18%;
 
-    /* Radiant gold #FBBF24 / #F59E0B */
-    --gold: 43 96% 56%;
-    --gold-foreground: 220 39% 11%;
+    /* Radiant amber gold #F5A623 primary, #FFB84D hover */
+    --gold: 37 91% 55%;              /* #F5A623 */
+    --gold-hover: 33 100% 65%;       /* #FFB84D */
+    --gold-foreground: 215 24% 8%;
     --gold-soft: 215 28% 17%;
 
-    --secondary: 215 28% 17%;        /* #1F2937 surface */
-    --secondary-foreground: 0 0% 100%;
+    /* Surface tiers */
+    --surface-1: 215 24% 8%;         /* #0D1117 */
+    --surface-2: 215 24% 12%;        /* #151B24 */
+    --surface-3: 222 29% 15%;        /* #1C2333 */
+    --surface-hover: 220 27% 19%;    /* #232D3F */
+    --surface-active: 219 25% 22%;   /* #2A3448 */
 
-    --muted: 215 28% 17%;
-    --muted-foreground: 215 15% 70%;
+    /* Text tiers — never darker than #5E6D80 */
+    --text-primary: 210 27% 96%;     /* #F0F4F8 */
+    --text-secondary: 212 20% 77%;   /* #B8C4D0 */
+    --text-tertiary: 215 17% 60%;    /* #8896A8 */
+    --text-muted-strong: 215 15% 43%;/* #5E6D80 lowest allowed */
 
-    --accent: 215 28% 17%;
-    --accent-foreground: 43 96% 56%;
+    --secondary: 222 29% 15%;        /* #1C2333 */
+    --secondary-foreground: 210 27% 96%;
+
+    --muted: 215 24% 12%;
+    --muted-foreground: 212 20% 77%; /* #B8C4D0 — was 215 15% 70% too dim */
+
+    --accent: 220 27% 19%;
+    --accent-foreground: 37 91% 55%;
 
     --destructive: 0 75% 58%;
     --destructive-foreground: 0 0% 100%;
@@ -45,20 +59,20 @@
     --success: 152 60% 48%;
     --success-foreground: 0 0% 100%;
 
-    --border: 215 25% 17%;           /* #1F2937 */
-    --input: 215 25% 17%;
-    --ring: 43 96% 56%;
+    --border: 220 25% 16%;           /* subtle ~ rgba(255,255,255,0.1) over dark */
+    --input: 222 29% 15%;
+    --ring: 37 91% 55%;
 
     --radius: 1rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(220 39% 11%), hsl(214 70% 32%));
-    --gradient-gold: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
-    --gradient-hero: linear-gradient(160deg, hsl(225 46% 5%) 0%, hsl(220 39% 11%) 55%, hsl(214 60% 25%) 100%);
-    --gradient-room: linear-gradient(180deg, hsl(225 46% 5%) 0%, hsl(220 39% 9%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(215 24% 8%), hsl(214 70% 32%));
+    --gradient-gold: linear-gradient(135deg, hsl(37 91% 55%), hsl(33 100% 65%));
+    --gradient-hero: linear-gradient(160deg, hsl(216 39% 5%) 0%, hsl(215 24% 8%) 55%, hsl(214 60% 22%) 100%);
+    --gradient-room: linear-gradient(180deg, hsl(216 39% 5%) 0%, hsl(215 24% 7%) 100%);
 
-    --shadow-elegant: 0 10px 30px -12px hsl(0 0% 0% / 0.55);
-    --shadow-soft: 0 4px 16px -6px hsl(0 0% 0% / 0.45);
-    --shadow-gold: 0 8px 24px -8px hsl(43 96% 56% / 0.45);
+    --shadow-elegant: 0 10px 30px -12px hsl(0 0% 0% / 0.6);
+    --shadow-soft: 0 4px 16px -6px hsl(0 0% 0% / 0.5);
+    --shadow-gold: 0 8px 24px -8px hsl(37 91% 55% / 0.45);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);

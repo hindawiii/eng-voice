@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { ROOMS, SAMPLE_SPEAKERS, SeatUser } from "@/data/rooms";
 import { getCustomRoom, CustomRoom } from "@/data/customRooms";
 import { Seat } from "@/components/Seat";
+import { ListenersBar } from "@/components/ListenersBar";
 import { ChatBox } from "@/components/ChatBox";
 import { RequestQueue, SpeakRequest } from "@/components/RequestQueue";
 import { AdminPanel } from "@/components/AdminPanel";
@@ -720,8 +721,25 @@ const Room = () => {
 
         </section>
 
+        {/* Listeners bar — directly under speakers */}
+        <div className="mt-3">
+          <ListenersBar
+            listeners={listeners.map((l, i) => ({
+              id: l.id,
+              name: l.name,
+              flag: l.flag,
+              premium: i % 4 === 0,
+              muted: i === 2,
+            }))}
+            onSelect={(l) => setMiniUser({ id: l.id, name: l.name, flag: l.flag })}
+            onInvite={() => toast.success(lang === "ar" ? "أُرسلت دعوة" : "Invite sent")}
+          />
+        </div>
+
         {/* Live transcription drawer */}
         <LiveTranscriptionDrawer />
+
+
 
 
         {/* Compact tabbed interaction panel directly under seats */}
