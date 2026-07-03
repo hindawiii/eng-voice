@@ -809,46 +809,6 @@ const Room = () => {
               )}
             </section>
           </TabsContent>
-
-          <TabsContent value="tools" className="mt-3">
-            <section className="overflow-hidden rounded-3xl bg-gradient-hero p-4 text-primary-foreground shadow-elegant">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-gold" />
-                    <h2 className="text-sm font-bold">{t("room.challenge")}</h2>
-                  </div>
-                  <p className="mt-1 text-xs text-primary-foreground/80">{t("room.challengeHint")}</p>
-                </div>
-                <button className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
-                  {t("room.send")}
-                </button>
-              </div>
-            </section>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <ShareButton roomKey={room.key} password={customRoom?.password} />
-              <GiftButton />
-            </div>
-            <div className="mt-3">
-              <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
-            </div>
-            {isAdmin && (
-              <button
-                onClick={() => setTimerDialogOpen(true)}
-                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-[#FBBF24]/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-[#FBBF24]"
-              >
-                <span className="flex items-center gap-2">
-                  <Timer className="h-4 w-4 text-[#FBBF24]" />
-                  <span className="text-sm font-extrabold">
-                    {lang === "ar" ? "محرك المؤقت" : "Timer Engine"}
-                  </span>
-                </span>
-                <span className="rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-bold uppercase text-[#FBBF24]">
-                  {timerCfg.mode === "off" ? (lang === "ar" ? "مفتوح" : "Open") : timerCfg.mode}
-                </span>
-              </button>
-            )}
-          </TabsContent>
         </Tabs>
       </main>
 
