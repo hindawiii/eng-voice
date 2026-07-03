@@ -166,7 +166,7 @@ const Room = () => {
   const [topicIdx, setTopicIdx] = useState(0);
   const [topicTime, setTopicTime] = useState(TOPIC_INTERVAL);
   const [generatedTopic, setGeneratedTopic] = useState<string | null>(null);
-  const [minimized, setMinimized] = useState(false);
+  
 
   const [requests, setRequests] = useState<SpeakRequest[]>(isAdmin ? INITIAL_REQUESTS : []);
   const [listeners, setListeners] = useState(INITIAL_LISTENERS);
