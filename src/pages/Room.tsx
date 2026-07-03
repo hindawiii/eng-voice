@@ -1012,60 +1012,113 @@ const Room = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Admin Controls Sheet (slide-out drawer) */}
-      <Sheet open={adminOpen && isAdmin} onOpenChange={setAdminOpen}>
+      {/* Tools & Controls Sheet (slide-out drawer) */}
+      <Sheet open={adminOpen} onOpenChange={setAdminOpen}>
         <SheetContent side={lang === "ar" ? "right" : "left"} className="w-[88vw] sm:w-[420px] overflow-y-auto bg-[#111827] text-white border-l border-slate-800">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-[#FBBF24]">
-              <Crown className="h-4 w-4" /> {lang === "ar" ? "تحكم الغرفة" : "Room Controls"}
+              <Wand2 className="h-4 w-4" /> {lang === "ar" ? "الأدوات والتحكم" : "Tools & Controls"}
             </SheetTitle>
             <SheetDescription className="text-slate-400">
-              {lang === "ar" ? "إدارة المتحدثين، المؤقت، والمشرفين." : "Manage speakers, timer, and moderators."}
+              {lang === "ar" ? "التحدي، المشاركة، الهدايا، الصوت، والمؤقت." : "Challenge, share, gifts, audio, and timer."}
             </SheetDescription>
           </SheetHeader>
           <div className="mt-4 space-y-4">
-            <AdminPanel
-              turnLength={turnLength}
-              onTurnLengthChange={(s) => { setTurnLength(s); setTimeLeft(s); toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`); }}
-              onResetTimer={() => setTimeLeft(turnLength)}
-              onExtendTimer={() => setTimeLeft((s) => s + 30)}
-              onMuteAll={() => { setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u))); toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted"); }}
-              onWatchAd={() => {
-                toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
-                setTimeout(() => {
-                  setSessionExtraMin((m) => Math.min(MAX_SESSION_MIN, m + 15));
-                  toast.success(lang === "ar" ? "+15 دقيقة!" : "+15 min!", { id: "ad" });
-                }, 1500);
-              }}
-              onOpenSettings={() => setSettingsOpen(true)}
-            />
-            {requests.length > 0 && (
-              <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
+            {/* Word challenge */}
+            <section className="overflow-hidden rounded-3xl bg-gradient-hero p-4 text-primary-foreground shadow-elegant">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-gold" />
+                    <h2 className="text-sm font-bold">{t("room.challenge")}</h2>
+                  </div>
+                  <p className="mt-1 text-xs text-primary-foreground/80">{t("room.challengeHint")}</p>
+                </div>
+                <button className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
+                  {t("room.send")}
+                </button>
+              </div>
+            </section>
+
+            {/* Share & Gift */}
+            <div className="grid grid-cols-2 gap-2">
+              <ShareButton roomKey={room.key} password={customRoom?.password} />
+              <GiftButton />
+            </div>
+
+            {/* AI Noise Suppression */}
+            <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
+
+            {/* Timer Engine (admin) */}
+            {isAdmin && (
+              <button
+                onClick={() => setTimerDialogOpen(true)}
+                className="flex w-full items-center justify-between rounded-2xl border border-[#FBBF24]/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-[#FBBF24]"
+              >
+                <span className="flex items-center gap-2">
+                  <Timer className="h-4 w-4 text-[#FBBF24]" />
+                  <span className="text-sm font-extrabold">
+                    {lang === "ar" ? "محرك المؤقت" : "Timer Engine"}
+                  </span>
+                </span>
+                <span className="rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-bold uppercase text-[#FBBF24]">
+                  {timerCfg.mode === "off" ? (lang === "ar" ? "مفتوح" : "Open") : timerCfg.mode}
+                </span>
+              </button>
             )}
 
-            {/* Host migration */}
-            <div className="rounded-2xl border border-[#FBBF24]/30 bg-[#0B101D] p-3">
-              <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#FBBF24]">
-                <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "تفويض الإدارة" : "Transfer host"}
-              </p>
-              <p className="mt-1 text-[11px] text-slate-400">
-                {lang === "ar" ? "اختر مشاركاً لتسليمه حقوق المشرف قبل المغادرة." : "Pick a participant to receive admin rights before you leave."}
-              </p>
-              <div className="mt-2 grid grid-cols-2 gap-1.5">
-                {[...seats.filter(Boolean).map((u) => ({ id: u!.id, name: u!.name, flag: u!.flag })), ...listeners].map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => { toast.success(lang === "ar" ? `تم تفويض ${p.name} كمشرف` : `${p.name} is now host`); setAdminOpen(false); }}
-                    className="flex items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-slate-700"
-                  >
-                    <span>{p.flag}</span><span className="truncate">{p.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* Admin controls */}
+            {isAdmin && (
+              <>
+                <div className="h-px bg-slate-800" />
+                <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-[#FBBF24]">
+                  <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "لوحة المشرف" : "Admin panel"}
+                </p>
+                <AdminPanel
+                  turnLength={turnLength}
+                  onTurnLengthChange={(s) => { setTurnLength(s); setTimeLeft(s); toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`); }}
+                  onResetTimer={() => setTimeLeft(turnLength)}
+                  onExtendTimer={() => setTimeLeft((s) => s + 30)}
+                  onMuteAll={() => { setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u))); toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted"); }}
+                  onWatchAd={() => {
+                    toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
+                    setTimeout(() => {
+                      setSessionExtraMin((m) => Math.min(MAX_SESSION_MIN, m + 15));
+                      toast.success(lang === "ar" ? "+15 دقيقة!" : "+15 min!", { id: "ad" });
+                    }, 1500);
+                  }}
+                  onOpenSettings={() => setSettingsOpen(true)}
+                />
+                {requests.length > 0 && (
+                  <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
+                )}
+
+                {/* Host migration */}
+                <div className="rounded-2xl border border-[#FBBF24]/30 bg-[#0B101D] p-3">
+                  <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#FBBF24]">
+                    <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "تفويض الإدارة" : "Transfer host"}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    {lang === "ar" ? "اختر مشاركاً لتسليمه حقوق المشرف قبل المغادرة." : "Pick a participant to receive admin rights before you leave."}
+                  </p>
+                  <div className="mt-2 grid grid-cols-2 gap-1.5">
+                    {[...seats.filter(Boolean).map((u) => ({ id: u!.id, name: u!.name, flag: u!.flag })), ...listeners].map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => { toast.success(lang === "ar" ? `تم تفويض ${p.name} كمشرف` : `${p.name} is now host`); setAdminOpen(false); }}
+                        className="flex items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-slate-700"
+                      >
+                        <span>{p.flag}</span><span className="truncate">{p.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </SheetContent>
       </Sheet>
+
 
     </div>
   );
