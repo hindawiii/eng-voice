@@ -233,6 +233,7 @@ const Room = () => {
   }, []);
 
   const handleLeaveRoom = async () => {
+    setMinimizedRoom(null);
     if (isTutorRoom && isAdmin && recorder.recording) {
       await recorder.stop();
       setTutorDownloadOpen(true);
