@@ -485,7 +485,11 @@ const Room = () => {
       <header className={cn("bg-gradient-to-br px-5 pb-8 pt-12 text-primary-foreground", room.accent)}>
         <div className="flex items-center justify-between gap-2">
           <button
-            onClick={() => setMinimized(true)}
+            onClick={() => {
+              setMinimizedRoom({ key: room.key, name: roomName, flag: room.flag });
+              toast.success(lang === "ar" ? "تم تصغير الغرفة" : "Room minimized");
+              navigate("/");
+            }}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
             aria-label="Minimize"
             title={lang === "ar" ? "تصغير" : "Minimize"}
