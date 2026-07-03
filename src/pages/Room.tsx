@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nProvider";
 import { toast } from "sonner";
 import { playCasinoSpin } from "@/lib/casinoSpin";
+import { setMinimizedRoom } from "@/components/MinimizedRoomBar";
 
 const REACTION_EMOJIS = ["👏", "❤️", "🔥", "😂", "👍"] as const;
 const SESSION_TOTAL = 90 * 60; // 90 minutes (extended ceiling)
@@ -165,7 +166,7 @@ const Room = () => {
   const [topicIdx, setTopicIdx] = useState(0);
   const [topicTime, setTopicTime] = useState(TOPIC_INTERVAL);
   const [generatedTopic, setGeneratedTopic] = useState<string | null>(null);
-  const [minimized, setMinimized] = useState(false);
+  
 
   const [requests, setRequests] = useState<SpeakRequest[]>(isAdmin ? INITIAL_REQUESTS : []);
   const [listeners, setListeners] = useState(INITIAL_LISTENERS);
@@ -232,6 +233,7 @@ const Room = () => {
   }, []);
 
   const handleLeaveRoom = async () => {
+    setMinimizedRoom(null);
     if (isTutorRoom && isAdmin && recorder.recording) {
       await recorder.stop();
       setTutorDownloadOpen(true);
@@ -484,7 +486,11 @@ const Room = () => {
       <header className={cn("bg-gradient-to-br px-5 pb-8 pt-12 text-primary-foreground", room.accent)}>
         <div className="flex items-center justify-between gap-2">
           <button
-            onClick={() => setMinimized(true)}
+            onClick={() => {
+              setMinimizedRoom({ key: room.key, name: roomName, flag: room.flag });
+              toast.success(lang === "ar" ? "تم تصغير الغرفة" : "Room minimized");
+              navigate("/");
+            }}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
             aria-label="Minimize"
             title={lang === "ar" ? "تصغير" : "Minimize"}
@@ -626,15 +632,6 @@ const Room = () => {
                 (seats[activeSpeakerIdx]?.id?.startsWith("me-") || isAdmin) && (
                   <SpeakerCountdown seconds={timeLeft} />
                 )}
-              {isAdmin && (
-                <button
-                  onClick={() => setTimerDialogOpen(true)}
-                  className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
-                  aria-label="Timer engine"
-                >
-                  <Timer className="h-3 w-3" />
-                </button>
-              )}
             </div>
           </div>
 
@@ -839,6 +836,22 @@ const Room = () => {
             <div className="mt-3">
               <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
             </div>
+            {isAdmin && (
+              <button
+                onClick={() => setTimerDialogOpen(true)}
+                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-[#FBBF24]/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-[#FBBF24]"
+              >
+                <span className="flex items-center gap-2">
+                  <Timer className="h-4 w-4 text-[#FBBF24]" />
+                  <span className="text-sm font-extrabold">
+                    {lang === "ar" ? "محرك المؤقت" : "Timer Engine"}
+                  </span>
+                </span>
+                <span className="rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-bold uppercase text-[#FBBF24]">
+                  {timerCfg.mode === "off" ? (lang === "ar" ? "مفتوح" : "Open") : timerCfg.mode}
+                </span>
+              </button>
+            )}
           </TabsContent>
         </Tabs>
       </main>
@@ -1098,36 +1111,6 @@ const Room = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Floating minimized audio dock — stays connected while browsing */}
-      {minimized && (
-        <div className="fixed bottom-20 inset-x-3 z-[60] mx-auto max-w-md rounded-2xl border border-[#FBBF24]/40 bg-[#111827]/95 px-3 py-2.5 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
-              <span className="relative h-2.5 w-2.5 rounded-full bg-emerald-400" />
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-xs font-extrabold text-white">{room.flag} {roomName}</p>
-              <p className="truncate text-[10px] text-slate-400 tabular-nums">
-                {Math.floor(sessionRemaining / 60)}:{(sessionRemaining % 60).toString().padStart(2, "0")} {lang === "ar" ? "متبقٍ" : "left"}
-              </p>
-            </div>
-            <button
-              onClick={() => setMinimized(false)}
-              className="rounded-full bg-[#FBBF24] px-3 py-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.5)]"
-            >
-              {lang === "ar" ? "افتح" : "Open"}
-            </button>
-            <button
-              onClick={handleLeaveRoom}
-              className="rounded-full bg-destructive/20 p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-              aria-label={lang === "ar" ? "خروج" : "Leave"}
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

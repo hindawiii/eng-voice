@@ -12,6 +12,7 @@ import Settings from "./pages/Settings.tsx";
 import Messages from "./pages/Messages.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { I18nProvider } from "./i18n/I18nProvider";
+import { MinimizedRoomBar } from "./components/MinimizedRoomBar";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <MinimizedRoomBar />
       </BrowserRouter>
     </TooltipProvider>
     </I18nProvider>
