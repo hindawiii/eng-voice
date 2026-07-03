@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/I18nProvider";
 import { toast } from "sonner";
 import { playCasinoSpin } from "@/lib/casinoSpin";
+import { setMinimizedRoom } from "@/components/MinimizedRoomBar";
 
 const REACTION_EMOJIS = ["👏", "❤️", "🔥", "😂", "👍"] as const;
 const SESSION_TOTAL = 90 * 60; // 90 minutes (extended ceiling)
