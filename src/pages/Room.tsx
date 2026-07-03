@@ -632,15 +632,6 @@ const Room = () => {
                 (seats[activeSpeakerIdx]?.id?.startsWith("me-") || isAdmin) && (
                   <SpeakerCountdown seconds={timeLeft} />
                 )}
-              {isAdmin && (
-                <button
-                  onClick={() => setTimerDialogOpen(true)}
-                  className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground transition-smooth hover:bg-primary-soft hover:text-primary"
-                  aria-label="Timer engine"
-                >
-                  <Timer className="h-3 w-3" />
-                </button>
-              )}
             </div>
           </div>
 
