@@ -836,6 +836,22 @@ const Room = () => {
             <div className="mt-3">
               <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
             </div>
+            {isAdmin && (
+              <button
+                onClick={() => setTimerDialogOpen(true)}
+                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-[#FBBF24]/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-[#FBBF24]"
+              >
+                <span className="flex items-center gap-2">
+                  <Timer className="h-4 w-4 text-[#FBBF24]" />
+                  <span className="text-sm font-extrabold">
+                    {lang === "ar" ? "محرك المؤقت" : "Timer Engine"}
+                  </span>
+                </span>
+                <span className="rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-bold uppercase text-[#FBBF24]">
+                  {timerCfg.mode === "off" ? (lang === "ar" ? "مفتوح" : "Open") : timerCfg.mode}
+                </span>
+              </button>
+            )}
           </TabsContent>
         </Tabs>
       </main>
