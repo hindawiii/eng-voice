@@ -1111,36 +1111,6 @@ const Room = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Floating minimized audio dock — stays connected while browsing */}
-      {minimized && (
-        <div className="fixed bottom-20 inset-x-3 z-[60] mx-auto max-w-md rounded-2xl border border-[#FBBF24]/40 bg-[#111827]/95 px-3 py-2.5 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
-              <span className="relative h-2.5 w-2.5 rounded-full bg-emerald-400" />
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-xs font-extrabold text-white">{room.flag} {roomName}</p>
-              <p className="truncate text-[10px] text-slate-400 tabular-nums">
-                {Math.floor(sessionRemaining / 60)}:{(sessionRemaining % 60).toString().padStart(2, "0")} {lang === "ar" ? "متبقٍ" : "left"}
-              </p>
-            </div>
-            <button
-              onClick={() => setMinimized(false)}
-              className="rounded-full bg-[#FBBF24] px-3 py-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.5)]"
-            >
-              {lang === "ar" ? "افتح" : "Open"}
-            </button>
-            <button
-              onClick={handleLeaveRoom}
-              className="rounded-full bg-destructive/20 p-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-              aria-label={lang === "ar" ? "خروج" : "Leave"}
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
