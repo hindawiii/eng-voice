@@ -524,16 +524,15 @@ const Room = () => {
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            {isAdmin && (
-              <button
-                onClick={() => setAdminOpen(true)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
-                aria-label={lang === "ar" ? "تحكم" : "Controls"}
-                title={lang === "ar" ? "تحكم" : "Controls"}
-              >
-                <Cog className="h-4 w-4" />
-              </button>
-            )}
+            <button
+              onClick={() => setAdminOpen(true)}
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
+              aria-label={lang === "ar" ? "أدوات" : "Tools"}
+              title={lang === "ar" ? "أدوات وتحكم" : "Tools & Controls"}
+            >
+              <Wand2 className="h-4 w-4" />
+              <span className="absolute -top-0.5 -end-0.5 h-2 w-2 rounded-full bg-[#FBBF24] shadow-[0_0_6px_rgba(251,191,36,0.8)]" />
+            </button>
             <button
               onClick={handleLeaveRoom}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive"
