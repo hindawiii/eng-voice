@@ -524,15 +524,16 @@ const Room = () => {
             )}
           </div>
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setAdminOpen(true)}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
-              aria-label={lang === "ar" ? "أدوات" : "Tools"}
-              title={lang === "ar" ? "أدوات وتحكم" : "Tools & Controls"}
-            >
-              <Wand2 className="h-4 w-4" />
-              <span className="absolute -top-0.5 -end-0.5 h-2 w-2 rounded-full bg-[#FBBF24] shadow-[0_0_6px_rgba(251,191,36,0.8)]" />
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setAdminOpen(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-white/25"
+                aria-label={lang === "ar" ? "تحكم" : "Controls"}
+                title={lang === "ar" ? "تحكم" : "Controls"}
+              >
+                <Cog className="h-4 w-4" />
+              </button>
+            )}
             <button
               onClick={handleLeaveRoom}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 backdrop-blur transition-smooth hover:bg-destructive"
@@ -740,7 +741,7 @@ const Room = () => {
 
         {/* Compact tabbed interaction panel directly under seats */}
         <Tabs defaultValue="chat" className="mt-4">
-          <TabsList className="grid w-full grid-cols-3 rounded-full bg-card shadow-soft p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-4 rounded-full bg-card shadow-soft p-1 h-auto">
             <TabsTrigger value="chat" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
               <MessageSquare className="h-3.5 w-3.5" /> {lang === "ar" ? "دردشة" : "Chat"}
             </TabsTrigger>
@@ -749,6 +750,9 @@ const Room = () => {
             </TabsTrigger>
             <TabsTrigger value="translate" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
               <Languages className="h-3.5 w-3.5" /> {lang === "ar" ? "ترجمة" : "Translate"}
+            </TabsTrigger>
+            <TabsTrigger value="tools" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
+              <Wand2 className="h-3.5 w-3.5" /> {lang === "ar" ? "أدوات" : "Tools"}
             </TabsTrigger>
           </TabsList>
 
@@ -808,6 +812,46 @@ const Room = () => {
                 </div>
               )}
             </section>
+          </TabsContent>
+
+          <TabsContent value="tools" className="mt-3">
+            <section className="overflow-hidden rounded-3xl bg-gradient-hero p-4 text-primary-foreground shadow-elegant">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-gold" />
+                    <h2 className="text-sm font-bold">{t("room.challenge")}</h2>
+                  </div>
+                  <p className="mt-1 text-xs text-primary-foreground/80">{t("room.challengeHint")}</p>
+                </div>
+                <button className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
+                  {t("room.send")}
+                </button>
+              </div>
+            </section>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <ShareButton roomKey={room.key} password={customRoom?.password} />
+              <GiftButton />
+            </div>
+            <div className="mt-3">
+              <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
+            </div>
+            {isAdmin && (
+              <button
+                onClick={() => setTimerDialogOpen(true)}
+                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-[#FBBF24]/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-[#FBBF24]"
+              >
+                <span className="flex items-center gap-2">
+                  <Timer className="h-4 w-4 text-[#FBBF24]" />
+                  <span className="text-sm font-extrabold">
+                    {lang === "ar" ? "محرك المؤقت" : "Timer Engine"}
+                  </span>
+                </span>
+                <span className="rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-bold uppercase text-[#FBBF24]">
+                  {timerCfg.mode === "off" ? (lang === "ar" ? "مفتوح" : "Open") : timerCfg.mode}
+                </span>
+              </button>
+            )}
           </TabsContent>
         </Tabs>
       </main>
@@ -1012,113 +1056,60 @@ const Room = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Tools & Controls Sheet (slide-out drawer) */}
-      <Sheet open={adminOpen} onOpenChange={setAdminOpen}>
+      {/* Admin Controls Sheet (slide-out drawer) */}
+      <Sheet open={adminOpen && isAdmin} onOpenChange={setAdminOpen}>
         <SheetContent side={lang === "ar" ? "right" : "left"} className="w-[88vw] sm:w-[420px] overflow-y-auto bg-[#111827] text-white border-l border-slate-800">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-[#FBBF24]">
-              <Wand2 className="h-4 w-4" /> {lang === "ar" ? "الأدوات والتحكم" : "Tools & Controls"}
+              <Crown className="h-4 w-4" /> {lang === "ar" ? "تحكم الغرفة" : "Room Controls"}
             </SheetTitle>
             <SheetDescription className="text-slate-400">
-              {lang === "ar" ? "التحدي، المشاركة، الهدايا، الصوت، والمؤقت." : "Challenge, share, gifts, audio, and timer."}
+              {lang === "ar" ? "إدارة المتحدثين، المؤقت، والمشرفين." : "Manage speakers, timer, and moderators."}
             </SheetDescription>
           </SheetHeader>
           <div className="mt-4 space-y-4">
-            {/* Word challenge */}
-            <section className="overflow-hidden rounded-3xl bg-gradient-hero p-4 text-primary-foreground shadow-elegant">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-gold" />
-                    <h2 className="text-sm font-bold">{t("room.challenge")}</h2>
-                  </div>
-                  <p className="mt-1 text-xs text-primary-foreground/80">{t("room.challengeHint")}</p>
-                </div>
-                <button className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-bold text-gold-foreground shadow-gold transition-spring hover:scale-105">
-                  {t("room.send")}
-                </button>
+            <AdminPanel
+              turnLength={turnLength}
+              onTurnLengthChange={(s) => { setTurnLength(s); setTimeLeft(s); toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`); }}
+              onResetTimer={() => setTimeLeft(turnLength)}
+              onExtendTimer={() => setTimeLeft((s) => s + 30)}
+              onMuteAll={() => { setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u))); toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted"); }}
+              onWatchAd={() => {
+                toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
+                setTimeout(() => {
+                  setSessionExtraMin((m) => Math.min(MAX_SESSION_MIN, m + 15));
+                  toast.success(lang === "ar" ? "+15 دقيقة!" : "+15 min!", { id: "ad" });
+                }, 1500);
+              }}
+              onOpenSettings={() => setSettingsOpen(true)}
+            />
+            {requests.length > 0 && (
+              <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
+            )}
+
+            {/* Host migration */}
+            <div className="rounded-2xl border border-[#FBBF24]/30 bg-[#0B101D] p-3">
+              <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#FBBF24]">
+                <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "تفويض الإدارة" : "Transfer host"}
+              </p>
+              <p className="mt-1 text-[11px] text-slate-400">
+                {lang === "ar" ? "اختر مشاركاً لتسليمه حقوق المشرف قبل المغادرة." : "Pick a participant to receive admin rights before you leave."}
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-1.5">
+                {[...seats.filter(Boolean).map((u) => ({ id: u!.id, name: u!.name, flag: u!.flag })), ...listeners].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => { toast.success(lang === "ar" ? `تم تفويض ${p.name} كمشرف` : `${p.name} is now host`); setAdminOpen(false); }}
+                    className="flex items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-slate-700"
+                  >
+                    <span>{p.flag}</span><span className="truncate">{p.name}</span>
+                  </button>
+                ))}
               </div>
-            </section>
-
-            {/* Share & Gift */}
-            <div className="grid grid-cols-2 gap-2">
-              <ShareButton roomKey={room.key} password={customRoom?.password} />
-              <GiftButton />
             </div>
-
-            {/* AI Noise Suppression */}
-            <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
-
-            {/* Timer Engine (admin) */}
-            {isAdmin && (
-              <button
-                onClick={() => setTimerDialogOpen(true)}
-                className="flex w-full items-center justify-between rounded-2xl border border-[#FBBF24]/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-[#FBBF24]"
-              >
-                <span className="flex items-center gap-2">
-                  <Timer className="h-4 w-4 text-[#FBBF24]" />
-                  <span className="text-sm font-extrabold">
-                    {lang === "ar" ? "محرك المؤقت" : "Timer Engine"}
-                  </span>
-                </span>
-                <span className="rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-bold uppercase text-[#FBBF24]">
-                  {timerCfg.mode === "off" ? (lang === "ar" ? "مفتوح" : "Open") : timerCfg.mode}
-                </span>
-              </button>
-            )}
-
-            {/* Admin controls */}
-            {isAdmin && (
-              <>
-                <div className="h-px bg-slate-800" />
-                <p className="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-wider text-[#FBBF24]">
-                  <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "لوحة المشرف" : "Admin panel"}
-                </p>
-                <AdminPanel
-                  turnLength={turnLength}
-                  onTurnLengthChange={(s) => { setTurnLength(s); setTimeLeft(s); toast.success(lang === "ar" ? `مدة التحدث: ${s / 60} د` : `Turn: ${s / 60} min`); }}
-                  onResetTimer={() => setTimeLeft(turnLength)}
-                  onExtendTimer={() => setTimeLeft((s) => s + 30)}
-                  onMuteAll={() => { setSeats((prev) => prev.map((u) => (u ? { ...u, speaking: false } : u))); toast.success(lang === "ar" ? "تم كتم الجميع" : "All muted"); }}
-                  onWatchAd={() => {
-                    toast.loading(lang === "ar" ? "جارٍ تشغيل الإعلان…" : "Playing ad…", { id: "ad" });
-                    setTimeout(() => {
-                      setSessionExtraMin((m) => Math.min(MAX_SESSION_MIN, m + 15));
-                      toast.success(lang === "ar" ? "+15 دقيقة!" : "+15 min!", { id: "ad" });
-                    }, 1500);
-                  }}
-                  onOpenSettings={() => setSettingsOpen(true)}
-                />
-                {requests.length > 0 && (
-                  <RequestQueue requests={requests} onApprove={approveRequest} onReject={rejectRequest} />
-                )}
-
-                {/* Host migration */}
-                <div className="rounded-2xl border border-[#FBBF24]/30 bg-[#0B101D] p-3">
-                  <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#FBBF24]">
-                    <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "تفويض الإدارة" : "Transfer host"}
-                  </p>
-                  <p className="mt-1 text-[11px] text-slate-400">
-                    {lang === "ar" ? "اختر مشاركاً لتسليمه حقوق المشرف قبل المغادرة." : "Pick a participant to receive admin rights before you leave."}
-                  </p>
-                  <div className="mt-2 grid grid-cols-2 gap-1.5">
-                    {[...seats.filter(Boolean).map((u) => ({ id: u!.id, name: u!.name, flag: u!.flag })), ...listeners].map((p) => (
-                      <button
-                        key={p.id}
-                        onClick={() => { toast.success(lang === "ar" ? `تم تفويض ${p.name} كمشرف` : `${p.name} is now host`); setAdminOpen(false); }}
-                        className="flex items-center gap-1.5 rounded-full bg-slate-800 px-2.5 py-1.5 text-[11px] font-semibold text-white hover:bg-slate-700"
-                      >
-                        <span>{p.flag}</span><span className="truncate">{p.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
           </div>
         </SheetContent>
       </Sheet>
-
 
     </div>
   );
