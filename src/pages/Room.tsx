@@ -237,6 +237,18 @@ const Room = () => {
 
   const handleLeaveRoom = async () => {
     setMinimizedRoom(null);
+    const reactions = Object.values(seatReactionCounts).reduce((a, b) => a + b, 0);
+    const xpGain = Math.round(sessionElapsed / 6);
+    const lpGain = Math.round(sessionElapsed / 12);
+    setSummary({
+      roomName,
+      flag: room.flag,
+      elapsedSec: sessionElapsed,
+      reactions,
+      gifts: giftCount,
+      xpGain,
+      lpGain,
+    });
     if (isTutorRoom && isAdmin && recorder.recording) {
       await recorder.stop();
       setTutorDownloadOpen(true);
