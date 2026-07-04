@@ -19,7 +19,8 @@ import { MiniProfileSheet, MiniProfileUser } from "@/components/MiniProfileSheet
 import { TimerEngineDialog, TimerConfig } from "@/components/TimerEngineDialog";
 import { SpeakerCountdown } from "@/components/SpeakerCountdown";
 import { LiveTranscriptionDrawer } from "@/components/LiveTranscriptionDrawer";
-import { SessionRatingModal } from "@/components/SessionRatingModal";
+import { SessionSummaryModal, SessionSummary } from "@/components/SessionSummaryModal";
+import { SmartMirrorCard } from "@/components/SmartMirrorCard";
 import { AINoiseToggle } from "@/components/AINoiseToggle";
 import { CertifiedTutorBadge } from "@/components/CertifiedTutorBadge";
 import { useTutorRecorder } from "@/hooks/useTutorRecorder";
@@ -192,6 +193,8 @@ const Room = () => {
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
   const [aiNoise, setAiNoise] = useState(true);
   const [ratingOpen, setRatingOpen] = useState(false);
+  const [summary, setSummary] = useState<SessionSummary | null>(null);
+  const [giftCount, setGiftCount] = useState(0);
   const [tutorDownloadOpen, setTutorDownloadOpen] = useState(false);
 
   const recorder = useTutorRecorder();
@@ -234,6 +237,18 @@ const Room = () => {
 
   const handleLeaveRoom = async () => {
     setMinimizedRoom(null);
+    const reactions = Object.values(seatReactionCounts).reduce((a, b) => a + b, 0);
+    const xpGain = Math.round(sessionElapsed / 6);
+    const lpGain = Math.round(sessionElapsed / 12);
+    setSummary({
+      roomName,
+      flag: room.flag,
+      elapsedSec: sessionElapsed,
+      reactions,
+      gifts: giftCount,
+      xpGain,
+      lpGain,
+    });
     if (isTutorRoom && isAdmin && recorder.recording) {
       await recorder.stop();
       setTutorDownloadOpen(true);
@@ -831,7 +846,12 @@ const Room = () => {
             </section>
             <div className="mt-3 grid grid-cols-2 gap-2">
               <ShareButton roomKey={room.key} password={customRoom?.password} />
-              <GiftButton />
+              <div onClickCapture={() => setGiftCount((c) => c + 1)}>
+                <GiftButton />
+              </div>
+            </div>
+            <div className="mt-3">
+              <SmartMirrorCard />
             </div>
             <div className="mt-3">
               <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
@@ -1008,9 +1028,10 @@ const Room = () => {
         }}
       />
 
-      {/* Session rating modal — on leave */}
-      <SessionRatingModal
+      {/* Session summary + rating modal — on leave */}
+      <SessionSummaryModal
         open={ratingOpen}
+        summary={summary}
         onOpenChange={(o) => {
           setRatingOpen(o);
           if (!o) navigate("/");
