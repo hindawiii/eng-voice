@@ -193,6 +193,8 @@ const Room = () => {
   const [timerDialogOpen, setTimerDialogOpen] = useState(false);
   const [aiNoise, setAiNoise] = useState(true);
   const [ratingOpen, setRatingOpen] = useState(false);
+  const [summary, setSummary] = useState<SessionSummary | null>(null);
+  const [giftCount, setGiftCount] = useState(0);
   const [tutorDownloadOpen, setTutorDownloadOpen] = useState(false);
 
   const recorder = useTutorRecorder();
