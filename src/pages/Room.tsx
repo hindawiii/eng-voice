@@ -1023,9 +1023,10 @@ const Room = () => {
         }}
       />
 
-      {/* Session rating modal — on leave */}
-      <SessionRatingModal
+      {/* Session summary + rating modal — on leave */}
+      <SessionSummaryModal
         open={ratingOpen}
+        summary={summary}
         onOpenChange={(o) => {
           setRatingOpen(o);
           if (!o) navigate("/");
