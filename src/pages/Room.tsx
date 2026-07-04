@@ -19,7 +19,8 @@ import { MiniProfileSheet, MiniProfileUser } from "@/components/MiniProfileSheet
 import { TimerEngineDialog, TimerConfig } from "@/components/TimerEngineDialog";
 import { SpeakerCountdown } from "@/components/SpeakerCountdown";
 import { LiveTranscriptionDrawer } from "@/components/LiveTranscriptionDrawer";
-import { SessionRatingModal } from "@/components/SessionRatingModal";
+import { SessionSummaryModal, SessionSummary } from "@/components/SessionSummaryModal";
+import { SmartMirrorCard } from "@/components/SmartMirrorCard";
 import { AINoiseToggle } from "@/components/AINoiseToggle";
 import { CertifiedTutorBadge } from "@/components/CertifiedTutorBadge";
 import { useTutorRecorder } from "@/hooks/useTutorRecorder";
