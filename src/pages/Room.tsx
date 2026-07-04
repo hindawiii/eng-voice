@@ -846,7 +846,12 @@ const Room = () => {
             </section>
             <div className="mt-3 grid grid-cols-2 gap-2">
               <ShareButton roomKey={room.key} password={customRoom?.password} />
-              <GiftButton />
+              <div onClickCapture={() => setGiftCount((c) => c + 1)}>
+                <GiftButton />
+              </div>
+            </div>
+            <div className="mt-3">
+              <SmartMirrorCard />
             </div>
             <div className="mt-3">
               <AINoiseToggle enabled={aiNoise} onChange={setAiNoise} />
