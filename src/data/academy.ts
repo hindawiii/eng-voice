@@ -8,23 +8,22 @@ export interface AcademyLang {
 }
 
 export const ACADEMY_LANGS: AcademyLang[] = [
-  { key: "en", labelAr: "الإنجليزية", flag: "🇬🇧", bcp47: "en-US", code: "en", name: "English" },
-  { key: "fr", labelAr: "الفرنسية", flag: "🇫🇷", bcp47: "fr-FR", code: "fr", name: "Français" },
-  { key: "es", labelAr: "الإسبانية", flag: "🇪🇸", bcp47: "es-ES", code: "es", name: "Español" },
-  { key: "ar", labelAr: "العربية", flag: "🇸🇦", bcp47: "ar-SA", code: "ar", name: "العربية" },
-  { key: "de", labelAr: "الألمانية", flag: "🇩🇪", bcp47: "de-DE", code: "de", name: "Deutsch" },
-  { key: "it", labelAr: "الإيطالية", flag: "🇮🇹", bcp47: "it-IT", code: "it", name: "Italiano" },
-  { key: "pt", labelAr: "البرتغالية", flag: "🇧🇷", bcp47: "pt-BR", code: "pt", name: "Português" },
   { key: "tr", labelAr: "التركية", flag: "🇹🇷", bcp47: "tr-TR", code: "tr", name: "Türkçe" },
+  { key: "ar", labelAr: "العربية", flag: "🇸🇦", bcp47: "ar-SA", code: "ar", name: "العربية" },
+  { key: "es", labelAr: "الإسبانية", flag: "🇪🇸", bcp47: "es-ES", code: "es", name: "Español" },
+  { key: "fr", labelAr: "الفرنسية", flag: "🇫🇷", bcp47: "fr-FR", code: "fr", name: "Français" },
+  { key: "en", labelAr: "الإنجليزية (بريطانيا)", flag: "🇬🇧", bcp47: "en-GB", code: "en", name: "English (UK)" },
+  { key: "de", labelAr: "الألمانية", flag: "🇩🇪", bcp47: "de-DE", code: "de", name: "Deutsch" },
+  { key: "ja", labelAr: "اليابانية", flag: "🇯🇵", bcp47: "ja-JP", code: "ja", name: "日本語" },
   { key: "ko", labelAr: "الكورية", flag: "🇰🇷", bcp47: "ko-KR", code: "ko", name: "한국어" },
   { key: "zh", labelAr: "الصينية", flag: "🇨🇳", bcp47: "zh-CN", code: "zh", name: "中文" },
-  { key: "ja", labelAr: "اليابانية", flag: "🇯🇵", bcp47: "ja-JP", code: "ja", name: "日本語" },
+  { key: "us", labelAr: "الإنجليزية (أمريكا)", flag: "🇺🇸", bcp47: "en-US", code: "en", name: "English (US)" },
 ];
 
 // Live online counts per corner (deterministic mock — replace with realtime later)
 export const LANG_ONLINE: Record<string, number> = {
-  all: 680, en: 142, fr: 88, es: 64, de: 45, ja: 32,
-  ar: 120, ko: 28, it: 35, zh: 56, pt: 41, tr: 38,
+  all: 680, en: 142, us: 118, fr: 88, es: 64, de: 45, ja: 32,
+  ar: 120, ko: 28, zh: 56, tr: 38,
 };
 
 export interface VocabItem { text: string; ar: string }
@@ -281,8 +280,8 @@ export const generateRandomPhrase = (langKey: string): VocabItem => {
   return { text: pick.en, ar: pick.ar };
 };
 
-// Fallback data for newly added corners (it/pt/tr/ko) — mirror English until localized content lands
-["it", "pt", "tr", "ko"].forEach((k) => {
+// Fallback data for corners without dedicated content — mirror English until localized content lands
+["tr", "ko", "us"].forEach((k) => {
   if (!LETTERS[k]) LETTERS[k] = LETTERS.en;
   if (!VOCAB[k]) VOCAB[k] = VOCAB.en;
   if (!GRAMMAR[k]) GRAMMAR[k] = GRAMMAR.en;

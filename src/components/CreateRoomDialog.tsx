@@ -148,15 +148,15 @@ export const CreateRoomDialog = () => {
       </button>
 
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset(); }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-md max-h-[85vh] p-0 gap-0 flex flex-col">
+          <DialogHeader className="px-6 pt-6 pb-2 shrink-0">
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-gold" />
               {lang === "ar" ? "غرفة جديدة" : "New Room"}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4 py-2">
+          <div className="flex-1 overflow-y-auto overscroll-contain px-6 pt-2 pb-32 space-y-4" style={{ WebkitOverflowScrolling: "touch" }}>
             <div className="space-y-2">
               <Label>{lang === "ar" ? "اللغة" : "Language"}</Label>
               <div className="flex flex-wrap gap-2">
@@ -266,11 +266,11 @@ export const CreateRoomDialog = () => {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="shrink-0 border-t border-border/60 bg-card/95 backdrop-blur px-6 py-3 gap-2 sm:justify-end">
             <Button variant="outline" onClick={() => setOpen(false)}>
               {lang === "ar" ? "إلغاء" : "Cancel"}
             </Button>
-            <Button onClick={handleCreate} className="bg-gradient-primary">
+            <Button onClick={handleCreate} className="bg-gradient-gold text-gold-foreground font-bold">
               {lang === "ar" ? "إنشاء" : "Create"}
             </Button>
           </DialogFooter>

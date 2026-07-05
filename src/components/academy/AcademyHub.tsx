@@ -2,8 +2,6 @@ import { useState } from "react";
 import { ACADEMY_LANGS, LANG_ONLINE } from "@/data/academy";
 import { cn } from "@/lib/utils";
 import { LanguageCorner } from "./LanguageCorner";
-import { RoomCard } from "@/components/RoomCard";
-import { ROOMS } from "@/data/rooms";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ALL = { key: "all", labelAr: "الكل", flag: "🌍" } as const;
@@ -66,8 +64,10 @@ export const AcademyHub = () => {
         {lang ? (
           <LanguageCorner lang={lang} />
         ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {ROOMS.map((r) => (<RoomCard key={r.key} room={r} />))}
+          <div className="rounded-2xl border border-dashed border-border/60 bg-card/40 p-8 text-center">
+            <p className="font-arabic text-sm text-muted-foreground">
+              اختر لغة من الأعلى لعرض غرف التحدث الخاصة بها
+            </p>
           </div>
         )}
       </div>
