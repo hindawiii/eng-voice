@@ -125,6 +125,30 @@
   .font-arabic {
     font-family: 'Tajawal', system-ui, sans-serif;
   }
+
+  /* Global input contrast (dark theme) — high-luminance text on deep surface */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  textarea,
+  select {
+    background-color: #1C2333 !important;
+    color: #F0F4F8 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #5E6D80 !important;
+    opacity: 1;
+  }
+  input:focus,
+  input:focus-visible,
+  textarea:focus,
+  textarea:focus-visible,
+  select:focus,
+  select:focus-visible {
+    border-color: #F5A623 !important;
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15) !important;
+    outline: none !important;
+  }
 }
 
 @layer utilities {
