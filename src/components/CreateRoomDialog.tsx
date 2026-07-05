@@ -266,11 +266,11 @@ export const CreateRoomDialog = () => {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="shrink-0 border-t border-border/60 bg-card/95 backdrop-blur px-6 py-3 gap-2 sm:justify-end">
             <Button variant="outline" onClick={() => setOpen(false)}>
               {lang === "ar" ? "إلغاء" : "Cancel"}
             </Button>
-            <Button onClick={handleCreate} className="bg-gradient-primary">
+            <Button onClick={handleCreate} className="bg-gradient-gold text-gold-foreground font-bold">
               {lang === "ar" ? "إنشاء" : "Create"}
             </Button>
           </DialogFooter>
