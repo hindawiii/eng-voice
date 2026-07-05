@@ -3,7 +3,6 @@ import { ACADEMY_LANGS, LANG_ONLINE } from "@/data/academy";
 import { cn } from "@/lib/utils";
 import { LanguageCorner } from "./LanguageCorner";
 import { RoomCard } from "@/components/RoomCard";
-import { ROOMS } from "@/data/rooms";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ALL = { key: "all", labelAr: "الكل", flag: "🌍" } as const;
