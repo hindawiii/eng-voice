@@ -156,7 +156,7 @@ export const CreateRoomDialog = () => {
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto overscroll-contain px-6 pb-32" style={{ WebkitOverflowScrolling: "touch" }}>
+          <div className="flex-1 overflow-y-auto overscroll-contain px-6 pt-2 pb-32 space-y-4" style={{ WebkitOverflowScrolling: "touch" }}>
             <div className="space-y-2">
               <Label>{lang === "ar" ? "اللغة" : "Language"}</Label>
               <div className="flex flex-wrap gap-2">
