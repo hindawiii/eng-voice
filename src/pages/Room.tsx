@@ -692,18 +692,6 @@ const Room = () => {
                   </div>
                 ))}
               </div>
-              <div className="flex flex-wrap justify-center gap-1.5 pt-1">
-                {listeners.map((l) => (
-                  <button
-                    key={l.id}
-                    onClick={() => setMiniUser({ id: l.id, name: l.name, flag: l.flag })}
-                    className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-xs"
-                    title={l.name}
-                  >
-                    {l.flag}
-                  </button>
-                ))}
-              </div>
             </div>
           ) : (
             <div className="grid grid-cols-4 gap-y-3 gap-x-1">
