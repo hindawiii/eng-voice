@@ -127,6 +127,21 @@ const Room = () => {
     !requiresPassword || urlPassword === customRoom?.password
   );
   const [pwInput, setPwInput] = useState("");
+  const LOCK_KEY = `lingvoice.roomLock.${room.key}`;
+  const readLock = () => {
+    try { return JSON.parse(localStorage.getItem(LOCK_KEY) || "null") as { attempts: number; lockUntil: number } | null; }
+    catch { return null; }
+  };
+  const [pwAttempts, setPwAttempts] = useState<number>(() => readLock()?.attempts ?? 0);
+  const [lockUntil, setLockUntil] = useState<number>(() => readLock()?.lockUntil ?? 0);
+  const [nowTs, setNowTs] = useState(Date.now());
+  useEffect(() => {
+    if (!requiresPassword || unlocked) return;
+    const t = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [requiresPassword, unlocked]);
+  const isLocked = lockUntil > nowTs;
+  const lockSecondsLeft = Math.max(0, Math.ceil((lockUntil - nowTs) / 1000));
 
   const TOPICS = lang === "ar" ? TOPICS_AR : TOPICS_EN;
   const [customTopic, setCustomTopic] = useState(
