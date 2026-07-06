@@ -467,6 +467,33 @@ const Room = () => {
 
   // password gate
   if (requiresPassword && !unlocked) {
+    const pwLen = Math.min(Math.max(customRoom?.password?.length ?? 6, 4), 6);
+    const attempt = (val: string) => {
+      if (val === customRoom?.password) {
+        setUnlocked(true);
+        localStorage.removeItem(LOCK_KEY);
+        toast.success(lang === "ar" ? "أهلاً بك" : "Welcome!");
+      } else {
+        const next = pwAttempts + 1;
+        setPwAttempts(next);
+        setPwInput("");
+        if (next >= 3) {
+          const until = Date.now() + 5 * 60 * 1000;
+          setLockUntil(until);
+          localStorage.setItem(LOCK_KEY, JSON.stringify({ attempts: next, lockUntil: until }));
+          toast.error(lang === "ar" ? "تم قفل الدخول لمدة 5 دقائق" : "Locked for 5 minutes");
+        } else {
+          localStorage.setItem(LOCK_KEY, JSON.stringify({ attempts: next, lockUntil: 0 }));
+          toast.error(
+            lang === "ar"
+              ? `كلمة مرور خاطئة (${next}/3)`
+              : `Wrong password (${next}/3)`
+          );
+        }
+      }
+    };
+    const mm = String(Math.floor(lockSecondsLeft / 60)).padStart(2, "0");
+    const ss = String(lockSecondsLeft % 60).padStart(2, "0");
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-room p-6">
         <div className="w-full max-w-sm rounded-3xl bg-card p-6 shadow-elegant">
@@ -476,39 +503,60 @@ const Room = () => {
               {lang === "ar" ? "غرفة خاصة" : "Private room"}
             </h1>
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {lang === "ar" ? "أدخل كلمة المرور للانضمام" : "Enter the password to join"}
-          </p>
-          <Input
-            className="mt-4"
-            value={pwInput}
-            onChange={(e) => setPwInput(e.target.value)}
-            placeholder="••••"
-            onKeyDown={(e) => e.key === "Enter" && tryUnlock()}
-          />
-          <div className="mt-4 flex gap-2">
+          {isLocked ? (
+            <>
+              <p className="mt-3 text-sm text-destructive font-semibold">
+                {lang === "ar"
+                  ? "لن تستطيع الدخول إلا إذا تمت دعوتك مرة أخرى"
+                  : "You can only re-enter if invited again"}
+              </p>
+              <div className="mt-4 rounded-2xl bg-destructive/10 border border-destructive/30 px-4 py-6 text-center">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">
+                  {lang === "ar" ? "المتبقي" : "Unlocks in"}
+                </p>
+                <p className="text-3xl font-black tabular-nums text-destructive">{mm}:{ss}</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {lang === "ar" ? `أدخل ${pwLen} أرقام للدخول` : `Enter ${pwLen} digits to join`}
+              </p>
+              <div className="mt-4 flex justify-center" dir="ltr">
+                <InputOTP
+                  maxLength={pwLen}
+                  value={pwInput}
+                  onChange={(v) => {
+                    setPwInput(v);
+                    if (v.length === pwLen) attempt(v);
+                  }}
+                >
+                  <InputOTPGroup>
+                    {Array.from({ length: pwLen }).map((_, i) => (
+                      <InputOTPSlot key={i} index={i} className="h-12 w-12 text-lg font-bold" />
+                    ))}
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+              {pwAttempts > 0 && (
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  {lang === "ar" ? `محاولات: ${pwAttempts}/3` : `Attempts: ${pwAttempts}/3`}
+                </p>
+              )}
+            </>
+          )}
+          <div className="mt-5 flex gap-2">
             <Link to="/" className="flex-1">
               <Button variant="outline" className="w-full">
-                {lang === "ar" ? "إلغاء" : "Cancel"}
+                {lang === "ar" ? "رجوع" : "Back"}
               </Button>
             </Link>
-            <Button className="flex-1 bg-gradient-primary" onClick={tryUnlock}>
-              {lang === "ar" ? "دخول" : "Enter"}
-            </Button>
           </div>
         </div>
       </div>
     );
-
-    function tryUnlock() {
-      if (pwInput === customRoom?.password) {
-        setUnlocked(true);
-        toast.success(lang === "ar" ? "أهلاً بك" : "Welcome!");
-      } else {
-        toast.error(lang === "ar" ? "كلمة مرور خاطئة" : "Wrong password");
-      }
-    }
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-room pb-32">
