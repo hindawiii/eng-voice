@@ -142,7 +142,7 @@ const Index = () => {
 
 
       {/* Academy Hub */}
-      <section className={customRooms.length > 0 ? "mt-5" : "-mt-6"}>
+      <section className="mt-5">
         <div className="rounded-3xl bg-[#070A13] pb-2 shadow-elegant">
           <AcademyHub />
         </div>
