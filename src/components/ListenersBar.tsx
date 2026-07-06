@@ -57,12 +57,12 @@ export const ListenersBar = ({
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => onSelect?.(l)}
-                      className="group flex w-[64px] flex-col items-center gap-1 transition-transform hover:-translate-y-0.5"
+                      className="group flex w-[52px] flex-col items-center gap-1 transition-transform hover:-translate-y-0.5"
                     >
                       <div className="relative">
                         <div
                           className={cn(
-                            "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-secondary text-sm font-black text-foreground ring-2 transition-all",
+                            "flex h-[40px] w-[40px] items-center justify-center rounded-full bg-secondary text-[11px] font-black text-foreground ring-2 transition-all",
                             LEVEL_RING[level],
                             "group-hover:brightness-110"
                           )}
@@ -70,7 +70,7 @@ export const ListenersBar = ({
                           {l.name.slice(0, 2).toUpperCase()}
                         </div>
                         {/* Flag badge */}
-                        <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background text-[13px] leading-none shadow-soft border border-border">
+                        <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-background text-[10px] leading-none shadow-soft border border-border">
                           {l.flag}
                         </span>
                         {/* Premium crown */}
@@ -86,7 +86,7 @@ export const ListenersBar = ({
                           </span>
                         )}
                       </div>
-                      <span className="max-w-[60px] truncate text-[11px] font-medium text-foreground/80">
+                      <span className="max-w-[50px] truncate text-[10px] font-medium text-foreground/80">
                         {l.name}
                       </span>
                     </button>
@@ -101,12 +101,12 @@ export const ListenersBar = ({
             {onInvite && (
               <button
                 onClick={onInvite}
-                className="flex w-[64px] flex-col items-center gap-1"
+                className="flex w-[52px] flex-col items-center gap-1"
               >
-                <div className="flex h-[52px] w-[52px] items-center justify-center rounded-full border-2 border-dashed border-gold/50 text-gold transition-all hover:bg-gold/10 hover:border-gold">
-                  <UserPlus className="h-5 w-5" />
+                <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gold/50 text-gold transition-all hover:bg-gold/10 hover:border-gold">
+                  <UserPlus className="h-4 w-4" />
                 </div>
-                <span className="text-[11px] font-bold text-gold">دعوة</span>
+                <span className="text-[10px] font-bold text-gold">دعوة</span>
               </button>
             )}
           </div>
