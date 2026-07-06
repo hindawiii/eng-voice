@@ -1,10 +1,16 @@
-import { Search, Sparkles, Coins, Lock } from "lucide-react";
+import { Search, Sparkles, Coins, Lock, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { CreateRoomDialog } from "@/components/CreateRoomDialog";
 import { useCustomRooms } from "@/data/customRooms";
 import { useI18n } from "@/i18n/I18nProvider";
 import { AcademyHub } from "@/components/academy/AcademyHub";
+
+const FRIEND_ROOMS = [
+  { key: "friend-1", friend: "سارة", friendEn: "Sara", avatar: "🌸", room: "دردشة الجمعة", roomEn: "Friday Chat", flag: "🇸🇦", live: 12 },
+  { key: "friend-2", friend: "Ahmad", friendEn: "Ahmad", avatar: "⚡", room: "English Practice", roomEn: "English Practice", flag: "🇬🇧", live: 8 },
+  { key: "friend-3", friend: "Yuki", friendEn: "Yuki", avatar: "🌙", room: "日本語 Café", roomEn: "Japanese Café", flag: "🇯🇵", live: 5 },
+];
 
 const Index = () => {
   const { t, lang } = useI18n();
