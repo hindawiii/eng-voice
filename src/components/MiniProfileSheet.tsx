@@ -37,8 +37,19 @@ const REWARDS = [
   { Icon: Award, ar: "موثّق", en: "Verified", tone: "text-sky-300 bg-sky-500/15 border-sky-400/40" },
 ] as const;
 
+const QUICK_GIFTS = [
+  { emoji: "🌹", ar: "وردة", en: "Rose", cost: 10 },
+  { emoji: "💖", ar: "قلب", en: "Heart", cost: 25 },
+  { emoji: "🔥", ar: "نار", en: "Fire", cost: 35 },
+  { emoji: "👑", ar: "تاج", en: "Crown", cost: 100 },
+  { emoji: "💎", ar: "ألماسة", en: "Diamond", cost: 250 },
+] as const;
+
 export const MiniProfileSheet = ({ user, onClose }: Props) => {
   const { lang } = useI18n();
+  const { lp, spend } = useWallet();
+  const [sent, setSent] = useState<string | null>(null);
+
   if (!user) return null;
 
   const h = hash(user.id);
@@ -49,6 +60,21 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
   const owned = [0, 1, 2].map((i) => REWARDS[(h + i * 7) % REWARDS.length]);
 
   const genderIcon = user.gender === "female" ? "♀️" : user.gender === "male" ? "♂️" : "⚧️";
+
+  const sendGift = (g: (typeof QUICK_GIFTS)[number]) => {
+    if (!spend(g.cost)) {
+      toast.error(lang === "ar" ? "رصيد LP غير كافٍ" : "Not enough LP");
+      return;
+    }
+    setSent(g.emoji);
+    setTimeout(() => setSent(null), 900);
+    toast.success(
+      lang === "ar"
+        ? `أرسلت ${g.ar} ${g.emoji} إلى ${user.name}`
+        : `Sent ${g.en} ${g.emoji} to ${user.name}`
+    );
+  };
+
 
   return (
     <Dialog open={!!user} onOpenChange={(o) => !o && onClose()}>
