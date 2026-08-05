@@ -145,9 +145,18 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
           </>
         )}
 
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-2">
           <Button variant="outline" className="border-[#1F2937] bg-transparent text-white hover:bg-[#111827]" onClick={() => onOpenChange(false)}>
             {lang === "ar" ? "تخطي" : "Skip"}
+          </Button>
+          <Button
+            variant="outline"
+            disabled={!summary}
+            onClick={saveToDevice}
+            className="gap-1.5 border-[#FBBF24]/50 bg-transparent text-[#FBBF24] hover:bg-[#FBBF24]/10 hover:text-[#FBBF24]"
+          >
+            <Download className="h-4 w-4" />
+            {lang === "ar" ? "حفظ" : "Save"}
           </Button>
           <Button
             disabled={!rating}
