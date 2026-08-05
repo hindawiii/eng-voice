@@ -41,6 +41,53 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
       ]
     : [];
 
+  // Save the summary as a PNG card to the device
+  const saveToDevice = () => {
+    if (!summary) return;
+    const W = 720, H = 900;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    if (!g) return;
+
+    g.fillStyle = "#070A13"; g.fillRect(0, 0, W, H);
+    g.fillStyle = "#0B101D"; g.fillRect(40, 40, W - 80, H - 80);
+    g.strokeStyle = "#FBBF24"; g.lineWidth = 3; g.strokeRect(40, 40, W - 80, H - 80);
+
+    g.textAlign = "center";
+    g.fillStyle = "#FBBF24"; g.font = "bold 44px Inter, Tajawal, sans-serif";
+    g.fillText("Engvoice", W / 2, 130);
+    g.fillStyle = "#FFFFFF"; g.font = "bold 34px Inter, Tajawal, sans-serif";
+    g.fillText(lang === "ar" ? "ملخّص الجلسة" : "Session Summary", W / 2, 190);
+    g.font = "30px Inter, Tajawal, sans-serif";
+    g.fillText(`${summary.flag} ${summary.roomName}`, W / 2, 250);
+
+    const rows: [string, string][] = [
+      [lang === "ar" ? "المدة" : "Duration", mmss(summary.elapsedSec)],
+      [lang === "ar" ? "تفاعلات" : "Reactions", fmt(summary.reactions)],
+      [lang === "ar" ? "هدايا" : "Gifts", fmt(summary.gifts)],
+      ["XP", `+${fmt(summary.xpGain)}`],
+      ["LP", `+${fmt(summary.lpGain)}`],
+    ];
+    rows.forEach(([k, v], i) => {
+      const y = 340 + i * 82;
+      g.fillStyle = "#111827"; g.fillRect(90, y - 44, W - 180, 66);
+      g.textAlign = "left"; g.fillStyle = "#B8C4D0"; g.font = "26px Inter, Tajawal, sans-serif";
+      g.fillText(k, 120, y);
+      g.textAlign = "right"; g.fillStyle = "#FBBF24"; g.font = "bold 30px Inter, sans-serif";
+      g.fillText(v, W - 120, y);
+    });
+
+    g.textAlign = "center"; g.fillStyle = "#5E6D80"; g.font = "22px Inter, sans-serif";
+    g.fillText(new Date().toLocaleString("en-GB"), W / 2, H - 90);
+
+    const a = document.createElement("a");
+    a.href = c.toDataURL("image/png");
+    a.download = `engvoice-session-${Date.now()}.png`;
+    a.click();
+    toast.success(lang === "ar" ? "تم حفظ الملخّص في جهازك 📥" : "Summary saved to your device 📥");
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md border border-[#1F2937] bg-[#0B101D] text-white">
