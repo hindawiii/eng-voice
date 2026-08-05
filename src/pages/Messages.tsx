@@ -11,6 +11,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { EmojiStickerPicker } from "@/components/EmojiStickerPicker";
 import { translateText, detectIsArabic } from "@/hooks/useDictionary";
 
 // ================= Types =================
