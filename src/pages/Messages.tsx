@@ -86,7 +86,6 @@ const SEED_THREADS: Thread[] = [
     messages: [{ id: "m1", from: "them", text: "Léa: bienvenue tout le monde", time: "أمس", lang: "fr" }] },
 ];
 
-const EMOJI_SET = ["😀","😂","🥰","😎","🤔","🙏","👍","🔥","🎉","❤️","💯","🌟","✨","🎙️","📚","👏","😢","😮","🤩","💪","🇸🇦","🇫🇷","🇩🇪","🇯🇵","🇪🇸","🇺🇸","🇨🇳","🇮🇹","🇰🇷","🇧🇷"];
 const QUICK_REACTIONS = ["❤️", "😂", "👍", "🔥", "🙏"];
 
 const FOLDERS: { id: "all" | "friends" | "rooms"; label: string }[] = [
