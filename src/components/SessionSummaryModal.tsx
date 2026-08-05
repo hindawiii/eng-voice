@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Star, Clock, Sparkles, Heart, Gift, TrendingUp, Coins } from "lucide-react";
+import { Star, Clock, Sparkles, Heart, Gift, TrendingUp, Coins, Download } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n/I18nProvider";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export interface SessionSummary {
   roomName: string;
