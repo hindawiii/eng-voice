@@ -11,6 +11,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { EmojiStickerPicker } from "@/components/EmojiStickerPicker";
 import { translateText, detectIsArabic } from "@/hooks/useDictionary";
 
 // ================= Types =================
@@ -85,7 +86,6 @@ const SEED_THREADS: Thread[] = [
     messages: [{ id: "m1", from: "them", text: "Léa: bienvenue tout le monde", time: "أمس", lang: "fr" }] },
 ];
 
-const EMOJI_SET = ["😀","😂","🥰","😎","🤔","🙏","👍","🔥","🎉","❤️","💯","🌟","✨","🎙️","📚","👏","😢","😮","🤩","💪","🇸🇦","🇫🇷","🇩🇪","🇯🇵","🇪🇸","🇺🇸","🇨🇳","🇮🇹","🇰🇷","🇧🇷"];
 const QUICK_REACTIONS = ["❤️", "😂", "👍", "🔥", "🙏"];
 
 const FOLDERS: { id: "all" | "friends" | "rooms"; label: string }[] = [
@@ -644,14 +644,13 @@ const ChatScreen = ({
         </div>
       )}
 
-      {/* Emoji panel */}
+      {/* Emoji + stickers panel */}
       {showEmoji && (
-        <div className="mx-3 mb-1 grid grid-cols-10 gap-1 rounded-2xl border border-slate-800 bg-[#0B101D] p-2">
-          {EMOJI_SET.map((e) => (
-            <button key={e} onClick={() => insertEmoji(e)} className="rounded-md p-1 text-lg hover:bg-slate-800">{e}</button>
-          ))}
+        <div className="mx-3 mb-1">
+          <EmojiStickerPicker onSelect={insertEmoji} />
         </div>
       )}
+
 
       {/* View-once badge */}
       {viewOnce && (

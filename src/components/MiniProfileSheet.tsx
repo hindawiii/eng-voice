@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, MapPin, Award, Flame, Trophy, Sparkles, Crown, Star } from "lucide-react";
+import { ExternalLink, MapPin, Award, Flame, Trophy, Sparkles, Crown, Star, Gift } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useWallet } from "@/hooks/useWallet";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export interface MiniProfileUser {
@@ -34,8 +37,19 @@ const REWARDS = [
   { Icon: Award, ar: "موثّق", en: "Verified", tone: "text-sky-300 bg-sky-500/15 border-sky-400/40" },
 ] as const;
 
+const QUICK_GIFTS = [
+  { emoji: "🌹", ar: "وردة", en: "Rose", cost: 10 },
+  { emoji: "💖", ar: "قلب", en: "Heart", cost: 25 },
+  { emoji: "🔥", ar: "نار", en: "Fire", cost: 35 },
+  { emoji: "👑", ar: "تاج", en: "Crown", cost: 100 },
+  { emoji: "💎", ar: "ألماسة", en: "Diamond", cost: 250 },
+] as const;
+
 export const MiniProfileSheet = ({ user, onClose }: Props) => {
   const { lang } = useI18n();
+  const { lp, spend } = useWallet();
+  const [sent, setSent] = useState<string | null>(null);
+
   if (!user) return null;
 
   const h = hash(user.id);
@@ -46,6 +60,21 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
   const owned = [0, 1, 2].map((i) => REWARDS[(h + i * 7) % REWARDS.length]);
 
   const genderIcon = user.gender === "female" ? "♀️" : user.gender === "male" ? "♂️" : "⚧️";
+
+  const sendGift = (g: (typeof QUICK_GIFTS)[number]) => {
+    if (!spend(g.cost)) {
+      toast.error(lang === "ar" ? "رصيد LP غير كافٍ" : "Not enough LP");
+      return;
+    }
+    setSent(g.emoji);
+    setTimeout(() => setSent(null), 900);
+    toast.success(
+      lang === "ar"
+        ? `أرسلت ${g.ar} ${g.emoji} إلى ${user.name}`
+        : `Sent ${g.en} ${g.emoji} to ${user.name}`
+    );
+  };
+
 
   return (
     <Dialog open={!!user} onOpenChange={(o) => !o && onClose()}>
@@ -112,6 +141,34 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
                   <Icon className="h-3 w-3" />
                   {lang === "ar" ? ar : en}
                 </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick gifts */}
+          <div className="rounded-2xl border border-[#1F2937] bg-[#070A13] p-2.5">
+            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#FBBF24]">
+              <Gift className="h-3 w-3" /> {lang === "ar" ? "إرسال هدية" : "Send a gift"}
+              <span className="ms-auto rounded-full bg-[#FBBF24]/15 px-2 py-0.5 tabular-nums" dir="ltr">
+                {lp} LP
+              </span>
+            </p>
+            <div className="grid grid-cols-5 gap-1.5">
+              {QUICK_GIFTS.map((g) => (
+                <button
+                  key={g.emoji}
+                  onClick={() => sendGift(g)}
+                  disabled={lp < g.cost}
+                  className={cn(
+                    "flex flex-col items-center gap-0.5 rounded-xl border border-[#1F2937] bg-[#111827] py-1.5 transition-spring hover:scale-105 hover:border-[#FBBF24]/50 disabled:opacity-40 disabled:hover:scale-100",
+                    sent === g.emoji && "animate-gift-pop border-[#FBBF24]"
+                  )}
+                >
+                  <span className="text-xl">{g.emoji}</span>
+                  <span className="text-[9px] font-black tabular-nums text-[#FBBF24]" dir="ltr">
+                    {g.cost}
+                  </span>
+                </button>
               ))}
             </div>
           </div>
