@@ -145,6 +145,34 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
             </div>
           </div>
 
+          {/* Quick gifts */}
+          <div className="rounded-2xl border border-[#1F2937] bg-[#070A13] p-2.5">
+            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#FBBF24]">
+              <Gift className="h-3 w-3" /> {lang === "ar" ? "إرسال هدية" : "Send a gift"}
+              <span className="ms-auto rounded-full bg-[#FBBF24]/15 px-2 py-0.5 tabular-nums" dir="ltr">
+                {lp} LP
+              </span>
+            </p>
+            <div className="grid grid-cols-5 gap-1.5">
+              {QUICK_GIFTS.map((g) => (
+                <button
+                  key={g.emoji}
+                  onClick={() => sendGift(g)}
+                  disabled={lp < g.cost}
+                  className={cn(
+                    "flex flex-col items-center gap-0.5 rounded-xl border border-[#1F2937] bg-[#111827] py-1.5 transition-spring hover:scale-105 hover:border-[#FBBF24]/50 disabled:opacity-40 disabled:hover:scale-100",
+                    sent === g.emoji && "animate-gift-pop border-[#FBBF24]"
+                  )}
+                >
+                  <span className="text-xl">{g.emoji}</span>
+                  <span className="text-[9px] font-black tabular-nums text-[#FBBF24]" dir="ltr">
+                    {g.cost}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <Link
             to="/profile"
             onClick={onClose}
