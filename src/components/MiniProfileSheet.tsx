@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, MapPin, Award, Flame, Trophy, Sparkles, Crown, Star } from "lucide-react";
+import { ExternalLink, MapPin, Award, Flame, Trophy, Sparkles, Crown, Star, Gift } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useWallet } from "@/hooks/useWallet";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export interface MiniProfileUser {
