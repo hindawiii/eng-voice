@@ -31,7 +31,7 @@ const hash = (s: string) => {
 
 const REWARDS = [
   { Icon: Flame, ar: "متألق", en: "Streaker", tone: "text-orange-400 bg-orange-500/15 border-orange-500/40" },
-  { Icon: Trophy, ar: "بطل الغرفة", en: "Room Champ", tone: "text-[#FBBF24] bg-[#FBBF24]/15 border-[#FBBF24]/40" },
+  { Icon: Trophy, ar: "بطل الغرفة", en: "Room Champ", tone: "text-gold bg-gold/15 border-gold/40" },
   { Icon: Sparkles, ar: "متحدث ذهبي", en: "Golden Voice", tone: "text-amber-300 bg-amber-500/15 border-amber-400/40" },
   { Icon: Crown, ar: "ملكي", en: "Royal", tone: "text-purple-300 bg-purple-500/15 border-purple-400/40" },
   { Icon: Award, ar: "موثّق", en: "Verified", tone: "text-sky-300 bg-sky-500/15 border-sky-400/40" },
@@ -78,12 +78,12 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
 
   return (
     <Dialog open={!!user} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-sm border border-[#1F2937] bg-[#0B101D] text-white">
+      <DialogContent className="sm:max-w-sm border border-[#1F2937] bg-card text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-white">
             <span className="text-2xl">{user.flag}</span> {user.name}
             {user.level !== undefined && (
-              <span className="ms-auto rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-black text-[#FBBF24]" dir="ltr">
+              <span className="ms-auto rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-black text-gold" dir="ltr">
                 Lv {user.level}
               </span>
             )}
@@ -105,13 +105,13 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
           <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-[#1F2937]">
             {[
               { v: followers.toLocaleString("en-US"), l: lang === "ar" ? "متابعون" : "Followers", tone: "text-white" },
-              { v: String(roomsHosted), l: lang === "ar" ? "غرف" : "Rooms", tone: "text-[#FBBF24]" },
+              { v: String(roomsHosted), l: lang === "ar" ? "غرف" : "Rooms", tone: "text-gold" },
               { v: rating.toFixed(1), l: lang === "ar" ? "تقييم" : "Rating", tone: "text-amber-300" },
             ].map((s, i) => (
               <div
                 key={i}
                 className={cn(
-                  "flex flex-col items-center gap-0.5 bg-[#070A13] p-2.5",
+                  "flex flex-col items-center gap-0.5 bg-background p-2.5",
                   i !== 2 && "border-e border-[#1F2937]"
                 )}
               >
@@ -126,7 +126,7 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
 
           {/* Rewards / achievements */}
           <div>
-            <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#FBBF24]">
+            <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-gold">
               <Award className="h-3 w-3" /> {lang === "ar" ? "المكافآت" : "Rewards"}
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -146,10 +146,10 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
           </div>
 
           {/* Quick gifts */}
-          <div className="rounded-2xl border border-[#1F2937] bg-[#070A13] p-2.5">
-            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#FBBF24]">
+          <div className="rounded-2xl border border-[#1F2937] bg-background p-2.5">
+            <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-gold">
               <Gift className="h-3 w-3" /> {lang === "ar" ? "إرسال هدية" : "Send a gift"}
-              <span className="ms-auto rounded-full bg-[#FBBF24]/15 px-2 py-0.5 tabular-nums" dir="ltr">
+              <span className="ms-auto rounded-full bg-gold/15 px-2 py-0.5 tabular-nums" dir="ltr">
                 {lp} LP
               </span>
             </p>
@@ -160,12 +160,12 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
                   onClick={() => sendGift(g)}
                   disabled={lp < g.cost}
                   className={cn(
-                    "flex flex-col items-center gap-0.5 rounded-xl border border-[#1F2937] bg-[#111827] py-1.5 transition-spring hover:scale-105 hover:border-[#FBBF24]/50 disabled:opacity-40 disabled:hover:scale-100",
-                    sent === g.emoji && "animate-gift-pop border-[#FBBF24]"
+                    "flex flex-col items-center gap-0.5 rounded-xl border border-[#1F2937] bg-surface-2 py-1.5 transition-spring hover:scale-105 hover:border-gold/50 disabled:opacity-40 disabled:hover:scale-100",
+                    sent === g.emoji && "animate-gift-pop border-gold"
                   )}
                 >
                   <span className="text-xl">{g.emoji}</span>
-                  <span className="text-[9px] font-black tabular-nums text-[#FBBF24]" dir="ltr">
+                  <span className="text-[9px] font-black tabular-nums text-gold" dir="ltr">
                     {g.cost}
                   </span>
                 </button>
@@ -176,7 +176,7 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
           <Link
             to="/profile"
             onClick={onClose}
-            className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F59E0B] to-[#FBBF24] py-2 text-sm font-black text-[#111827] transition-spring hover:scale-[1.02]"
+            className="mt-1 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-gold-hover to-gold py-2 text-sm font-black text-gold-foreground transition-spring hover:scale-[1.02]"
           >
             <ExternalLink className="h-4 w-4" />
             {lang === "ar" ? "عرض الملف الكامل" : "View full profile"}

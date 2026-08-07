@@ -37,7 +37,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
         { Icon: Heart, label: lang === "ar" ? "تفاعلات" : "Reactions", value: fmt(summary.reactions), tone: "text-rose-400" },
         { Icon: Gift, label: lang === "ar" ? "هدايا" : "Gifts", value: fmt(summary.gifts), tone: "text-pink-400" },
         { Icon: TrendingUp, label: "XP", value: `+${fmt(summary.xpGain)}`, tone: "text-emerald-400" },
-        { Icon: Coins, label: "LP", value: `+${fmt(summary.lpGain)}`, tone: "text-[#FBBF24]" },
+        { Icon: Coins, label: "LP", value: `+${fmt(summary.lpGain)}`, tone: "text-gold" },
       ]
     : [];
 
@@ -90,17 +90,17 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md border border-[#1F2937] bg-[#0B101D] text-white">
+      <DialogContent className="sm:max-w-md border border-[#1F2937] bg-card text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#FBBF24]" />
+            <Sparkles className="h-5 w-5 text-gold" />
             {lang === "ar" ? "ملخّص الجلسة" : "Session Summary"}
           </DialogTitle>
         </DialogHeader>
 
         {summary && (
           <>
-            <div className="rounded-2xl border border-[#1F2937] bg-[#111827] p-3 text-center">
+            <div className="rounded-2xl border border-[#1F2937] bg-surface-2 p-3 text-center">
               <p className="text-[11px] uppercase tracking-wider text-white/60">
                 {lang === "ar" ? "غادرت" : "You left"}
               </p>
@@ -111,7 +111,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
 
             <div className="grid grid-cols-5 gap-2">
               {stats.map(({ Icon, label, value, tone }) => (
-                <div key={label} className="rounded-2xl border border-[#1F2937] bg-[#070A13] p-2 text-center">
+                <div key={label} className="rounded-2xl border border-[#1F2937] bg-background p-2 text-center">
                   <Icon className={cn("mx-auto h-4 w-4", tone)} />
                   <p className={cn("mt-1 text-sm font-black tabular-nums", tone)} dir="ltr">{value}</p>
                   <p className="text-[9px] font-semibold text-white/60">{label}</p>
@@ -119,7 +119,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
               ))}
             </div>
 
-            <div className="rounded-2xl border border-[#1F2937] bg-[#111827] p-3">
+            <div className="rounded-2xl border border-[#1F2937] bg-surface-2 p-3">
               <p className="text-center text-xs font-bold text-white/80">
                 {lang === "ar" ? "قيّم تجربتك" : "Rate your experience"}
               </p>
@@ -135,7 +135,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
                     <Star
                       className={cn(
                         "h-7 w-7",
-                        (hover || rating) >= n ? "fill-[#FBBF24] text-[#FBBF24]" : "text-white/30"
+                        (hover || rating) >= n ? "fill-gold text-gold" : "text-white/30"
                       )}
                     />
                   </button>
@@ -146,21 +146,21 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
         )}
 
         <DialogFooter className="gap-2 sm:gap-2">
-          <Button variant="outline" className="border-[#1F2937] bg-transparent text-white hover:bg-[#111827]" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" className="border-[#1F2937] bg-transparent text-white hover:bg-surface-2" onClick={() => onOpenChange(false)}>
             {lang === "ar" ? "تخطي" : "Skip"}
           </Button>
           <Button
             variant="outline"
             disabled={!summary}
             onClick={saveToDevice}
-            className="gap-1.5 border-[#FBBF24]/50 bg-transparent text-[#FBBF24] hover:bg-[#FBBF24]/10 hover:text-[#FBBF24]"
+            className="gap-1.5 border-gold/50 bg-transparent text-gold hover:bg-gold/10 hover:text-gold"
           >
             <Download className="h-4 w-4" />
             {lang === "ar" ? "حفظ" : "Save"}
           </Button>
           <Button
             disabled={!rating}
-            className="bg-gradient-to-r from-[#F59E0B] to-[#FBBF24] text-[#111827] font-black hover:opacity-90"
+            className="bg-gradient-to-r from-gold-hover to-gold text-gold-foreground font-black hover:opacity-90"
             onClick={() => {
               onSubmit(rating);
               onOpenChange(false);

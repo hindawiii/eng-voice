@@ -20,7 +20,7 @@ export const TalkRoomsPanel = ({ langKey }: Props) => {
           <Link
             key={r.id}
             to={`/room/${r.id}`}
-            className="block rounded-2xl border border-[#1F2937] bg-[#111827] p-4 hover:border-[#FBBF24]/50 transition-colors"
+            className="block rounded-2xl border border-[#1F2937] bg-surface-2 p-4 hover:border-gold/50 transition-colors"
           >
             <div className="flex items-start justify-between gap-2">
               <h4 className="font-bold text-white">{r.titleAr}</h4>
@@ -34,7 +34,7 @@ export const TalkRoomsPanel = ({ langKey }: Props) => {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                 </span>
-                <span className="text-[#FBBF24] font-bold">{r.live}</span> مباشر
+                <span className="text-gold font-bold">{r.live}</span> مباشر
               </span>
               <span className="flex items-center gap-1 text-white/70"><Mic className="h-3 w-3" /> صوتي</span>
             </div>

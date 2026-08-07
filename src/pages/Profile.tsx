@@ -98,7 +98,7 @@ const MissionsBlock = () => {
   }
 
   return (
-    <section className="rounded-3xl border border-[#1F2937] bg-[#111827] p-5 shadow-soft">
+    <section className="rounded-3xl border border-[#1F2937] bg-surface-2 p-5 shadow-soft">
       <div className="mb-2 flex items-center justify-between">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-gold">
@@ -119,7 +119,7 @@ const MissionsBlock = () => {
           : "⚠️ Complete the tasks below to upgrade to 'Seedling' and unlock your own room."}
       </p>
 
-      <div className="mb-3 h-2 overflow-hidden rounded-full bg-[#070A13]">
+      <div className="mb-3 h-2 overflow-hidden rounded-full bg-background">
         <div className="h-full rounded-full bg-gradient-gold transition-smooth" style={{ width: `${progress}%` }} />
       </div>
 
@@ -135,7 +135,7 @@ const MissionsBlock = () => {
                   "flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-start transition-smooth",
                   done
                     ? "border-gold/30 bg-gold/5 text-white"
-                    : "border-[#1F2937] bg-[#070A13] text-white/85 hover:border-gold/40"
+                    : "border-[#1F2937] bg-background text-white/85 hover:border-gold/40"
                 )}
               >
                 <span
@@ -191,7 +191,7 @@ const Profile = () => {
   return (
     <AppShell>
       {/* Brand header */}
-      <header className="sticky top-0 z-30 border-b border-[#1F2937] bg-[#070A13]/90 px-5 py-3 backdrop-blur-lg">
+      <header className="sticky top-0 z-30 border-b border-[#1F2937] bg-background/90 px-5 py-3 backdrop-blur-lg">
         <div className="flex items-center justify-between gap-3">
           <ProfileGpsDropdown />
           <h1 className="text-lg font-black tracking-wide text-white">
@@ -200,7 +200,7 @@ const Profile = () => {
           <Link
             to="/settings"
             aria-label={t("settings.title")}
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#1F2937] bg-[#111827] text-white/85 transition-smooth hover:text-gold"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#1F2937] bg-surface-2 text-white/85 transition-smooth hover:text-gold"
           >
             <Settings className="h-5 w-5" />
           </Link>
@@ -213,7 +213,7 @@ const Profile = () => {
             </p>
           </div>
           <span
-            className="rounded-full border border-gold/40 bg-[#111827] px-2.5 py-1 text-[10px] font-black text-gold"
+            className="rounded-full border border-gold/40 bg-surface-2 px-2.5 py-1 text-[10px] font-black text-gold"
             dir="ltr"
           >
             🔥 {USER.streak} {t("profile.streak")}
@@ -223,7 +223,7 @@ const Profile = () => {
 
       <div className="space-y-4 px-5 pt-4">
         {/* 1. Hero user card with real avatar upload */}
-        <section className="rounded-3xl border border-[#1F2937] bg-[#111827] p-5 shadow-elegant">
+        <section className="rounded-3xl border border-[#1F2937] bg-surface-2 p-5 shadow-elegant">
           <input
             ref={fileRef}
             type="file"
@@ -248,7 +248,7 @@ const Profile = () => {
               <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-black/70 py-1 text-[10px] font-black text-white opacity-0 transition-opacity group-hover:opacity-100">
                 <Camera className="h-3 w-3" /> {lang === "ar" ? "تغيير" : "Change"}
               </span>
-              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#111827] bg-[#070A13] text-base">
+              <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface-2 bg-background text-base">
                 {USER.flag}
               </span>
             </button>
@@ -266,7 +266,7 @@ const Profile = () => {
           </div>
 
           {/* Level progress directly below identity */}
-          <div className="mt-4 rounded-2xl border border-[#1F2937] bg-[#070A13] p-4">
+          <div className="mt-4 rounded-2xl border border-[#1F2937] bg-background p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="font-black text-white" dir="ltr">
                 {currentLevel.emoji} Lv {currentLevel.id} ·{" "}
@@ -297,7 +297,7 @@ const Profile = () => {
 
           {/* Merged points + XP */}
           <div className="mt-3 grid grid-cols-2 overflow-hidden rounded-2xl border border-[#1F2937]">
-            <div className="flex items-center justify-between gap-2 border-e border-[#1F2937] bg-[#070A13] p-4">
+            <div className="flex items-center justify-between gap-2 border-e border-[#1F2937] bg-background p-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">
                   {t("profile.lp")}
@@ -308,7 +308,7 @@ const Profile = () => {
               </div>
               <Coins className="h-6 w-6 text-gold" />
             </div>
-            <div className="flex items-center justify-between gap-2 bg-[#070A13] p-4">
+            <div className="flex items-center justify-between gap-2 bg-background p-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">
                   {t("profile.xp")}
@@ -323,7 +323,7 @@ const Profile = () => {
         </section>
 
         {/* 2. Social stats bar — directly under hero */}
-        <section className="grid grid-cols-4 gap-2 rounded-2xl border border-[#1F2937] bg-[#111827] p-3">
+        <section className="grid grid-cols-4 gap-2 rounded-2xl border border-[#1F2937] bg-surface-2 p-3">
           {socialStats.map(({ Icon, value, label }) => (
             <div key={label} className="flex flex-col items-center gap-0.5 py-1">
               <Icon className="h-4 w-4 text-gold" />
@@ -339,7 +339,7 @@ const Profile = () => {
         <MissionsBlock />
 
         {/* Levels ladder */}
-        <section className="rounded-3xl border border-[#1F2937] bg-[#111827] p-5">
+        <section className="rounded-3xl border border-[#1F2937] bg-surface-2 p-5">
           <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-white/70">
             {t("profile.journey")}
           </h3>
@@ -374,11 +374,11 @@ const Profile = () => {
         <AdBoosterButton />
 
         {/* Earn LP */}
-        <section className="rounded-3xl border border-[#1F2937] bg-[#111827] p-5">
+        <section className="rounded-3xl border border-[#1F2937] bg-surface-2 p-5">
           <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-white/70">
             {t("profile.earnLp")}
           </h3>
-          <button className="flex w-full items-center gap-3 rounded-2xl border border-[#1F2937] bg-[#070A13] p-4 text-start transition-smooth hover:border-gold/40">
+          <button className="flex w-full items-center gap-3 rounded-2xl border border-[#1F2937] bg-background p-4 text-start transition-smooth hover:border-gold/40">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-gold to-amber-600 text-gold-foreground">
               <Play className="h-5 w-5" fill="currentColor" />
             </div>
@@ -397,7 +397,7 @@ const Profile = () => {
 
         {/* Pro upsell */}
         {!USER.pro && (
-          <section className="relative overflow-hidden rounded-3xl border border-gold/30 bg-gradient-to-br from-[#111827] via-[#0B1024] to-[#111827] p-6 text-white shadow-elegant">
+          <section className="relative overflow-hidden rounded-3xl border border-gold/30 bg-gradient-to-br from-surface-2 via-[#0B1024] to-surface-2 p-6 text-white shadow-elegant">
             <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-gold/20 blur-2xl" />
             <div className="relative">
               <div className="flex items-center gap-2">
@@ -413,7 +413,7 @@ const Profile = () => {
         )}
 
         {/* Inventory — Gifts received */}
-        <section className="rounded-3xl border border-[#1F2937] bg-[#111827] p-5">
+        <section className="rounded-3xl border border-[#1F2937] bg-surface-2 p-5">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white/80">
               <Gift className="h-4 w-4 text-gold" />
@@ -431,7 +431,7 @@ const Profile = () => {
               {RECEIVED_GIFTS.map((g) => (
                 <div
                   key={g.id}
-                  className="flex shrink-0 flex-col items-center gap-1 rounded-2xl border border-[#1F2937] bg-gradient-to-br from-[#0B1024] to-[#070A13] p-3 transition-spring hover:scale-105"
+                  className="flex shrink-0 flex-col items-center gap-1 rounded-2xl border border-[#1F2937] bg-gradient-to-br from-[#0B1024] to-background p-3 transition-spring hover:scale-105"
                   style={{ minWidth: "76px" }}
                 >
                   <span className="text-3xl">{g.emoji}</span>

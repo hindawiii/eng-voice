@@ -80,15 +80,15 @@ export const SmartMirrorCard = () => {
 
   const peakPct = Math.round(peak * 100);
   const peakColor =
-    peakPct > 75 ? "bg-emerald-400" : peakPct > 30 ? "bg-[#FBBF24]" : peakPct > 5 ? "bg-white/60" : "bg-white/25";
+    peakPct > 75 ? "bg-emerald-400" : peakPct > 30 ? "bg-gold" : peakPct > 5 ? "bg-white/60" : "bg-white/25";
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-[#1F2937] bg-[#0B101D] p-4 text-white shadow-elegant">
+    <section className="overflow-hidden rounded-3xl border border-[#1F2937] bg-card p-4 text-white shadow-elegant">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Radio className={cn("h-4 w-4", on ? "text-emerald-400 animate-pulse" : "text-white/50")} />
           <div>
-            <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#FBBF24]">
+            <p className="text-[11px] font-extrabold uppercase tracking-wider text-gold">
               {lang === "ar" ? "مرآة ذكية" : "Smart Mirror"}
             </p>
             <p className="text-[10px] text-white/60">
@@ -102,7 +102,7 @@ export const SmartMirrorCard = () => {
             "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black transition",
             on
               ? "bg-emerald-500 text-white shadow-[0_0_14px_rgba(16,185,129,0.55)]"
-              : "bg-[#111827] text-white/85 border border-[#1F2937] hover:border-[#FBBF24]"
+              : "bg-surface-2 text-white/85 border border-[#1F2937] hover:border-gold"
           )}
         >
           {on ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
@@ -111,7 +111,7 @@ export const SmartMirrorCard = () => {
       </div>
 
       {/* Waveform */}
-      <div className="flex h-16 items-end justify-between gap-0.5 rounded-2xl bg-[#070A13] px-2 py-2">
+      <div className="flex h-16 items-end justify-between gap-0.5 rounded-2xl bg-background px-2 py-2">
         {levels.map((v, i) => {
           const h = on ? Math.max(6, v * 100) : 8;
           const active = v > 0.1;
@@ -120,7 +120,7 @@ export const SmartMirrorCard = () => {
               key={i}
               className={cn(
                 "w-full rounded-full transition-all",
-                active ? "bg-gradient-to-t from-[#F59E0B] to-[#FBBF24]" : "bg-white/15"
+                active ? "bg-gradient-to-t from-gold-hover to-gold" : "bg-white/15"
               )}
               style={{ height: `${h}%` }}
             />
@@ -133,7 +133,7 @@ export const SmartMirrorCard = () => {
         <span className="text-[10px] font-bold uppercase text-white/60 w-10" dir="ltr">
           Peak
         </span>
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#070A13]">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-background">
           <div className={cn("h-full transition-all", peakColor)} style={{ width: `${peakPct}%` }} />
         </div>
         <span className="w-9 text-end text-[10px] font-black text-white tabular-nums" dir="ltr">

@@ -273,6 +273,11 @@ const Room = () => {
     }
   };
 
+  // Always points at the latest handler so timers never fire a stale closure.
+  const leaveRoomRef = useRef(handleLeaveRoom);
+  leaveRoomRef.current = handleLeaveRoom;
+
+
   // Stage mode + floating reactions + session clock
   const [stageMode, setStageMode] = useState(false);
   const [reactionTargetIdx, setReactionTargetIdx] = useState<number | null>(null);
@@ -370,7 +375,7 @@ const Room = () => {
     const remaining = _baseSessionTotal + sessionExtraMin * 60 - sessionElapsed;
     if (remaining <= 0) {
       toast.info(lang === "ar" ? "انتهت الجلسة" : "Session ended");
-      const tk = setTimeout(() => handleLeaveRoom(), 1500);
+      const tk = setTimeout(() => leaveRoomRef.current(), 1500);
       return () => clearTimeout(tk);
     }
   }, [sessionElapsed, timerCfg.mode, _baseSessionTotal, sessionExtraMin, lang]);
@@ -643,7 +648,7 @@ const Room = () => {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <button
               onClick={() => { playCasinoSpin(); setGeneratedTopic(generateTopic(lang)); toast.success(lang === "ar" ? "موضوع جديد ⚡" : "New topic ⚡"); }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] px-3 py-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-gold to-gold-hover px-3 py-1.5 text-[11px] font-extrabold text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105"
             >
               <Sparkles className="h-3.5 w-3.5" /> {lang === "ar" ? "توليد موضوع ⚡" : "Generate topic ⚡"}
             </button>
@@ -911,15 +916,15 @@ const Room = () => {
             {isAdmin && (
               <button
                 onClick={() => setTimerDialogOpen(true)}
-                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-[#FBBF24]/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-[#FBBF24]"
+                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-gold/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-gold"
               >
                 <span className="flex items-center gap-2">
-                  <Timer className="h-4 w-4 text-[#FBBF24]" />
+                  <Timer className="h-4 w-4 text-gold" />
                   <span className="text-sm font-extrabold">
                     {lang === "ar" ? "محرك المؤقت" : "Timer Engine"}
                   </span>
                 </span>
-                <span className="rounded-full bg-[#FBBF24]/15 px-2 py-0.5 text-[10px] font-bold uppercase text-[#FBBF24]">
+                <span className="rounded-full bg-gold/15 px-2 py-0.5 text-[10px] font-bold uppercase text-gold">
                   {timerCfg.mode === "off" ? (lang === "ar" ? "مفتوح" : "Open") : timerCfg.mode}
                 </span>
               </button>
@@ -1131,9 +1136,9 @@ const Room = () => {
 
       {/* Admin Controls Sheet (slide-out drawer) */}
       <Sheet open={adminOpen && isAdmin} onOpenChange={setAdminOpen}>
-        <SheetContent side={lang === "ar" ? "right" : "left"} className="w-[88vw] sm:w-[420px] overflow-y-auto bg-[#111827] text-white border-l border-slate-800">
+        <SheetContent side={lang === "ar" ? "right" : "left"} className="w-[88vw] sm:w-[420px] overflow-y-auto bg-surface-2 text-white border-l border-slate-800">
           <SheetHeader>
-            <SheetTitle className="flex items-center gap-2 text-[#FBBF24]">
+            <SheetTitle className="flex items-center gap-2 text-gold">
               <Crown className="h-4 w-4" /> {lang === "ar" ? "تحكم الغرفة" : "Room Controls"}
             </SheetTitle>
             <SheetDescription className="text-slate-400">
@@ -1161,8 +1166,8 @@ const Room = () => {
             )}
 
             {/* Host migration */}
-            <div className="rounded-2xl border border-[#FBBF24]/30 bg-[#0B101D] p-3">
-              <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#FBBF24]">
+            <div className="rounded-2xl border border-gold/30 bg-card p-3">
+              <p className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-gold">
                 <Crown className="h-3.5 w-3.5" /> {lang === "ar" ? "تفويض الإدارة" : "Transfer host"}
               </p>
               <p className="mt-1 text-[11px] text-slate-400">

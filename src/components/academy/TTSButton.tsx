@@ -21,7 +21,7 @@ export const TTSButton = ({ text, lang }: Props) => (
     size="icon"
     variant="ghost"
     onClick={(e) => { e.stopPropagation(); speak(text, lang); }}
-    className="h-8 w-8 rounded-full bg-[#1F2937] text-[#FBBF24] hover:bg-[#FBBF24]/15 hover:text-[#FBBF24]"
+    className="h-8 w-8 rounded-full bg-[#1F2937] text-gold hover:bg-gold/15 hover:text-gold"
     aria-label="Speak"
   >
     <Mic className="h-4 w-4" />

@@ -24,12 +24,12 @@ export const LanguageCorner = ({ lang }: { lang: AcademyLang }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between rounded-2xl border border-[#1F2937] bg-[#111827] p-4">
+      <div className="flex items-center justify-between rounded-2xl border border-[#1F2937] bg-surface-2 p-4">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{lang.flag}</span>
           <div>
             <h2 className="text-lg font-black text-white">{lang.labelAr}</h2>
-            <p className="text-xs text-[#FBBF24]">{lang.name}</p>
+            <p className="text-xs text-gold">{lang.name}</p>
           </div>
         </div>
         <TranslatorOverlay targetLang={lang.code} targetBcp47={lang.bcp47} />
@@ -44,8 +44,8 @@ export const LanguageCorner = ({ lang }: { lang: AcademyLang }) => {
               className={cn(
                 "flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold whitespace-nowrap border transition-colors",
                 sub === id
-                  ? "bg-[#FBBF24] text-black border-[#FBBF24]"
-                  : "bg-[#111827] text-white/80 border-[#1F2937] hover:border-[#FBBF24]/40"
+                  ? "bg-gold text-black border-gold"
+                  : "bg-surface-2 text-white/80 border-[#1F2937] hover:border-gold/40"
               )}
             >
               <Icon className="h-3.5 w-3.5" /> {ar}

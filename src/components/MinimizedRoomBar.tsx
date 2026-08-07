@@ -59,7 +59,7 @@ export const MinimizedRoomBar = () => {
 
   return (
     <div
-      className="fixed inset-x-3 z-[70] mx-auto max-w-[320px] rounded-[28px] border border-[#FBBF24]/40 bg-[#0F1524]/95 px-3 py-2 shadow-[0_10px_36px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+      className="fixed inset-x-3 z-[70] mx-auto max-w-[320px] rounded-[28px] border border-gold/40 bg-[#0F1524]/95 px-3 py-2 shadow-[0_10px_36px_rgba(0,0,0,0.55)] backdrop-blur-xl"
       style={{ bottom: "80px" }}
     >
       <div className="flex items-center gap-2">
