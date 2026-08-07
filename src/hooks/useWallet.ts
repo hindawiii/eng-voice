@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-const KEY = "lingvoice.wallet.lp";
+const KEY = "engvoice.wallet.lp";
 const EVENT = "lingvoice:wallet";
 const DEFAULT = 150;
 

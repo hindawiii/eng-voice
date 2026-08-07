@@ -128,7 +128,7 @@ const Room = () => {
     !requiresPassword || urlPassword === customRoom?.password
   );
   const [pwInput, setPwInput] = useState("");
-  const LOCK_KEY = `lingvoice.roomLock.${room.key}`;
+  const LOCK_KEY = `engvoice.roomLock.${room.key}`;
   const readLock = () => {
     try { return JSON.parse(localStorage.getItem(LOCK_KEY) || "null") as { attempts: number; lockUntil: number } | null; }
     catch { return null; }
@@ -158,7 +158,7 @@ const Room = () => {
   });
 
   // Speaker timer (persisted per room)
-  const TIMER_KEY = `lingvoice.roomTimer.${room.key}`;
+  const TIMER_KEY = `engvoice.roomTimer.${room.key}`;
   const restored = (() => {
     if (typeof window === "undefined") return null;
     try {
@@ -195,7 +195,7 @@ const Room = () => {
   const [newPasswordInput, setNewPasswordInput] = useState(customRoom?.password || "");
 
   // === NEW: Timer Engine, AI noise, rating, recorder ===
-  const TIMER_CFG_KEY = `lingvoice.timerCfg.${room.key}`;
+  const TIMER_CFG_KEY = `engvoice.timerCfg.${room.key}`;
   const [timerCfg, setTimerCfg] = useState<TimerConfig>(() => {
     try {
       const raw = localStorage.getItem(TIMER_CFG_KEY);
@@ -218,7 +218,7 @@ const Room = () => {
   // Tutor entry fee: charge listener 10 LP once per room visit
   useEffect(() => {
     if (!isTutorRoom) return;
-    const paidKey = `lingvoice.tutorPaid.${room.key}`;
+    const paidKey = `engvoice.tutorPaid.${room.key}`;
     if (sessionStorage.getItem(paidKey)) return;
     if (isAdmin) { sessionStorage.setItem(paidKey, "1"); return; }
     if (!spendLp(10)) {
@@ -229,10 +229,10 @@ const Room = () => {
     sessionStorage.setItem(paidKey, "1");
     // 7 LP to tutor balance (tracked separately), 3 LP platform commission
     try {
-      const tk = `lingvoice.tutorEarnings.${room.key}`;
+      const tk = `engvoice.tutorEarnings.${room.key}`;
       const cur = Number(localStorage.getItem(tk) || 0);
       localStorage.setItem(tk, String(cur + 7));
-      const pk = "lingvoice.platformCommission";
+      const pk = "engvoice.platformCommission";
       localStorage.setItem(pk, String(Number(localStorage.getItem(pk) || 0) + 3));
     } catch {}
     toast.success(lang === "ar" ? "-10 LP · أهلاً في الجلسة" : "-10 LP · Welcome to session");
@@ -287,7 +287,7 @@ const Room = () => {
   const longPressRef = useRef<number | null>(null);
   const [miniUser, setMiniUser] = useState<MiniProfileUser | null>(null);
 
-  const SESSION_KEY = `lingvoice.session.${room.key}`;
+  const SESSION_KEY = `engvoice.session.${room.key}`;
   const sessionRestored = (() => {
     if (typeof window === "undefined") return 0;
     try { return Number(localStorage.getItem(SESSION_KEY) || 0); } catch { return 0; }

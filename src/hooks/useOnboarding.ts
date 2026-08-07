@@ -38,7 +38,7 @@ export const MISSION_LABELS: Record<MissionId, { ar: string; en: string }> = {
   follow: { ar: "متابعة صديق أو مستخدم آخر", en: "Follow another user" },
 };
 
-const KEY = "lingvoice.onboarding.v1";
+const KEY = "engvoice.onboarding.v1";
 
 type State = Record<MissionId, boolean>;
 
