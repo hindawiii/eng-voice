@@ -20,7 +20,7 @@ export interface CustomRoom {
   status?: "active" | "closed";
 }
 
-const STORAGE_KEY = "lingvoice.customRooms";
+const STORAGE_KEY = "engvoice.customRooms";
 
 const listeners = new Set<() => void>();
 

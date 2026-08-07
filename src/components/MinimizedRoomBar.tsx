@@ -10,8 +10,8 @@ export interface MinimizedRoomState {
   flag: string;
 }
 
-const STORAGE_KEY = "lingvoice.minimizedRoom";
-const EVENT = "lingvoice:minimizedRoomChange";
+const STORAGE_KEY = "engvoice.minimizedRoom";
+const EVENT = "engvoice:minimizedRoomChange";
 
 export const setMinimizedRoom = (state: MinimizedRoomState | null) => {
   try {

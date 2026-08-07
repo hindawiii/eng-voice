@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-const KEY = "lingvoice.dailyAllowance";
+const KEY = "engvoice.dailyAllowance";
 export const BASE_MIN = 90;
 export const AD_BONUS_MIN = 15;
 export const MAX_ADS = 5;

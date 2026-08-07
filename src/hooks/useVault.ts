@@ -10,7 +10,7 @@ export interface VaultCard {
   strength: number; // 0..5 spaced-rep
 }
 
-const KEY = "lingvoice.vault.cards";
+const KEY = "engvoice.vault.cards";
 
 const read = (): VaultCard[] => {
   if (typeof window === "undefined") return [];

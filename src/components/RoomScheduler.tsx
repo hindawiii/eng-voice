@@ -13,7 +13,7 @@ interface Scheduled {
   notify: boolean;
 }
 
-const KEY = "lingvoice.scheduledRooms";
+const KEY = "engvoice.scheduledRooms";
 const read = (): Scheduled[] => {
   try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
 };

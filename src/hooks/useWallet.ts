@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-const KEY = "lingvoice.wallet.lp";
-const EVENT = "lingvoice:wallet";
+const KEY = "engvoice.wallet.lp";
+const EVENT = "engvoice:wallet";
 const DEFAULT = 150;
 
 const read = () => {

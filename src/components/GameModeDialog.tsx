@@ -19,7 +19,7 @@ export interface GameConfig {
   hybridMix: boolean;
 }
 
-const KEY = "lingvoice.gameConfig";
+const KEY = "engvoice.gameConfig";
 const DEFAULT: GameConfig = {
   mode: "linguistic",
   target: "en",

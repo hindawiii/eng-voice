@@ -24,7 +24,7 @@ type SectionKey =
   | "account" | "appearance" | "notifications" | "privacy"
   | "audio" | "data" | "support" | "session";
 
-const STORAGE = "lingvoice.settings.v2";
+const STORAGE = "engvoice.settings.v2";
 
 interface SettingsState {
   darkMode: boolean;

@@ -18,7 +18,7 @@ interface LocationState {
 }
 
 // Persisted location state shared across views.
-const KEY = "lingvoice.location.v1";
+const KEY = "engvoice.location.v1";
 
 const defaults: LocationState = {
   country: "Sudan",

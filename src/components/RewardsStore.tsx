@@ -25,7 +25,7 @@ const ITEMS: Item[] = [
   { id: "gift-rocket-premium", emoji: "🚀", en: "Premium Rocket Gift", ar: "هدية صاروخ", cost: 350, kind: "gift" },
 ];
 
-const OWN_KEY = "lingvoice.store.owned";
+const OWN_KEY = "engvoice.store.owned";
 
 export const RewardsStore = () => {
   const { lang } = useI18n();
