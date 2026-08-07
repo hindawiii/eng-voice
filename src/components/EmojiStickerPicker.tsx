@@ -54,7 +54,7 @@ export const EmojiStickerPicker = ({ onSelect, className }: Props) => {
   const items = isStickers ? STICKERS : CATEGORIES.find((c) => c.id === tab)!.items;
 
   return (
-    <div dir="rtl" className={cn("rounded-2xl border border-slate-800 bg-[#0B101D] p-2", className)}>
+    <div dir="rtl" className={cn("rounded-2xl border border-slate-800 bg-card p-2", className)}>
       {/* Category strip */}
       <div className="no-scrollbar mb-2 flex gap-1 overflow-x-auto border-b border-slate-800 pb-2">
         {[...CATEGORIES, { id: "stickers", label: "ملصقات", icon: "🪄", items: STICKERS }].map((c) => (
@@ -64,7 +64,7 @@ export const EmojiStickerPicker = ({ onSelect, className }: Props) => {
             title={c.label}
             className={cn(
               "shrink-0 rounded-xl px-2.5 py-1 text-base transition-colors",
-              tab === c.id ? "bg-[#FBBF24]/15 ring-1 ring-[#FBBF24]/50" : "hover:bg-slate-800/60"
+              tab === c.id ? "bg-gold/15 ring-1 ring-gold/50" : "hover:bg-slate-800/60"
             )}
           >
             {c.icon}

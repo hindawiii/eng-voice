@@ -57,7 +57,7 @@ const Waveform = () => (
 );
 
 const CARD_BASE =
-  "h-full flex flex-col rounded-2xl border border-slate-800 bg-[#111827] p-3 text-white overflow-hidden";
+  "h-full flex flex-col rounded-2xl border border-slate-800 bg-surface-2 p-3 text-white overflow-hidden";
 
 const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
   const [accepted, setAccepted] = useState(false);
@@ -65,7 +65,7 @@ const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
   const [progress, setProgress] = useState(35);
   return (
     <div className={CARD_BASE}>
-      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gold">
         <Zap className="h-3.5 w-3.5" /> {lang === "ar" ? "تحدي اليوم" : "Daily Challenge"}
       </div>
       <p className="mt-1.5 text-xs font-semibold line-clamp-2 text-white">
@@ -79,7 +79,7 @@ const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
       </div>
       <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400">
         <span>{count} {lang === "ar" ? "مشارك" : "joined"}</span>
-        <span className="tabular-nums text-[#FBBF24]">⏱ 12:34</span>
+        <span className="tabular-nums text-gold">⏱ 12:34</span>
       </div>
       <div className="mt-auto pt-2 flex gap-1.5">
         <button
@@ -90,7 +90,7 @@ const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
             setProgress((p) => Math.min(100, p + 10));
             toast.success(lang === "ar" ? "+20 ن.ت" : "+20 LP");
           }}
-          className="flex-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-[#111827] disabled:opacity-50 transition-spring hover:scale-105"
+          className="flex-1 rounded-full px-3 py-1.5 text-[11px] font-bold text-gold-foreground disabled:opacity-50 transition-spring hover:scale-105"
           style={{ background: "linear-gradient(90deg,#FBBF24,#F59E0B)" }}
         >
           {accepted ? (lang === "ar" ? "تم القبول" : "Accepted") : (lang === "ar" ? "اقبل التحدي" : "Accept")}
@@ -102,7 +102,7 @@ const ChallengeWidget = ({ lang }: { lang: "en" | "ar" }) => {
 
 const QuestionWidget = ({ lang }: { lang: "en" | "ar" }) => (
   <div className={CARD_BASE}>
-    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gold">
       <HelpCircle className="h-3.5 w-3.5" /> {lang === "ar" ? "سؤال الجماعة" : "Community Q"}
     </div>
     <p className="mt-1.5 text-xs font-semibold line-clamp-3 text-white">
@@ -117,11 +117,11 @@ const QuestionWidget = ({ lang }: { lang: "en" | "ar" }) => (
 
 const HighlightWidget = ({ lang, onView }: { lang: "en" | "ar"; onView: () => void }) => (
   <div className={CARD_BASE}>
-    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gold">
       <Trophy className="h-3.5 w-3.5" /> {lang === "ar" ? "إنجاز الأسبوع" : "Weekly Highlight"}
     </div>
     <button onClick={onView} className="mt-1.5 flex items-center gap-2 text-start">
-      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FBBF24] text-lg text-[#111827]">🇸🇦</div>
+      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold text-lg text-gold-foreground">🇸🇦</div>
       <div className="min-w-0">
         <p className="font-bold text-sm text-white truncate">Layla</p>
         <p className="text-[10px] text-slate-400 truncate">{lang === "ar" ? "أعلى مشارك" : "Top contributor"}</p>
@@ -134,14 +134,14 @@ const HighlightWidget = ({ lang, onView }: { lang: "en" | "ar"; onView: () => vo
         { v: "21", l: lang === "ar" ? "تصحيح" : "Fixes" },
       ].map((s) => (
         <div key={s.l} className="rounded-lg bg-slate-800/70 py-1">
-          <p className="font-bold text-xs text-[#FBBF24] tabular-nums">{s.v}</p>
+          <p className="font-bold text-xs text-gold tabular-nums">{s.v}</p>
           <p className="text-[9px] text-slate-400">{s.l}</p>
         </div>
       ))}
     </div>
     <button
       onClick={() => toast.success(lang === "ar" ? "هنّأت ليلى! 🎉" : "Congrats sent! 🎉")}
-      className="mt-auto rounded-full py-1.5 text-[11px] font-bold text-[#111827]"
+      className="mt-auto rounded-full py-1.5 text-[11px] font-bold text-gold-foreground"
       style={{ background: "linear-gradient(90deg,#FBBF24,#F59E0B)" }}
     >
       {lang === "ar" ? "هنّئ" : "Congratulate"}
@@ -152,7 +152,7 @@ const HighlightWidget = ({ lang, onView }: { lang: "en" | "ar"; onView: () => vo
 const QuickTipWidget = ({ lang, onDismiss }: { lang: "en" | "ar"; onDismiss: () => void }) => (
   <div className={CARD_BASE}>
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#FBBF24]">
+      <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gold">
         <Lightbulb className="h-3.5 w-3.5" /> {lang === "ar" ? "نصيحة سريعة" : "Quick Tip"}
       </div>
       <button onClick={onDismiss} className="text-slate-400 hover:text-white">
@@ -163,7 +163,7 @@ const QuickTipWidget = ({ lang, onDismiss }: { lang: "en" | "ar"; onDismiss: () 
       {lang === "ar" ? "كرر الكلمات الجديدة بصوت عالٍ ٣ مرات قبل النوم لتثبيتها." : "Repeat new words aloud 3× before sleep to lock them in."}
     </p>
     <div className="mt-auto pt-2 flex gap-1.5 text-[11px]">
-      <button className="rounded-full bg-slate-800 px-3 py-1 font-bold text-[#FBBF24]">👍 {lang === "ar" ? "مفيد" : "Helpful"}</button>
+      <button className="rounded-full bg-slate-800 px-3 py-1 font-bold text-gold">👍 {lang === "ar" ? "مفيد" : "Helpful"}</button>
       <button className="rounded-full bg-slate-800 px-3 py-1 font-semibold text-white">↗ {lang === "ar" ? "شارك" : "Share"}</button>
     </div>
   </div>
@@ -362,21 +362,21 @@ const Activity = () => {
         </section>
 
         {/* Achievement timeline (relocated from composer) */}
-        <section className="rounded-3xl border border-[#FBBF24]/40 bg-[#111827] p-4 text-white shadow-elegant">
+        <section className="rounded-3xl border border-gold/40 bg-surface-2 p-4 text-white shadow-elegant">
           <div className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-[#FBBF24] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
-            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#FBBF24]">
+            <Award className="h-5 w-5 text-gold drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-gold">
               {lang === "ar" ? "خط زمن الإنجازات" : "Achievements Timeline"}
             </h2>
           </div>
-          <ol className="mt-3 space-y-3 border-s-2 border-[#FBBF24]/30 ps-4">
+          <ol className="mt-3 space-y-3 border-s-2 border-gold/30 ps-4">
             {[
               { t: lang === "ar" ? "أكملت سلسلة ٧ أيام" : "Completed 7-day streak", d: lang === "ar" ? "اليوم" : "Today", icon: "🏆" },
               { t: lang === "ar" ? "تعلّمت ٥٠ كلمة جديدة" : "Learned 50 new words", d: lang === "ar" ? "أمس" : "Yesterday", icon: "📚" },
               { t: lang === "ar" ? "أول غرفة فرنسية" : "First French room", d: lang === "ar" ? "هذا الأسبوع" : "This week", icon: "🇫🇷" },
             ].map((a, i) => (
               <li key={i} className="relative">
-                <span className="absolute -start-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#FBBF24] text-[10px] shadow-[0_0_10px_rgba(251,191,36,0.6)]">
+                <span className="absolute -start-[22px] top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[10px] shadow-[0_0_10px_rgba(251,191,36,0.6)]">
                   {a.icon}
                 </span>
                 <p className="text-sm font-bold text-white">{a.t}</p>

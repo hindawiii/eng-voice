@@ -40,22 +40,22 @@ export const TranslatorOverlay = ({ targetLang, targetBcp47 }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2 border-[#FBBF24]/40 bg-[#111827] text-[#FBBF24] hover:bg-[#FBBF24]/10">
+        <Button variant="outline" className="gap-2 border-gold/40 bg-surface-2 text-gold hover:bg-gold/10">
           <Languages className="h-4 w-4" /> قاموسي الخاص
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg bg-[#0B0F1A] text-white border-[#1F2937]">
-        <DialogHeader><DialogTitle className="text-[#FBBF24]">المترجم الذكي</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle className="text-gold">المترجم الذكي</DialogTitle></DialogHeader>
 
         <div className="space-y-3">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="اكتب بالعربية أو بلغة الهدف..."
-            className="min-h-[80px] bg-[#111827] border-[#1F2937] text-white placeholder:text-white/40"
+            className="min-h-[80px] bg-surface-2 border-[#1F2937] text-white placeholder:text-white/40"
           />
           <div className="flex gap-2">
-            <Button onClick={handleTranslate} disabled={loading} className="flex-1 bg-[#FBBF24] text-black hover:bg-[#F59E0B]">
+            <Button onClick={handleTranslate} disabled={loading} className="flex-1 bg-gold text-black hover:bg-gold-hover">
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "ترجم الآن"}
             </Button>
             <Button onClick={() => { setInput(""); setOutput(""); }} variant="ghost" className="text-white/70">
@@ -64,13 +64,13 @@ export const TranslatorOverlay = ({ targetLang, targetBcp47 }: Props) => {
           </div>
 
           {output && (
-            <div className="rounded-lg border border-[#1F2937] bg-[#111827] p-3">
+            <div className="rounded-lg border border-[#1F2937] bg-surface-2 p-3">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-white font-medium">{output}</p>
                 <TTSButton text={output} lang={to === "ar" ? "ar-SA" : targetBcp47} />
               </div>
               <div className="mt-2 flex gap-2">
-                <Button size="sm" onClick={handleSave} className="bg-[#FBBF24] text-black hover:bg-[#F59E0B]">
+                <Button size="sm" onClick={handleSave} className="bg-gold text-black hover:bg-gold-hover">
                   <Save className="h-3 w-3 ml-1" /> حفظ الكلمة 💾
                 </Button>
               </div>
@@ -79,14 +79,14 @@ export const TranslatorOverlay = ({ targetLang, targetBcp47 }: Props) => {
 
           {entries.length > 0 && (
             <div>
-              <p className="text-xs font-bold text-[#FBBF24] mb-1">مفضلتي ({entries.length})</p>
-              <ScrollArea className="h-40 rounded-lg border border-[#1F2937] bg-[#070A13] p-2">
+              <p className="text-xs font-bold text-gold mb-1">مفضلتي ({entries.length})</p>
+              <ScrollArea className="h-40 rounded-lg border border-[#1F2937] bg-background p-2">
                 <div className="space-y-2">
                   {entries.map((e) => (
-                    <div key={e.id} className="flex items-center justify-between gap-2 rounded bg-[#111827] p-2 text-sm">
+                    <div key={e.id} className="flex items-center justify-between gap-2 rounded bg-surface-2 p-2 text-sm">
                       <div className="flex-1">
                         <p className="text-white">{e.source}</p>
-                        <p className="text-[#FBBF24] text-xs">{e.translation}</p>
+                        <p className="text-gold text-xs">{e.translation}</p>
                       </div>
                       <TTSButton text={e.translation} lang={e.to === "ar" ? "ar-SA" : targetBcp47} />
                       <Button size="icon" variant="ghost" onClick={() => remove(e.id)} className="h-7 w-7 text-red-400">

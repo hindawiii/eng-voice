@@ -143,7 +143,7 @@ const Index = () => {
 
       {/* Academy Hub */}
       <section className="mt-5">
-        <div className="rounded-3xl bg-[#070A13] pb-2 shadow-elegant">
+        <div className="rounded-3xl bg-background pb-2 shadow-elegant">
           <AcademyHub />
         </div>
       </section>

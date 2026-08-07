@@ -110,7 +110,7 @@ const StatusTick = ({ s }: { s?: "sent" | "delivered" | "read" }) => {
   if (!s) return null;
   if (s === "sent") return <Check className="h-3.5 w-3.5 text-slate-500" />;
   if (s === "delivered") return <CheckCheck className="h-3.5 w-3.5 text-slate-500" />;
-  return <CheckCheck className="h-3.5 w-3.5 text-[#FBBF24]" />;
+  return <CheckCheck className="h-3.5 w-3.5 text-gold" />;
 };
 
 // ================= Active friends bar =================
@@ -120,7 +120,7 @@ const ActiveFriends = ({ friends, onPick }: { friends: Friend[]; onPick: (f: Fri
       <button key={f.id} onClick={() => onPick(f)} className="flex w-[64px] shrink-0 flex-col items-center gap-1.5">
         <div className="relative">
           <img src={f.avatar} alt={f.name} className="h-14 w-14 rounded-full border-2 border-slate-800 object-cover" />
-          <span className="absolute bottom-0.5 end-0.5 block h-3 w-3 rounded-full border-2 border-[#070A13] bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]">
+          <span className="absolute bottom-0.5 end-0.5 block h-3 w-3 rounded-full border-2 border-background bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]">
             <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/70" />
           </span>
         </div>
@@ -139,12 +139,12 @@ const Lightbox = ({ src, kind, onClose, alt }: { src: string; kind: "image" | "v
     document.body.appendChild(a); a.click(); a.remove();
   };
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#070A13]/95 backdrop-blur-md" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-md" onClick={onClose}>
       <div className="flex items-center justify-between px-4 py-3" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="rounded-full bg-slate-800/80 p-2 text-white hover:bg-slate-700">
           <X className="h-5 w-5" />
         </button>
-        <button onClick={download} className="inline-flex items-center gap-2 rounded-full bg-[#FBBF24] px-4 py-2 text-sm font-extrabold text-[#111827] shadow-[0_0_18px_rgba(251,191,36,0.5)]">
+        <button onClick={download} className="inline-flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-sm font-extrabold text-gold-foreground shadow-[0_0_18px_rgba(251,191,36,0.5)]">
           <Download className="h-4 w-4" /> تحميل المرفق
         </button>
       </div>
@@ -162,10 +162,10 @@ const AudioPreview = ({ url, onSend, onDelete }: { url: string; onSend: () => vo
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   return (
-    <div className="flex items-center gap-2 rounded-2xl border border-[#FBBF24]/40 bg-[#0B101D] p-2">
+    <div className="flex items-center gap-2 rounded-2xl border border-gold/40 bg-card p-2">
       <button
         onClick={() => { const a = audioRef.current; if (!a) return; if (playing) { a.pause(); setPlaying(false); } else { a.play(); setPlaying(true); } }}
-        className="rounded-full bg-[#FBBF24]/20 p-2 text-[#FBBF24]"
+        className="rounded-full bg-gold/20 p-2 text-gold"
         aria-label="play/pause"
       >
         {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -175,7 +175,7 @@ const AudioPreview = ({ url, onSend, onDelete }: { url: string; onSend: () => vo
       <button onClick={onDelete} className="rounded-full bg-rose-500/15 p-2 text-rose-300 hover:bg-rose-500/30" aria-label="حذف">
         <Trash2 className="h-4 w-4" />
       </button>
-      <button onClick={onSend} className="rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] p-2.5 text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.5)]" aria-label="إرسال">
+      <button onClick={onSend} className="rounded-full bg-gradient-to-r from-gold to-gold-hover p-2.5 text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.5)]" aria-label="إرسال">
         <Send className="h-4 w-4" />
       </button>
     </div>
@@ -240,7 +240,7 @@ const MessageBubble = ({
     <div ref={wrapRef} className={cn("flex", mine ? "justify-end" : "justify-start")}>
       <div className="relative max-w-[78%] space-y-1" style={{ transform: `translateX(${dx}px)`, transition: dx === 0 ? "transform 200ms" : "none" }}>
         {Math.abs(dx) > 20 && (
-          <div className={cn("absolute top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-bold text-[#FBBF24]",
+          <div className={cn("absolute top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-bold text-gold",
             dx > 0 ? "-right-8" : "-left-8")}>
             <Reply className="h-4 w-4" /> رد
           </div>
@@ -260,15 +260,15 @@ const MessageBubble = ({
           )}
         >
           {m.replyTo && (
-            <div className="mb-1.5 rounded-lg border-l-2 border-[#FBBF24] bg-black/25 px-2 py-1 text-[11px] text-slate-300">
-              <span className="block font-bold text-[#FBBF24]">{m.replyTo.from === "me" ? "أنت" : "رد على"}</span>
+            <div className="mb-1.5 rounded-lg border-l-2 border-gold bg-black/25 px-2 py-1 text-[11px] text-slate-300">
+              <span className="block font-bold text-gold">{m.replyTo.from === "me" ? "أنت" : "رد على"}</span>
               <span className="line-clamp-2">{m.replyTo.text}</span>
             </div>
           )}
 
           {isBlurredViewOnce ? (
             <div className="flex items-center gap-2 rounded-xl border border-slate-700 bg-black/40 px-3 py-4 text-xs text-slate-300">
-              <Lock className="h-4 w-4 text-[#FBBF24]" />
+              <Lock className="h-4 w-4 text-gold" />
               تم فتح الوسائط وتدميرها تلقائياً 🔒
             </div>
           ) : showViewOnceGate ? (
@@ -277,7 +277,7 @@ const MessageBubble = ({
                 onOpenMedia((m.imageUrl || m.videoUrl)!, m.imageUrl ? "image" : "video");
                 onConsumeViewOnce(m);
               }}
-              className="flex items-center gap-2 rounded-xl border border-[#FBBF24]/40 bg-[#FBBF24]/10 px-3 py-4 text-xs font-bold text-[#FBBF24]"
+              className="flex items-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-3 py-4 text-xs font-bold text-gold"
             >
               <Eye className="h-4 w-4" /> فتح لمرة واحدة
             </button>
@@ -298,12 +298,12 @@ const MessageBubble = ({
             </p>
           )}
           {translation && (
-            <p className="mt-1.5 border-t border-white/10 pt-1.5 text-xs text-[#FBBF24]">{translation}</p>
+            <p className="mt-1.5 border-t border-white/10 pt-1.5 text-xs text-gold">{translation}</p>
           )}
           {m.reactions && m.reactions.length > 0 && (
             <div className="mt-1.5 flex flex-wrap gap-1">
               {m.reactions.map((r, i) => (
-                <span key={i} className="rounded-full border border-[#FBBF24]/30 bg-[#111827] px-1.5 py-0.5 text-[11px]">{r}</span>
+                <span key={i} className="rounded-full border border-gold/30 bg-surface-2 px-1.5 py-0.5 text-[11px]">{r}</span>
               ))}
             </div>
           )}
@@ -313,7 +313,7 @@ const MessageBubble = ({
           {mine && <StatusTick s={m.status} />}
           {!mine && m.lang && !isBlurredViewOnce && (
             <button onClick={() => onTranslate(m)}
-              className="flex items-center gap-1 rounded-full bg-slate-800/70 px-2 py-0.5 text-[10px] font-semibold text-[#FBBF24] hover:bg-slate-700/70">
+              className="flex items-center gap-1 rounded-full bg-slate-800/70 px-2 py-0.5 text-[10px] font-semibold text-gold hover:bg-slate-700/70">
               <Languages className="h-3 w-3" /> ترجمة
             </button>
           )}
@@ -343,19 +343,19 @@ const FloatingMenu = ({
     <div className="fixed inset-0 z-[80]" onClick={onClose}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
       <div
-        className="absolute z-[81] flex items-center gap-1 rounded-full border border-[#FBBF24]/30 bg-[#0B101D]/95 px-2 py-1.5 shadow-[0_0_24px_rgba(251,191,36,0.25)]"
+        className="absolute z-[81] flex items-center gap-1 rounded-full border border-gold/30 bg-card/95 px-2 py-1.5 shadow-[0_0_24px_rgba(251,191,36,0.25)]"
         style={{ top, left: Math.max(12, Math.min(state.left, window.innerWidth - 260)) }}
         onClick={(e) => e.stopPropagation()}
       >
         {QUICK_REACTIONS.map((e) => (
           <button key={e} onClick={() => { onReact(state.m, e); onClose(); }} className="rounded-full p-1.5 text-lg transition hover:scale-125">{e}</button>
         ))}
-        <button onClick={() => { onOpenEmojiPicker(state.m); onClose(); }} className="rounded-full bg-[#FBBF24]/15 p-1.5 text-[#FBBF24] hover:bg-[#FBBF24]/25">
+        <button onClick={() => { onOpenEmojiPicker(state.m); onClose(); }} className="rounded-full bg-gold/15 p-1.5 text-gold hover:bg-gold/25">
           <Plus className="h-4 w-4" />
         </button>
       </div>
       <div
-        className="absolute z-[81] w-56 overflow-hidden rounded-2xl border border-slate-800 bg-[#0B101D] shadow-2xl"
+        className="absolute z-[81] w-56 overflow-hidden rounded-2xl border border-slate-800 bg-card shadow-2xl"
         style={{ top: top + 56, left: Math.max(12, Math.min(state.left, window.innerWidth - 240)) }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -560,9 +560,9 @@ const ChatScreen = ({
   }, [thread.messages, searchOpen, searchQ]);
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-[#070A13]" dir="rtl">
+    <div className="flex h-[100dvh] flex-col bg-background" dir="rtl">
       {/* Header */}
-      <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-slate-800 bg-[#0B101D]/90 px-4 py-3 backdrop-blur">
+      <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-slate-800 bg-card/90 px-4 py-3 backdrop-blur">
         <button onClick={onBack} className="rounded-full p-2 text-slate-300 hover:bg-slate-800/60" aria-label="رجوع">
           <ArrowRight className="h-5 w-5 rtl:rotate-180" />
         </button>
@@ -572,12 +572,12 @@ const ChatScreen = ({
         <button onClick={() => setSidebar(true)} className="flex-1 min-w-0 text-start">
           <p className="truncate text-sm font-bold text-white">{thread.friend.name}</p>
           <p className={cn("flex items-center gap-1.5 text-[11px]",
-            thread.theyRecording ? "text-[#FBBF24]" : thread.blocked ? "text-rose-400" : "text-emerald-400"
+            thread.theyRecording ? "text-gold" : thread.blocked ? "text-rose-400" : "text-emerald-400"
           )}>
             {thread.theyRecording && (
               <span className="flex items-center gap-0.5">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <span key={i} className="waveform-bar block h-2.5 w-[3px] rounded-full bg-[#FBBF24]" style={{ animationDelay: `${i * 0.08}s` }} />
+                  <span key={i} className="waveform-bar block h-2.5 w-[3px] rounded-full bg-gold" style={{ animationDelay: `${i * 0.08}s` }} />
                 ))}
               </span>
             )}
@@ -590,18 +590,18 @@ const ChatScreen = ({
         <button className="rounded-full bg-slate-800/70 p-2 text-emerald-300 hover:bg-slate-700/70" aria-label="مكالمة">
           <Phone className="h-4 w-4" />
         </button>
-        <button onClick={() => setSidebar(true)} className="rounded-full bg-slate-800/70 p-2 text-[#FBBF24] hover:bg-slate-700/70" aria-label="الملف">
+        <button onClick={() => setSidebar(true)} className="rounded-full bg-slate-800/70 p-2 text-gold hover:bg-slate-700/70" aria-label="الملف">
           <MoreHorizontal className="h-4 w-4" />
         </button>
       </header>
 
       {searchOpen && (
-        <div className="border-b border-slate-800 bg-[#0B101D] px-3 py-2">
+        <div className="border-b border-slate-800 bg-card px-3 py-2">
           <input
             value={searchQ}
             onChange={(e) => setSearchQ(e.target.value)}
             placeholder="ابحث في المحادثة…"
-            className="w-full rounded-xl border border-slate-800 bg-[#111827] px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500"
+            className="w-full rounded-xl border border-slate-800 bg-surface-2 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500"
           />
         </div>
       )}
@@ -625,17 +625,17 @@ const ChatScreen = ({
 
       {/* Grammar hint */}
       {grammarHint && (
-        <div className="mx-4 mb-1 flex items-center gap-2 rounded-xl border border-[#FBBF24]/30 bg-[#FBBF24]/10 px-3 py-1.5 text-[11px] text-[#FBBF24]">
+        <div className="mx-4 mb-1 flex items-center gap-2 rounded-xl border border-gold/30 bg-gold/10 px-3 py-1.5 text-[11px] text-gold">
           <Sparkles className="h-3.5 w-3.5" /> {grammarHint}
         </div>
       )}
 
       {/* Reply / edit banner */}
       {(replyTo || editing) && (
-        <div className="mx-3 mb-1 flex items-center gap-2 rounded-xl border border-slate-800 bg-[#111827] px-3 py-2 text-[11px] text-slate-300">
-          {editing ? <Pencil className="h-3.5 w-3.5 text-[#FBBF24]" /> : <Reply className="h-3.5 w-3.5 text-[#FBBF24]" />}
+        <div className="mx-3 mb-1 flex items-center gap-2 rounded-xl border border-slate-800 bg-surface-2 px-3 py-2 text-[11px] text-slate-300">
+          {editing ? <Pencil className="h-3.5 w-3.5 text-gold" /> : <Reply className="h-3.5 w-3.5 text-gold" />}
           <span className="flex-1 truncate">
-            <span className="font-bold text-[#FBBF24]">{editing ? "تعديل: " : "رد على: "}</span>
+            <span className="font-bold text-gold">{editing ? "تعديل: " : "رد على: "}</span>
             {(editing || replyTo)!.text}
           </span>
           <button onClick={() => { setReplyTo(null); setEditing(null); setText(""); }} className="text-slate-500 hover:text-white">
@@ -654,7 +654,7 @@ const ChatScreen = ({
 
       {/* View-once badge */}
       {viewOnce && (
-        <div className="mx-3 mb-1 flex items-center gap-2 rounded-xl border border-[#FBBF24]/40 bg-[#FBBF24]/10 px-3 py-1.5 text-[11px] text-[#FBBF24]">
+        <div className="mx-3 mb-1 flex items-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-3 py-1.5 text-[11px] text-gold">
           <EyeOff className="h-3.5 w-3.5" /> الوسائط التالية للعرض لمرة واحدة فقط
           <button onClick={() => setViewOnce(false)} className="ms-auto text-slate-400 hover:text-white"><X className="h-3.5 w-3.5" /></button>
         </div>
@@ -662,7 +662,7 @@ const ChatScreen = ({
 
       {/* Sticky bottom input dock — safe area padded */}
       <div
-        className="sticky bottom-0 z-50 border-t border-slate-800 bg-[#0B101D]/95 px-3 pt-3 backdrop-blur"
+        className="sticky bottom-0 z-50 border-t border-slate-800 bg-card/95 px-3 pt-3 backdrop-blur"
         style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}
       >
         {previewUrl ? (
@@ -675,27 +675,27 @@ const ChatScreen = ({
             </span>
             <div className="flex-1 flex items-center gap-1">
               {Array.from({ length: 18 }).map((_, i) => (
-                <span key={i} className="waveform-bar block h-4 w-1 rounded-full bg-[#FBBF24]" style={{ animationDelay: `${i * 0.05}s` }} />
+                <span key={i} className="waveform-bar block h-4 w-1 rounded-full bg-gold" style={{ animationDelay: `${i * 0.05}s` }} />
               ))}
             </div>
-            <span className="tabular-nums text-xs font-extrabold text-[#FBBF24]">0:{secondsLeft.toString().padStart(2, "0")}</span>
-            <button onClick={stopVoice} className="rounded-full bg-[#FBBF24] px-3 py-1.5 text-[11px] font-extrabold text-[#111827]">إيقاف</button>
+            <span className="tabular-nums text-xs font-extrabold text-gold">0:{secondsLeft.toString().padStart(2, "0")}</span>
+            <button onClick={stopVoice} className="rounded-full bg-gold px-3 py-1.5 text-[11px] font-extrabold text-gold-foreground">إيقاف</button>
           </div>
         ) : (
-          <div className="flex items-end gap-1 rounded-2xl border border-slate-800 bg-[#111827] p-2">
-            <button onClick={() => fileImgRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-[#FBBF24]" aria-label="صورة">
+          <div className="flex items-end gap-1 rounded-2xl border border-slate-800 bg-surface-2 p-2">
+            <button onClick={() => fileImgRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label="صورة">
               <ImagePlus className="h-5 w-5" />
             </button>
-            <button onClick={() => fileVidRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-[#FBBF24]" aria-label="فيديو">
+            <button onClick={() => fileVidRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label="فيديو">
               <Video className="h-5 w-5" />
             </button>
-            <button onClick={() => setViewOnce((v) => !v)} className={cn("rounded-full p-2 hover:bg-slate-800/60", viewOnce ? "text-[#FBBF24]" : "text-slate-400 hover:text-[#FBBF24]")} aria-label="عرض لمرة واحدة">
+            <button onClick={() => setViewOnce((v) => !v)} className={cn("rounded-full p-2 hover:bg-slate-800/60", viewOnce ? "text-gold" : "text-slate-400 hover:text-gold")} aria-label="عرض لمرة واحدة">
               <EyeOff className="h-5 w-5" />
             </button>
-            <button onClick={() => { setEmojiTargetMsgId(null); setShowEmoji((v) => !v); }} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-[#FBBF24]" aria-label="إيموجي">
+            <button onClick={() => { setEmojiTargetMsgId(null); setShowEmoji((v) => !v); }} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label="إيموجي">
               <Smile className="h-5 w-5" />
             </button>
-            <button onClick={translateDraft} disabled={!text.trim()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-[#FBBF24] disabled:opacity-40" aria-label="ترجمة فورية">
+            <button onClick={translateDraft} disabled={!text.trim()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold disabled:opacity-40" aria-label="ترجمة فورية">
               <Languages className="h-5 w-5" />
             </button>
             <input ref={fileImgRef} type="file" accept="image/*" hidden onChange={(e) => handleFile(e.target.files?.[0] || null, "image")} />
@@ -710,11 +710,11 @@ const ChatScreen = ({
               className="no-scrollbar flex-1 resize-none bg-transparent px-1 py-2 text-sm text-white outline-none placeholder:text-slate-500"
             />
             {text.trim() ? (
-              <button onClick={send} className="rounded-full bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] p-2.5 text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105" aria-label="إرسال">
+              <button onClick={send} className="rounded-full bg-gradient-to-r from-gold to-gold-hover p-2.5 text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105" aria-label="إرسال">
                 <Send className="h-4 w-4" />
               </button>
             ) : (
-              <button onClick={startVoice} className="rounded-full bg-[#FBBF24]/15 p-2.5 text-[#FBBF24] hover:bg-[#FBBF24]/25 shadow-[0_0_18px_rgba(251,191,36,0.25)]" aria-label="تسجيل صوتي">
+              <button onClick={startVoice} className="rounded-full bg-gold/15 p-2.5 text-gold hover:bg-gold/25 shadow-[0_0_18px_rgba(251,191,36,0.25)]" aria-label="تسجيل صوتي">
                 <Mic className="h-4 w-4" />
               </button>
             )}
@@ -739,7 +739,7 @@ const ChatScreen = ({
 
       {/* Delete confirmation */}
       <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
-        <DialogContent className="border-slate-800 bg-[#0B101D] text-white">
+        <DialogContent className="border-slate-800 bg-card text-white">
           <DialogHeader>
             <DialogTitle className="text-white">حذف الرسالة</DialogTitle>
             <DialogDescription className="text-slate-400">اختر نطاق الحذف. لا يمكن التراجع.</DialogDescription>
@@ -747,7 +747,7 @@ const ChatScreen = ({
           <div className="grid gap-2">
             <button
               onClick={() => { if (deleteTarget) onDeleteMessage(deleteTarget.id, "me"); setDeleteTarget(null); }}
-              className="flex items-center gap-2 rounded-xl border border-slate-800 bg-[#111827] px-3 py-3 text-sm text-white hover:border-[#FBBF24]/40"
+              className="flex items-center gap-2 rounded-xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm text-white hover:border-gold/40"
             >
               <Trash2 className="h-4 w-4 text-slate-300" /> حذف من طرفي فقط 🗑️
             </button>
@@ -763,14 +763,14 @@ const ChatScreen = ({
 
       {/* Clear history */}
       <Dialog open={!!clearTarget} onOpenChange={(o) => !o && setClearTarget(null)}>
-        <DialogContent className="border-slate-800 bg-[#0B101D] text-white">
+        <DialogContent className="border-slate-800 bg-card text-white">
           <DialogHeader>
             <DialogTitle className="text-white">مسح سجل المحادثة</DialogTitle>
             <DialogDescription className="text-slate-400">هذا الإجراء غير قابل للاسترجاع.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
             <button onClick={() => { onClearHistory("me"); setClearTarget(null); }}
-              className="flex items-center gap-2 rounded-xl border border-slate-800 bg-[#111827] px-3 py-3 text-sm text-white hover:border-[#FBBF24]/40">
+              className="flex items-center gap-2 rounded-xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm text-white hover:border-gold/40">
               <Trash2 className="h-4 w-4" /> مسح من طرفي فقط
             </button>
             <button onClick={() => { onClearHistory("all"); setClearTarget(null); }}
@@ -783,7 +783,7 @@ const ChatScreen = ({
 
       {/* Side drawer settings */}
       <Sheet open={sidebar} onOpenChange={setSidebar}>
-        <SheetContent side="left" className="w-[86vw] max-w-md border-slate-800 bg-[#0B101D] p-0 text-white">
+        <SheetContent side="left" className="w-[86vw] max-w-md border-slate-800 bg-card p-0 text-white">
           <div className="flex h-full flex-col">
             <SheetHeader className="border-b border-slate-800 p-4">
               <SheetTitle className="text-white">تفاصيل المحادثة</SheetTitle>
@@ -791,31 +791,31 @@ const ChatScreen = ({
 
             <div className="flex flex-col items-center gap-2 p-6">
               <button onClick={() => setLightbox({ src: thread.friend.avatar, kind: "image", alt: thread.friend.name })} className="relative">
-                <img src={thread.friend.avatar} alt={thread.friend.name} className="h-28 w-28 rounded-full border-2 border-[#FBBF24]/50 object-cover shadow-[0_0_24px_rgba(251,191,36,0.25)]" />
-                {thread.friend.online && <span className="absolute bottom-1 end-1 block h-4 w-4 rounded-full border-2 border-[#0B101D] bg-emerald-400" />}
+                <img src={thread.friend.avatar} alt={thread.friend.name} className="h-28 w-28 rounded-full border-2 border-gold/50 object-cover shadow-[0_0_24px_rgba(251,191,36,0.25)]" />
+                {thread.friend.online && <span className="absolute bottom-1 end-1 block h-4 w-4 rounded-full border-2 border-card bg-emerald-400" />}
               </button>
               <p className="text-lg font-extrabold text-white">{thread.friend.name}</p>
-              <p className="text-xs text-[#FBBF24]">{thread.friend.handle}</p>
+              <p className="text-xs text-gold">{thread.friend.handle}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-2 px-4">
-              <button className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-[#111827] px-3 py-3 text-sm font-bold text-white hover:border-[#FBBF24]/40">
-                <UserRound className="h-4 w-4 text-[#FBBF24]" /> عرض الملف
+              <button className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm font-bold text-white hover:border-gold/40">
+                <UserRound className="h-4 w-4 text-gold" /> عرض الملف
               </button>
-              <button onClick={() => { setSidebar(false); setSearchOpen(true); }} className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-[#111827] px-3 py-3 text-sm font-bold text-white hover:border-[#FBBF24]/40">
-                <Search className="h-4 w-4 text-[#FBBF24]" /> بحث
+              <button onClick={() => { setSidebar(false); setSearchOpen(true); }} className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm font-bold text-white hover:border-gold/40">
+                <Search className="h-4 w-4 text-gold" /> بحث
               </button>
             </div>
 
             <div className="mt-4 space-y-1 px-3">
-              <button onClick={onToggleMute} className="flex w-full items-center justify-between rounded-2xl border border-slate-800 bg-[#111827] px-4 py-3 text-sm">
+              <button onClick={onToggleMute} className="flex w-full items-center justify-between rounded-2xl border border-slate-800 bg-surface-2 px-4 py-3 text-sm">
                 <span className="flex items-center gap-2 text-white"><BellOff className="h-4 w-4 text-slate-300" /> كتم الإشعارات</span>
                 <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-extrabold",
-                  thread.muted ? "bg-[#FBBF24] text-[#111827]" : "bg-slate-700 text-slate-300")}>
+                  thread.muted ? "bg-gold text-gold-foreground" : "bg-slate-700 text-slate-300")}>
                   {thread.muted ? "مفعل" : "معطل"}
                 </span>
               </button>
-              <button onClick={() => setClearTarget(true)} className="flex w-full items-center gap-2 rounded-2xl border border-slate-800 bg-[#111827] px-4 py-3 text-sm text-white">
+              <button onClick={() => setClearTarget(true)} className="flex w-full items-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-4 py-3 text-sm text-white">
                 <Trash2 className="h-4 w-4 text-slate-300" /> مسح سجل المحادثة
               </button>
               <button onClick={onBlock} className="flex w-full items-center gap-2 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm font-bold text-rose-200 hover:bg-rose-900/40">
@@ -852,20 +852,20 @@ const InboxRow = ({ t, onOpen, onAction }: {
       >
         <div className="relative">
           {isSaved ? (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#FBBF24] to-[#F59E0B] text-[#111827] shadow-[0_0_18px_rgba(251,191,36,0.4)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-gold to-gold-hover text-gold-foreground shadow-[0_0_18px_rgba(251,191,36,0.4)]">
               <Bookmark className="h-6 w-6" />
             </div>
           ) : (
             <img src={t.friend.avatar} alt={t.friend.name} className="h-12 w-12 rounded-full object-cover" />
           )}
           {t.friend.online && !isSaved && (
-            <span className="absolute bottom-0 end-0 block h-3 w-3 rounded-full border-2 border-[#070A13] bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+            <span className="absolute bottom-0 end-0 block h-3 w-3 rounded-full border-2 border-background bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
             <p className="flex items-center gap-1.5 truncate text-sm font-bold text-white">
-              {t.pinned && <Pin className="h-3 w-3 text-[#FBBF24]" />}
+              {t.pinned && <Pin className="h-3 w-3 text-gold" />}
               {t.muted && <BellOff className="h-3 w-3 text-slate-500" />}
               {t.kind === "room" && <Users className="h-3 w-3 text-cyan-400" />}
               {isSaved ? "الرسائل المحفوظة الشخصية" : t.friend.name}
@@ -874,9 +874,9 @@ const InboxRow = ({ t, onOpen, onAction }: {
           </div>
           <div className="mt-0.5 flex items-center gap-1.5">
             {t.theyRecording ? (
-              <span className="flex items-center gap-1 text-[11px] font-bold text-[#FBBF24]">
+              <span className="flex items-center gap-1 text-[11px] font-bold text-gold">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <span key={i} className="waveform-bar block h-2 w-[3px] rounded-full bg-[#FBBF24]" style={{ animationDelay: `${i * 0.08}s` }} />
+                  <span key={i} className="waveform-bar block h-2 w-[3px] rounded-full bg-gold" style={{ animationDelay: `${i * 0.08}s` }} />
                 ))}
                 جاري تسجيل رسالة صوتية… 🎙️
               </span>
@@ -889,16 +889,16 @@ const InboxRow = ({ t, onOpen, onAction }: {
           </div>
         </div>
         {t.unread > 0 && (
-          <span className="ml-1 inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-[#FBBF24] px-1.5 text-[11px] font-extrabold text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.55)]">
+          <span className="ml-1 inline-flex h-6 min-w-[24px] items-center justify-center rounded-full bg-gold px-1.5 text-[11px] font-extrabold text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.55)]">
             {t.unread}
           </span>
         )}
       </button>
 
       {menu && (
-        <div className="absolute inset-x-2 top-full z-30 mt-1 overflow-hidden rounded-2xl border border-slate-800 bg-[#111827] shadow-2xl">
+        <div className="absolute inset-x-2 top-full z-30 mt-1 overflow-hidden rounded-2xl border border-slate-800 bg-surface-2 shadow-2xl">
           <button onClick={() => { onAction("pin"); setMenu(false); }} className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-slate-800">
-            <Pin className="h-4 w-4 text-[#FBBF24]" /> تثبيت في الأعلى
+            <Pin className="h-4 w-4 text-gold" /> تثبيت في الأعلى
           </button>
           <button onClick={() => { onAction("mute"); setMenu(false); }} className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-slate-800">
             <BellOff className="h-4 w-4 text-slate-300" /> {t.muted ? "إلغاء الكتم" : "عمل ميوت"}
@@ -937,7 +937,7 @@ const Inbox = ({ threads, onOpen, onAction, query, setQuery, folder, setFolder }
   return (
     <div className="px-5 pt-6">
       <h1 className="text-2xl font-extrabold tracking-tight text-white">الرسائل</h1>
-      <div className="mt-3 flex items-center gap-2 rounded-2xl border border-slate-800 bg-[#111827] px-3 py-2.5">
+      <div className="mt-3 flex items-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-3 py-2.5">
         <Search className="h-4 w-4 text-slate-400" />
         <input
           value={query}
@@ -959,8 +959,8 @@ const Inbox = ({ threads, onOpen, onAction, query, setQuery, folder, setFolder }
             className={cn(
               "shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition",
               folder === f.id
-                ? "bg-gradient-to-r from-[#FBBF24] to-[#F59E0B] text-[#111827] shadow-[0_0_14px_rgba(251,191,36,0.45)]"
-                : "border border-slate-800 bg-[#111827] text-slate-300 hover:text-white"
+                ? "bg-gradient-to-r from-gold to-gold-hover text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.45)]"
+                : "border border-slate-800 bg-surface-2 text-slate-300 hover:text-white"
             )}
           >
             {f.label}
@@ -1074,7 +1074,7 @@ const Messages = () => {
 
   return (
     <AppShell>
-      <div className="min-h-screen bg-[#070A13]" dir="rtl">
+      <div className="min-h-screen bg-background" dir="rtl">
         <Inbox
           threads={threads}
           onOpen={openThread}
