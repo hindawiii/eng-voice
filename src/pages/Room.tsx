@@ -273,6 +273,11 @@ const Room = () => {
     }
   };
 
+  // Always points at the latest handler so timers never fire a stale closure.
+  const leaveRoomRef = useRef(handleLeaveRoom);
+  leaveRoomRef.current = handleLeaveRoom;
+
+
   // Stage mode + floating reactions + session clock
   const [stageMode, setStageMode] = useState(false);
   const [reactionTargetIdx, setReactionTargetIdx] = useState<number | null>(null);
