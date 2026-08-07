@@ -17,7 +17,7 @@ interface LocationState {
   updatedAt: number;
 }
 
-// Shared key with the legacy GpsLocationCard so state persists across views.
+// Persisted location state shared across views.
 const KEY = "lingvoice.location.v1";
 
 const defaults: LocationState = {
