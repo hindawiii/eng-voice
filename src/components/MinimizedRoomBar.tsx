@@ -11,7 +11,7 @@ export interface MinimizedRoomState {
 }
 
 const STORAGE_KEY = "engvoice.minimizedRoom";
-const EVENT = "lingvoice:minimizedRoomChange";
+const EVENT = "engvoice:minimizedRoomChange";
 
 export const setMinimizedRoom = (state: MinimizedRoomState | null) => {
   try {
