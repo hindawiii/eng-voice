@@ -375,7 +375,7 @@ const Room = () => {
     const remaining = _baseSessionTotal + sessionExtraMin * 60 - sessionElapsed;
     if (remaining <= 0) {
       toast.info(lang === "ar" ? "انتهت الجلسة" : "Session ended");
-      const tk = setTimeout(() => handleLeaveRoom(), 1500);
+      const tk = setTimeout(() => leaveRoomRef.current(), 1500);
       return () => clearTimeout(tk);
     }
   }, [sessionElapsed, timerCfg.mode, _baseSessionTotal, sessionExtraMin, lang]);
