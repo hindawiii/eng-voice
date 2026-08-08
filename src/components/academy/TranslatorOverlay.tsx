@@ -44,7 +44,7 @@ export const TranslatorOverlay = ({ targetLang, targetBcp47 }: Props) => {
           <Languages className="h-4 w-4" /> قاموسي الخاص
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg bg-[#0B0F1A] text-white border-[#1F2937]">
+      <DialogContent className="max-w-lg bg-background text-white border-border">
         <DialogHeader><DialogTitle className="text-gold">المترجم الذكي</DialogTitle></DialogHeader>
 
         <div className="space-y-3">
@@ -52,7 +52,7 @@ export const TranslatorOverlay = ({ targetLang, targetBcp47 }: Props) => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="اكتب بالعربية أو بلغة الهدف..."
-            className="min-h-[80px] bg-surface-2 border-[#1F2937] text-white placeholder:text-white/40"
+            className="min-h-[80px] bg-surface-2 border-border text-white placeholder:text-white/40"
           />
           <div className="flex gap-2">
             <Button onClick={handleTranslate} disabled={loading} className="flex-1 bg-gold text-black hover:bg-gold-hover">
@@ -64,7 +64,7 @@ export const TranslatorOverlay = ({ targetLang, targetBcp47 }: Props) => {
           </div>
 
           {output && (
-            <div className="rounded-lg border border-[#1F2937] bg-surface-2 p-3">
+            <div className="rounded-lg border border-border bg-surface-2 p-3">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-white font-medium">{output}</p>
                 <TTSButton text={output} lang={to === "ar" ? "ar-SA" : targetBcp47} />
@@ -80,7 +80,7 @@ export const TranslatorOverlay = ({ targetLang, targetBcp47 }: Props) => {
           {entries.length > 0 && (
             <div>
               <p className="text-xs font-bold text-gold mb-1">مفضلتي ({entries.length})</p>
-              <ScrollArea className="h-40 rounded-lg border border-[#1F2937] bg-background p-2">
+              <ScrollArea className="h-40 rounded-lg border border-border bg-background p-2">
                 <div className="space-y-2">
                   {entries.map((e) => (
                     <div key={e.id} className="flex items-center justify-between gap-2 rounded bg-surface-2 p-2 text-sm">

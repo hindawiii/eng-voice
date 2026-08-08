@@ -24,7 +24,7 @@ export const LanguageCorner = ({ lang }: { lang: AcademyLang }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between rounded-2xl border border-[#1F2937] bg-surface-2 p-4">
+      <div className="flex items-center justify-between rounded-2xl border border-border bg-surface-2 p-4">
         <div className="flex items-center gap-3">
           <span className="text-3xl">{lang.flag}</span>
           <div>
@@ -45,7 +45,7 @@ export const LanguageCorner = ({ lang }: { lang: AcademyLang }) => {
                 "flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold whitespace-nowrap border transition-colors",
                 sub === id
                   ? "bg-gold text-black border-gold"
-                  : "bg-surface-2 text-white/80 border-[#1F2937] hover:border-gold/40"
+                  : "bg-surface-2 text-white/80 border-border hover:border-gold/40"
               )}
             >
               <Icon className="h-3.5 w-3.5" /> {ar}

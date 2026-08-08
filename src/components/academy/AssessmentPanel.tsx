@@ -56,7 +56,7 @@ export const AssessmentPanel = ({ langKey }: Props) => {
 
   const q = questions[idx];
   return (
-    <div className="rounded-2xl border border-[#1F2937] bg-surface-2 p-5 space-y-4">
+    <div className="rounded-2xl border border-border bg-surface-2 p-5 space-y-4">
       <div className="flex items-center justify-between text-xs">
         <span className="text-white/60">سؤال {idx + 1} / {questions.length}</span>
         <span className="text-gold font-bold">اختبار المستوى</span>
@@ -71,7 +71,7 @@ export const AssessmentPanel = ({ langKey }: Props) => {
             key={i}
             onClick={() => handle(i)}
             className={cn(
-              "rounded-lg border border-[#1F2937] bg-background p-3 text-right text-white font-medium",
+              "rounded-lg border border-border bg-background p-3 text-right text-white font-medium",
               "hover:border-gold hover:bg-gold/10 transition-colors"
             )}
           >

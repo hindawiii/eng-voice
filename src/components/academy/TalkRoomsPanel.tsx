@@ -20,7 +20,7 @@ export const TalkRoomsPanel = ({ langKey }: Props) => {
           <Link
             key={r.id}
             to={`/room/${r.id}`}
-            className="block rounded-2xl border border-[#1F2937] bg-surface-2 p-4 hover:border-gold/50 transition-colors"
+            className="block rounded-2xl border border-border bg-surface-2 p-4 hover:border-gold/50 transition-colors"
           >
             <div className="flex items-start justify-between gap-2">
               <h4 className="font-bold text-white">{r.titleAr}</h4>

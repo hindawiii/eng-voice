@@ -82,7 +82,7 @@ export const CreateRoomDialog = () => {
       liveUsers: 1,
       speakers: 1,
       createdAt: Date.now(),
-      accent: tutorMode ? "from-emerald-700 to-[#D4AF37]" : "from-[#1E3A5F] to-[#D4AF37]",
+      accent: tutorMode ? "from-emerald-700 to-gold" : "from-primary-soft to-gold",
       tutorMode: tutorMode && canTutor,
       difficulty: tutorMode && canTutor ? difficulty : undefined,
       status: "active",

@@ -27,7 +27,7 @@ export const ReferralRewardsPanel = ({ invitedCount = 0 }: { invitedCount?: numb
   };
 
   return (
-    <section className="rounded-3xl border border-[#1F2937] bg-surface-2 p-5 shadow-elegant">
+    <section className="rounded-3xl border border-border bg-surface-2 p-5 shadow-elegant">
       <div className="mb-3 flex items-center gap-2">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-gold text-gold-foreground shadow-gold">
           <Users className="h-5 w-5" />
@@ -44,7 +44,7 @@ export const ReferralRewardsPanel = ({ invitedCount = 0 }: { invitedCount?: numb
         </div>
       </div>
 
-      <div className="mb-4 flex items-center gap-2 rounded-2xl border border-[#1F2937] bg-background p-2">
+      <div className="mb-4 flex items-center gap-2 rounded-2xl border border-border bg-background p-2">
         <input
           readOnly
           value={link}
@@ -67,7 +67,7 @@ export const ReferralRewardsPanel = ({ invitedCount = 0 }: { invitedCount?: numb
         </button>
       </div>
 
-      <div className="mb-3 flex items-center justify-between rounded-2xl border border-[#1F2937] bg-background p-3">
+      <div className="mb-3 flex items-center justify-between rounded-2xl border border-border bg-background p-3">
         <span className="text-[11px] font-bold uppercase tracking-wider text-white/70">
           {lang === "ar" ? "أصدقاؤك المدعوّون" : "Friends Invited"}
         </span>
@@ -84,7 +84,7 @@ export const ReferralRewardsPanel = ({ invitedCount = 0 }: { invitedCount?: numb
                 "flex items-center gap-3 rounded-2xl border p-3 transition-smooth",
                 reached
                   ? "border-emerald-500/60 bg-emerald-950/40"
-                  : "border-[#1F2937] bg-background"
+                  : "border-border bg-background"
               )}
             >
               <div

@@ -16,14 +16,14 @@ export interface Room {
 }
 
 export const ROOMS: Room[] = [
-  { key: "english", name: "English Lounge", nameAr: "صالون الإنجليزية", flag: "🇬🇧", liveUsers: 142, speakers: 7, topic: "Tell us about a weird food you've tried", topicAr: "أخبرنا عن طعام غريب جربته", accent: "from-[#1E3A5F] to-[#2c5282]" },
-  { key: "french", name: "Salon Français", nameAr: "صالون الفرنسية", flag: "🇫🇷", liveUsers: 88, speakers: 6, topic: "Describe your perfect Sunday morning", topicAr: "صف صباح الأحد المثالي", accent: "from-[#1E3A5F] to-[#3b4a8a]" },
-  { key: "spanish", name: "Sala Española", nameAr: "صالون الإسبانية", flag: "🇪🇸", liveUsers: 67, speakers: 5, topic: "What song reminds you of childhood?", topicAr: "أي أغنية تذكرك بطفولتك؟", accent: "from-[#7a3b2e] to-[#D4AF37]" },
-  { key: "arabic-foreign", name: "Arabic for Foreigners", nameAr: "العربية للناطقين بغيرها", flag: "🌍", liveUsers: 121, speakers: 8, topic: "تحدث عن طبق من بلدك", topicAr: "تحدث عن طبق من بلدك", accent: "from-[#1E3A5F] to-[#D4AF37]" },
-  { key: "dialect-sudanese", name: "Sudanese Dialect", nameAr: "ركن اللهجة السودانية", flag: "🇸🇩", liveUsers: 54, speakers: 4, topic: "احكي عن أحلى مكان في بلدك", topicAr: "احكي عن أحلى مكان في بلدك", accent: "from-[#0a3d2e] to-[#D4AF37]" },
-  { key: "dialect-egyptian", name: "Egyptian Dialect", nameAr: "ركن اللهجة المصرية", flag: "🇪🇬", liveUsers: 96, speakers: 6, topic: "إيه أكتر فيلم بتحبه ليه؟", topicAr: "إيه أكتر فيلم بتحبه ليه؟", accent: "from-[#1E3A5F] to-[#c9a227]" },
-  { key: "german", name: "Deutsch Zimmer", nameAr: "صالون الألمانية", flag: "🇩🇪", liveUsers: 39, speakers: 3, topic: "A small habit that changed your life", topicAr: "عادة صغيرة غيّرت حياتك", pro: true, accent: "from-[#1E3A5F] to-[#374151]" },
-  { key: "japanese", name: "日本語ラウンジ", nameAr: "صالون اليابانية", flag: "🇯🇵", liveUsers: 73, speakers: 5, topic: "Your favorite city to walk in", topicAr: "مدينتك المفضلة للمشي", pro: true, accent: "from-[#7a1e2e] to-[#D4AF37]" },
+  { key: "english", name: "English Lounge", nameAr: "صالون الإنجليزية", flag: "🇬🇧", liveUsers: 142, speakers: 7, topic: "Tell us about a weird food you've tried", topicAr: "أخبرنا عن طعام غريب جربته", accent: "from-primary-soft to-[#2c5282]" },
+  { key: "french", name: "Salon Français", nameAr: "صالون الفرنسية", flag: "🇫🇷", liveUsers: 88, speakers: 6, topic: "Describe your perfect Sunday morning", topicAr: "صف صباح الأحد المثالي", accent: "from-primary-soft to-[#3b4a8a]" },
+  { key: "spanish", name: "Sala Española", nameAr: "صالون الإسبانية", flag: "🇪🇸", liveUsers: 67, speakers: 5, topic: "What song reminds you of childhood?", topicAr: "أي أغنية تذكرك بطفولتك؟", accent: "from-[#7a3b2e] to-gold" },
+  { key: "arabic-foreign", name: "Arabic for Foreigners", nameAr: "العربية للناطقين بغيرها", flag: "🌍", liveUsers: 121, speakers: 8, topic: "تحدث عن طبق من بلدك", topicAr: "تحدث عن طبق من بلدك", accent: "from-primary-soft to-gold" },
+  { key: "dialect-sudanese", name: "Sudanese Dialect", nameAr: "ركن اللهجة السودانية", flag: "🇸🇩", liveUsers: 54, speakers: 4, topic: "احكي عن أحلى مكان في بلدك", topicAr: "احكي عن أحلى مكان في بلدك", accent: "from-[#0a3d2e] to-gold" },
+  { key: "dialect-egyptian", name: "Egyptian Dialect", nameAr: "ركن اللهجة المصرية", flag: "🇪🇬", liveUsers: 96, speakers: 6, topic: "إيه أكتر فيلم بتحبه ليه؟", topicAr: "إيه أكتر فيلم بتحبه ليه؟", accent: "from-primary-soft to-[#c9a227]" },
+  { key: "german", name: "Deutsch Zimmer", nameAr: "صالون الألمانية", flag: "🇩🇪", liveUsers: 39, speakers: 3, topic: "A small habit that changed your life", topicAr: "عادة صغيرة غيّرت حياتك", pro: true, accent: "from-primary-soft to-surface-3" },
+  { key: "japanese", name: "日本語ラウンジ", nameAr: "صالون اليابانية", flag: "🇯🇵", liveUsers: 73, speakers: 5, topic: "Your favorite city to walk in", topicAr: "مدينتك المفضلة للمشي", pro: true, accent: "from-[#7a1e2e] to-gold" },
 ];
 
 export interface SeatUser {

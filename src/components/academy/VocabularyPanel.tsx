@@ -13,11 +13,11 @@ export const VocabularyPanel = ({ langKey, bcp47 }: Props) => {
 
   return (
     <div className="space-y-5">
-      <section className="rounded-2xl border border-[#1F2937] bg-surface-2 p-4">
+      <section className="rounded-2xl border border-border bg-surface-2 p-4">
         <h3 className="mb-3 text-base font-bold text-gold">الأحرف الأساسية</h3>
         <div className="grid grid-cols-6 gap-2 sm:grid-cols-8">
           {letters.map((l, i) => (
-            <div key={i} className="flex flex-col items-center gap-1 rounded-lg bg-background p-2 border border-[#1F2937]">
+            <div key={i} className="flex flex-col items-center gap-1 rounded-lg bg-background p-2 border border-border">
               <span className="text-xl font-bold text-white">{l.text}</span>
               <TTSButton text={l.text} lang={bcp47} />
             </div>
@@ -25,7 +25,7 @@ export const VocabularyPanel = ({ langKey, bcp47 }: Props) => {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-[#1F2937] bg-surface-2 p-4">
+      <section className="rounded-2xl border border-border bg-surface-2 p-4">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base font-bold text-gold">المفردات الأساسية</h3>
           <Button
@@ -38,7 +38,7 @@ export const VocabularyPanel = ({ langKey, bcp47 }: Props) => {
         </div>
         <div className="grid gap-2 sm:grid-cols-2">
           {[...extra, ...vocab].map((v, i) => (
-            <div key={i} className="flex items-center justify-between rounded-lg border border-[#1F2937] bg-background p-3">
+            <div key={i} className="flex items-center justify-between rounded-lg border border-border bg-background p-3">
               <div>
                 <p className="font-semibold text-white">{v.text}</p>
                 <p className="text-xs text-white/60">{v.ar}</p>

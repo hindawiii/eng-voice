@@ -78,7 +78,7 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
 
   return (
     <Dialog open={!!user} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-sm border border-[#1F2937] bg-card text-white">
+      <DialogContent className="sm:max-w-sm border border-border bg-card text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-white">
             <span className="text-2xl">{user.flag}</span> {user.name}
@@ -102,7 +102,7 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
           </div>
 
           {/* Stats row */}
-          <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-[#1F2937]">
+          <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-border">
             {[
               { v: followers.toLocaleString("en-US"), l: lang === "ar" ? "متابعون" : "Followers", tone: "text-white" },
               { v: String(roomsHosted), l: lang === "ar" ? "غرف" : "Rooms", tone: "text-gold" },
@@ -112,7 +112,7 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
                 key={i}
                 className={cn(
                   "flex flex-col items-center gap-0.5 bg-background p-2.5",
-                  i !== 2 && "border-e border-[#1F2937]"
+                  i !== 2 && "border-e border-border"
                 )}
               >
                 <p className={cn("text-base font-black tabular-nums", s.tone)} dir="ltr">
@@ -146,7 +146,7 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
           </div>
 
           {/* Quick gifts */}
-          <div className="rounded-2xl border border-[#1F2937] bg-background p-2.5">
+          <div className="rounded-2xl border border-border bg-background p-2.5">
             <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-gold">
               <Gift className="h-3 w-3" /> {lang === "ar" ? "إرسال هدية" : "Send a gift"}
               <span className="ms-auto rounded-full bg-gold/15 px-2 py-0.5 tabular-nums" dir="ltr">
@@ -160,7 +160,7 @@ export const MiniProfileSheet = ({ user, onClose }: Props) => {
                   onClick={() => sendGift(g)}
                   disabled={lp < g.cost}
                   className={cn(
-                    "flex flex-col items-center gap-0.5 rounded-xl border border-[#1F2937] bg-surface-2 py-1.5 transition-spring hover:scale-105 hover:border-gold/50 disabled:opacity-40 disabled:hover:scale-100",
+                    "flex flex-col items-center gap-0.5 rounded-xl border border-border bg-surface-2 py-1.5 transition-spring hover:scale-105 hover:border-gold/50 disabled:opacity-40 disabled:hover:scale-100",
                     sent === g.emoji && "animate-gift-pop border-gold"
                   )}
                 >

@@ -83,7 +83,7 @@ export const SmartMirrorCard = () => {
     peakPct > 75 ? "bg-emerald-400" : peakPct > 30 ? "bg-gold" : peakPct > 5 ? "bg-white/60" : "bg-white/25";
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-[#1F2937] bg-card p-4 text-white shadow-elegant">
+    <section className="overflow-hidden rounded-3xl border border-border bg-card p-4 text-white shadow-elegant">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Radio className={cn("h-4 w-4", on ? "text-emerald-400 animate-pulse" : "text-white/50")} />
@@ -102,7 +102,7 @@ export const SmartMirrorCard = () => {
             "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black transition",
             on
               ? "bg-emerald-500 text-white shadow-[0_0_14px_rgba(16,185,129,0.55)]"
-              : "bg-surface-2 text-white/85 border border-[#1F2937] hover:border-gold"
+              : "bg-surface-2 text-white/85 border border-border hover:border-gold"
           )}
         >
           {on ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
