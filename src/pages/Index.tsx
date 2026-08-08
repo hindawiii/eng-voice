@@ -50,95 +50,36 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Your rooms + Active friends' rooms */}
-      <section className="px-5 -mt-6 space-y-4">
-        {customRooms.length > 0 && (
-          <div className="rounded-3xl bg-card p-4 shadow-elegant">
-            <div className="mb-3 flex items-baseline justify-between px-1">
-              <h2 className="text-lg font-bold">
-                {lang === "ar" ? "غرفك المُنشأة" : "Your rooms"}
-              </h2>
-              <span className="text-xs text-muted-foreground">
-                {customRooms.length} {lang === "ar" ? "غرفة" : "rooms"}
-              </span>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
-              {customRooms.map((r) => (
-                <Link
-                  key={r.key}
-                  to={`/room/${r.key}`}
-                  style={{ width: 160 }}
-                  className="group relative shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-soft transition-spring hover:-translate-y-1 hover:shadow-elegant"
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft text-lg">
-                      {r.flag}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-sm font-bold text-foreground">{r.language}</h3>
-                      <p className="truncate text-[10px] text-muted-foreground">
-                        {lang === "ar" ? "أنشأتها أنت" : "By you"}
-                      </p>
-                    </div>
-                    {r.isPrivate && <Lock className="h-3 w-3 text-gold" />}
-                  </div>
-                  <p className="mt-2 line-clamp-2 text-[11px] text-foreground/80 min-h-[28px]">{r.topic}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="rounded-3xl bg-card p-4 shadow-elegant">
-          <div className="mb-3 flex items-baseline justify-between px-1">
-            <h2 className="text-lg font-bold">
-              {lang === "ar" ? "غرف الأصدقاء النشطة" : "Active friends' rooms"}
-            </h2>
-            <span className="text-xs text-muted-foreground">
-              {FRIEND_ROOMS.length} {lang === "ar" ? "نشطة" : "live"}
-            </span>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
-            {FRIEND_ROOMS.map((f) => (
-              <Link
-                key={f.key}
-                to={`/room/${f.key}`}
-                style={{ width: 180 }}
-                className="group relative shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-card p-3 shadow-soft transition-spring hover:-translate-y-1 hover:shadow-elegant"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-xl">
-                    {f.avatar}
-                    <span className="absolute -bottom-0.5 -right-0.5 text-sm">{f.flag}</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-sm font-bold text-foreground">
-                      {lang === "ar" ? f.room : f.roomEn}
-                    </h3>
-                    <p className="truncate text-[10px] text-muted-foreground">
-                      {lang === "ar" ? f.friend : f.friendEn}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                    <Users className="h-3 w-3" /> {f.live}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                    </span>
-                    <span className="text-[10px] font-bold text-emerald-500">
-                      {lang === "ar" ? "مباشر" : "LIVE"}
-                    </span>
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+      {/* Merged compact rooms bar: your rooms | friends' rooms */}
+      <section className="px-5 -mt-6">
+        <RoomsQuickBar
+          labels={{
+            mine: lang === "ar" ? "غرفك" : "Your rooms",
+            friends: lang === "ar" ? "غرف الأصدقاء" : "Friends",
+            emptyMine: lang === "ar" ? "لا توجد غرفة" : "No room yet",
+            emptyFriends: lang === "ar" ? "لا يوجد نشاط" : "No activity",
+          }}
+          mine={customRooms.map((r) => ({
+            key: r.key,
+            label: r.language,
+            icon: r.flag,
+            desc: r.topic,
+            locked: r.isPrivate,
+            live: r.liveUsers,
+            owner: lang === "ar" ? "أنشأتها أنت" : "By you",
+          }))}
+          friends={FRIEND_ROOMS.map((f) => ({
+            key: f.key,
+            label: lang === "ar" ? f.room : f.roomEn,
+            icon: f.avatar,
+            flag: f.flag,
+            live: f.live,
+            owner: lang === "ar" ? f.friend : f.friendEn,
+            desc: lang === "ar" ? "غرفة صوتية مباشرة" : "Live voice room",
+          }))}
+        />
       </section>
+
 
 
       {/* Academy Hub */}
