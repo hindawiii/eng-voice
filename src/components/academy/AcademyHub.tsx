@@ -1,24 +1,22 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mic } from "lucide-react";
-import { ACADEMY_LANGS, LANG_ONLINE, generateTalkRooms } from "@/data/academy";
+import { ACADEMY_LANGS, LANG_ONLINE } from "@/data/academy";
+import { useCustomRooms } from "@/data/customRooms";
 import { cn } from "@/lib/utils";
 import { LanguageCorner } from "./LanguageCorner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+
 const ALL = { key: "all", labelAr: "الكل", flag: "🌍" } as const;
 
-const LEVEL_STYLE: Record<string, { ar: string; color: string }> = {
-  beginner: { ar: "مبتدئ", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" },
-  intermediate: { ar: "متوسط", color: "bg-sky-500/20 text-sky-300 border-sky-500/40" },
-  advanced: { ar: "متقدم", color: "bg-rose-500/20 text-rose-300 border-rose-500/40" },
-};
 
 export const AcademyHub = () => {
   const [active, setActive] = useState<string>("all");
   const lang = ACADEMY_LANGS.find((l) => l.key === active);
 
   const items = [ALL, ...ACADEMY_LANGS];
+  const activeRooms = useCustomRooms().filter((r) => (r.status ?? "active") === "active");
+
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -74,50 +72,46 @@ export const AcademyHub = () => {
         ) : (
           <div className="space-y-3">
             <h3 className="font-arabic text-sm font-bold text-foreground/85 px-1">
-              🎙️ كل غرف التحدث النشطة
+              🎙️ الغرف النشطة الآن
             </h3>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {ACADEMY_LANGS.flatMap((L) =>
-                generateTalkRooms(L.key).map((r) => ({ ...r, langFlag: L.flag, langAr: L.labelAr }))
-              )
-                .sort((a, b) => b.live - a.live)
-                .map((r) => {
-                  const meta = LEVEL_STYLE[r.level];
-                  return (
-                    <Link
-                      key={r.id}
-                      to={`/room/${r.id}`}
-                      className="block rounded-2xl border border-border bg-card p-4 hover:border-gold/50 transition-colors"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl leading-none">{r.langFlag}</span>
-                          <div>
-                            <h4 className="font-bold text-foreground text-sm">{r.titleAr}</h4>
-                            <p className="text-[11px] text-muted-foreground font-arabic">{r.langAr}</p>
+            {activeRooms.length === 0 ? (
+              <p className="rounded-2xl border border-dashed border-border bg-card p-6 text-center font-arabic text-xs text-muted-foreground">
+                لا توجد غرف نشطة حالياً — كن أول من ينشئ غرفة!
+              </p>
+            ) : (
+              <div className="grid grid-cols-4 gap-3 sm:grid-cols-6">
+                {activeRooms.map((r) => (
+                  <Tooltip key={r.key}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={`/room/${r.key}`}
+                        className="group flex flex-col items-center gap-1 outline-none"
+                      >
+                        <div className="relative">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-xl ring-1 ring-gold/40 transition-all group-hover:-translate-y-0.5 group-hover:ring-gold">
+                            {r.flag}
                           </div>
-                        </div>
-                        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${meta.color}`}>
-                          {meta.ar}
-                        </span>
-                      </div>
-                      <div className="mt-3 flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-1 text-foreground/70">
-                          <span className="relative flex h-2 w-2">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                          <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+                            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                           </span>
-                          <span className="text-gold font-bold">{r.live}</span> مباشر
+                        </div>
+                        <span className="max-w-[56px] truncate text-[10px] font-semibold text-foreground/80">
+                          {r.language}
                         </span>
-                        <span className="flex items-center gap-1 text-foreground/70">
-                          <Mic className="h-3 w-3" /> صوتي
-                        </span>
-                      </div>
-                    </Link>
-                  );
-                })}
-            </div>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[190px] font-arabic">
+                      <p className="text-xs font-bold">{r.language}</p>
+                      <p className="mt-0.5 text-[10px] leading-snug text-foreground/80">{r.topic}</p>
+                      <p className="mt-0.5 text-[10px] text-gold">{r.liveUsers} مباشر</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
+            )}
           </div>
+
         )}
       </div>
     </TooltipProvider>
