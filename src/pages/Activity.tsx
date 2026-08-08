@@ -473,7 +473,7 @@ const Activity = () => {
                   </button>
                 </div>
                 {openComments[entry.item.id] && (
-                  <div className="mt-3 space-y-2 rounded-2xl bg-[#F8F9FA] p-3">
+                  <div className="mt-3 space-y-2 rounded-2xl bg-foreground p-3">
                     {(comments[entry.item.id] || []).map((c) => (
                       <div key={c.id} className="rounded-xl bg-card p-2 text-sm">
                         <span className="font-semibold text-primary">{c.user}: </span>{c.text}

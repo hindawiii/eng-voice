@@ -112,7 +112,7 @@ const Room = () => {
     name: customRoom?.name || "Room",
     nameAr: customRoom?.nameAr || "غرفة",
     flag: customRoom?.flag || "🌍",
-    accent: customRoom?.accent || "from-[#1E3A5F] to-[#D4AF37]",
+    accent: customRoom?.accent || "from-primary-soft to-gold",
     topic: customRoom?.topic || "",
     topicAr: customRoom?.topicAr || "",
   } as any;
@@ -916,7 +916,7 @@ const Room = () => {
             {isAdmin && (
               <button
                 onClick={() => setTimerDialogOpen(true)}
-                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-gold/40 bg-[#0F1524] px-4 py-3 text-start text-white transition hover:border-gold"
+                className="mt-3 flex w-full items-center justify-between rounded-2xl border border-gold/40 bg-card px-4 py-3 text-start text-white transition hover:border-gold"
               >
                 <span className="flex items-center gap-2">
                   <Timer className="h-4 w-4 text-gold" />

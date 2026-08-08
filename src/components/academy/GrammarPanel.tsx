@@ -19,7 +19,7 @@ export const GrammarPanel = ({ langKey, bcp47 }: Props) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 rounded-xl bg-surface-2 p-1 border border-[#1F2937]">
+      <div className="flex gap-2 rounded-xl bg-surface-2 p-1 border border-border">
         {TIERS.map((t) => (
           <button
             key={t.id}
@@ -36,7 +36,7 @@ export const GrammarPanel = ({ langKey, bcp47 }: Props) => {
 
       <div className="space-y-2">
         {rules.map((r) => (
-          <div key={r.id} className="rounded-2xl border border-[#1F2937] bg-surface-2 overflow-hidden">
+          <div key={r.id} className="rounded-2xl border border-border bg-surface-2 overflow-hidden">
             <button
               onClick={() => setOpen(open === r.id ? null : r.id)}
               className="flex w-full items-center justify-between p-4 text-right text-white font-bold"
@@ -45,9 +45,9 @@ export const GrammarPanel = ({ langKey, bcp47 }: Props) => {
               <ChevronDown className={cn("h-4 w-4 text-gold transition-transform", open === r.id && "rotate-180")} />
             </button>
             {open === r.id && (
-              <div className="space-y-2 border-t border-[#1F2937] bg-background p-4">
+              <div className="space-y-2 border-t border-border bg-background p-4">
                 <p className="text-white/80 text-sm">{r.explanation}</p>
-                <div className="flex items-center justify-between rounded-lg bg-surface-2 border border-[#1F2937] p-3">
+                <div className="flex items-center justify-between rounded-lg bg-surface-2 border border-border p-3">
                   <code className="text-gold">{r.example}</code>
                   <TTSButton text={r.example} lang={bcp47} />
                 </div>

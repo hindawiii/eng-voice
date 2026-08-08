@@ -90,7 +90,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md border border-[#1F2937] bg-card text-white">
+      <DialogContent className="sm:max-w-md border border-border bg-card text-white">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-gold" />
@@ -100,7 +100,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
 
         {summary && (
           <>
-            <div className="rounded-2xl border border-[#1F2937] bg-surface-2 p-3 text-center">
+            <div className="rounded-2xl border border-border bg-surface-2 p-3 text-center">
               <p className="text-[11px] uppercase tracking-wider text-white/60">
                 {lang === "ar" ? "غادرت" : "You left"}
               </p>
@@ -111,7 +111,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
 
             <div className="grid grid-cols-5 gap-2">
               {stats.map(({ Icon, label, value, tone }) => (
-                <div key={label} className="rounded-2xl border border-[#1F2937] bg-background p-2 text-center">
+                <div key={label} className="rounded-2xl border border-border bg-background p-2 text-center">
                   <Icon className={cn("mx-auto h-4 w-4", tone)} />
                   <p className={cn("mt-1 text-sm font-black tabular-nums", tone)} dir="ltr">{value}</p>
                   <p className="text-[9px] font-semibold text-white/60">{label}</p>
@@ -119,7 +119,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
               ))}
             </div>
 
-            <div className="rounded-2xl border border-[#1F2937] bg-surface-2 p-3">
+            <div className="rounded-2xl border border-border bg-surface-2 p-3">
               <p className="text-center text-xs font-bold text-white/80">
                 {lang === "ar" ? "قيّم تجربتك" : "Rate your experience"}
               </p>
@@ -146,7 +146,7 @@ export const SessionSummaryModal = ({ open, summary, onOpenChange, onSubmit }: P
         )}
 
         <DialogFooter className="gap-2 sm:gap-2">
-          <Button variant="outline" className="border-[#1F2937] bg-transparent text-white hover:bg-surface-2" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" className="border-border bg-transparent text-white hover:bg-surface-2" onClick={() => onOpenChange(false)}>
             {lang === "ar" ? "تخطي" : "Skip"}
           </Button>
           <Button
