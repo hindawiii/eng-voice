@@ -9,11 +9,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const ALL = { key: "all", labelAr: "الكل", flag: "🌍" } as const;
 
-const LEVEL_STYLE: Record<string, { ar: string; color: string }> = {
-  beginner: { ar: "مبتدئ", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" },
-  intermediate: { ar: "متوسط", color: "bg-sky-500/20 text-sky-300 border-sky-500/40" },
-  advanced: { ar: "متقدم", color: "bg-rose-500/20 text-rose-300 border-rose-500/40" },
-};
 
 export const AcademyHub = () => {
   const [active, setActive] = useState<string>("all");
