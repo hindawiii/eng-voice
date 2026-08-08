@@ -1,10 +1,11 @@
-import { Search, Sparkles, Coins, Lock, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, Sparkles, Coins } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { CreateRoomDialog } from "@/components/CreateRoomDialog";
 import { useCustomRooms } from "@/data/customRooms";
 import { useI18n } from "@/i18n/I18nProvider";
 import { AcademyHub } from "@/components/academy/AcademyHub";
+import { RoomsQuickBar } from "@/components/RoomsQuickBar";
+
 
 const FRIEND_ROOMS = [
   { key: "friend-1", friend: "سارة", friendEn: "Sara", avatar: "🌸", room: "دردشة الجمعة", roomEn: "Friday Chat", flag: "🇸🇦", live: 12 },
