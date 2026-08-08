@@ -20,6 +20,8 @@ export const AcademyHub = () => {
   const lang = ACADEMY_LANGS.find((l) => l.key === active);
 
   const items = [ALL, ...ACADEMY_LANGS];
+  const activeRooms = useCustomRooms().filter((r) => (r.status ?? "active") === "active");
+
 
   return (
     <TooltipProvider delayDuration={150}>
