@@ -150,12 +150,38 @@ const Room = () => {
   );
   const roomName = lang === "ar" ? room.nameAr : room.name;
 
-  // Seats
+  // Seats — 10 by default, VIP can expand to 12 or 14
+  const SEATS_KEY = `engvoice.roomSeats.${room.key}`;
+  const isVip = typeof window !== "undefined" && localStorage.getItem("engvoice.vip") === "1";
+  const [maxSeats, setMaxSeats] = useState<number>(() => {
+    if (typeof window === "undefined") return 10;
+    const v = Number(localStorage.getItem(SEATS_KEY));
+    return v === 12 || v === 14 ? v : 10;
+  });
   const [seats, setSeats] = useState<(SeatUser | undefined)[]>(() => {
     const arr: (SeatUser | undefined)[] = [...SAMPLE_SPEAKERS];
-    while (arr.length < 8) arr.push(undefined);
+    while (arr.length < 10) arr.push(undefined);
     return arr;
   });
+
+  useEffect(() => {
+    try { localStorage.setItem(SEATS_KEY, String(maxSeats)); } catch {}
+    setSeats((prev) => {
+      if (prev.length === maxSeats) return prev;
+      const next = prev.slice(0, maxSeats);
+      while (next.length < maxSeats) next.push(undefined);
+      return next;
+    });
+  }, [maxSeats, SEATS_KEY]);
+
+  const changeMaxSeats = (n: number) => {
+    if (n > 10 && !isVip) {
+      toast.error(lang === "ar" ? "زيادة المقاعد متاحة لأعضاء VIP فقط 👑" : "Extra seats are VIP only 👑");
+      return;
+    }
+    setMaxSeats(n);
+  };
+
 
   // Speaker timer (persisted per room)
   const TIMER_KEY = `engvoice.roomTimer.${room.key}`;
