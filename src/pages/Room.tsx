@@ -656,7 +656,7 @@ const Room = () => {
         </div>
 
         {/* Topic card */}
-        <div className="mt-5 rounded-2xl bg-white/95 p-4 text-foreground shadow-elegant">
+        <div className="mt-5 rounded-2xl border border-gold/25 bg-card p-4 text-card-foreground shadow-elegant">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-foreground">
               <Sparkles className="h-3 w-3" /> {t("room.topic")}
