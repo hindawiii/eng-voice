@@ -806,7 +806,7 @@ const Room = () => {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-y-3 gap-x-1">
+            <div className="grid grid-cols-5 gap-y-3 gap-x-1">
               {seats.map((u, i) => (
                 <div key={i} className="relative">
                   <button
