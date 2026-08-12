@@ -13,6 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { EmojiStickerPicker } from "@/components/EmojiStickerPicker";
 import { translateText, detectIsArabic } from "@/hooks/useDictionary";
+import { useMsg, tm, MsgKey } from "@/i18n/msg";
+import { Lang } from "@/i18n/I18nProvider";
 
 // ================= Types =================
 interface Friend { id: string; name: string; handle: string; avatar: string; online: boolean; lastSeen?: string }
@@ -35,74 +37,75 @@ interface Thread {
 }
 
 // ================= Seed data =================
-const SELF: Friend = { id: "me", name: "الرسائل المحفوظة", handle: "@saved", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=saved&backgroundColor=FBBF24", online: true };
-const FRIENDS: Friend[] = [
+const makeSelf = (l: Lang): Friend => ({ id: "me", name: tm(l, "saved"), handle: "@saved", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=saved&backgroundColor=FBBF24", online: true });
+const makeFriends = (l: Lang): Friend[] => [
   { id: "u1", name: "Léa Martin", handle: "@lea", avatar: "https://i.pravatar.cc/120?img=47", online: true },
   { id: "u2", name: "Hans Müller", handle: "@hans", avatar: "https://i.pravatar.cc/120?img=12", online: true },
   { id: "u3", name: "Yuki Tanaka", handle: "@yuki", avatar: "https://i.pravatar.cc/120?img=32", online: true },
-  { id: "u4", name: "Carlos Vega", handle: "@carlos", avatar: "https://i.pravatar.cc/120?img=15", online: false, lastSeen: "منذ ١٠ د" },
+  { id: "u4", name: "Carlos Vega", handle: "@carlos", avatar: "https://i.pravatar.cc/120?img=15", online: false, lastSeen: tm(l, "min10") },
   { id: "u5", name: "Sara Ahmed", handle: "@sara", avatar: "https://i.pravatar.cc/120?img=49", online: true },
-  { id: "u6", name: "Marco Rossi", handle: "@marco", avatar: "https://i.pravatar.cc/120?img=8", online: false, lastSeen: "منذ ساعة" },
+  { id: "u6", name: "Marco Rossi", handle: "@marco", avatar: "https://i.pravatar.cc/120?img=8", online: false, lastSeen: tm(l, "hour1") },
 ];
-const ROOM_FRIENDS: Friend[] = [
-  { id: "r1", name: "غرفة English Café", handle: "@english-cafe", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=english&backgroundColor=1E3A5F", online: true },
-  { id: "r2", name: "غرفة Français Élite", handle: "@fr-elite", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=fr&backgroundColor=4C1D95", online: true },
+const makeRoomFriends = (l: Lang): Friend[] => [
+  { id: "r1", name: tm(l, "roomEnglish"), handle: "@english-cafe", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=english&backgroundColor=1E3A5F", online: true },
+  { id: "r2", name: tm(l, "roomFrench"), handle: "@fr-elite", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=fr&backgroundColor=4C1D95", online: true },
 ];
 
-const SAVED_THREAD: Thread = {
-  id: "saved", kind: "saved", friend: SELF, unread: 0, preview: "احفظ كلماتك ومقاطعك الصوتية هنا",
-  time: "الآن", status: "read", pinned: true,
-  messages: [
-    { id: "s1", from: "me", text: "📌 مساحة شخصية — أرسل هنا الكلمات، العبارات، والمقاطع الصوتية لتراجعها لاحقاً.", time: "الآن", status: "read" },
-  ],
+const makeSeedThreads = (l: Lang): Thread[] => {
+  const F = makeFriends(l);
+  const R = makeRoomFriends(l);
+  const yest = tm(l, "yesterday");
+  return [
+    {
+      id: "saved", kind: "saved", friend: makeSelf(l), unread: 0, preview: tm(l, "savedPreview"),
+      time: tm(l, "now"), status: "read", pinned: true,
+      messages: [{ id: "s1", from: "me", text: tm(l, "savedIntro"), time: tm(l, "now"), status: "read" }],
+    },
+    { id: "t1", kind: "friend", friend: F[0], unread: 2, preview: "On va pratiquer ce soir ?", time: "21:14", status: "delivered",
+      messages: [
+        { id: "m1", from: "them", text: "Salut! Comment ça va aujourd'hui ?", time: "21:10", lang: "fr" },
+        { id: "m2", from: "me", text: tm(l, "seedFine"), time: "21:12", status: "read" },
+        { id: "m3", from: "them", text: "On va pratiquer ce soir ?", time: "21:14", lang: "fr" },
+      ] },
+    { id: "t2", kind: "friend", friend: F[1], unread: 0, preview: "Danke schön 🙏", time: "19:02", status: "read",
+      messages: [
+        { id: "m1", from: "me", text: "Hier ist die Datei", time: "18:59", status: "read" },
+        { id: "m2", from: "them", text: "Danke schön 🙏", time: "19:02", lang: "de" },
+      ] },
+    { id: "t3", kind: "friend", friend: F[2], unread: 5, preview: "また明日話そう！", time: yest, status: "sent",
+      messages: [
+        { id: "m1", from: "them", text: "今日はとても楽しかった", time: yest, lang: "ja" },
+        { id: "m2", from: "them", text: "また明日話そう！", time: yest, lang: "ja" },
+      ] },
+    { id: "t4", kind: "friend", friend: F[3], unread: 0, preview: "Perfecto, nos vemos.", time: yest, status: "read",
+      messages: [{ id: "m1", from: "them", text: "Perfecto, nos vemos.", time: yest, lang: "es" }] },
+    { id: "r1", kind: "room", friend: R[0], unread: 1, preview: tm(l, "seedRoomTopic"), time: "20:30", status: "delivered",
+      messages: [
+        { id: "m1", from: "them", text: tm(l, "seedRoomWelcome"), time: "20:00" },
+        { id: "m2", from: "them", text: tm(l, "seedRoomTopic"), time: "20:30" },
+      ] },
+    { id: "r2", kind: "room", friend: R[1], unread: 0, preview: "Léa: bienvenue tout le monde", time: yest, status: "read",
+      messages: [{ id: "m1", from: "them", text: "Léa: bienvenue tout le monde", time: yest, lang: "fr" }] },
+  ];
 };
-
-const SEED_THREADS: Thread[] = [
-  SAVED_THREAD,
-  { id: "t1", kind: "friend", friend: FRIENDS[0], unread: 2, preview: "On va pratiquer ce soir ?", time: "21:14", status: "delivered",
-    messages: [
-      { id: "m1", from: "them", text: "Salut! Comment ça va aujourd'hui ?", time: "21:10", lang: "fr" },
-      { id: "m2", from: "me", text: "أنا بخير، شكراً!", time: "21:12", status: "read" },
-      { id: "m3", from: "them", text: "On va pratiquer ce soir ?", time: "21:14", lang: "fr" },
-    ] },
-  { id: "t2", kind: "friend", friend: FRIENDS[1], unread: 0, preview: "Danke schön 🙏", time: "19:02", status: "read",
-    messages: [
-      { id: "m1", from: "me", text: "Hier ist die Datei", time: "18:59", status: "read" },
-      { id: "m2", from: "them", text: "Danke schön 🙏", time: "19:02", lang: "de" },
-    ] },
-  { id: "t3", kind: "friend", friend: FRIENDS[2], unread: 5, preview: "また明日話そう！", time: "أمس", status: "sent",
-    messages: [
-      { id: "m1", from: "them", text: "今日はとても楽しかった", time: "أمس", lang: "ja" },
-      { id: "m2", from: "them", text: "また明日話そう！", time: "أمس", lang: "ja" },
-    ] },
-  { id: "t4", kind: "friend", friend: FRIENDS[3], unread: 0, preview: "Perfecto, nos vemos.", time: "أمس", status: "read",
-    messages: [{ id: "m1", from: "them", text: "Perfecto, nos vemos.", time: "أمس", lang: "es" }] },
-  { id: "r1", kind: "room", friend: ROOM_FRIENDS[0], unread: 1, preview: "أحمد: النقاش الليلة عن السفر ✈️", time: "20:30", status: "delivered",
-    messages: [
-      { id: "m1", from: "them", text: "أهلاً بكم في غرفة الممارسة اليومية.", time: "20:00" },
-      { id: "m2", from: "them", text: "أحمد: النقاش الليلة عن السفر ✈️", time: "20:30" },
-    ] },
-  { id: "r2", kind: "room", friend: ROOM_FRIENDS[1], unread: 0, preview: "Léa: bienvenue tout le monde", time: "أمس", status: "read",
-    messages: [{ id: "m1", from: "them", text: "Léa: bienvenue tout le monde", time: "أمس", lang: "fr" }] },
-];
 
 const QUICK_REACTIONS = ["❤️", "😂", "👍", "🔥", "🙏"];
 
-const FOLDERS: { id: "all" | "friends" | "rooms"; label: string }[] = [
-  { id: "all", label: "الكل" },
-  { id: "friends", label: "الأصدقاء" },
-  { id: "rooms", label: "الغرف المشترك بها" },
+const FOLDERS: { id: "all" | "friends" | "rooms"; key: MsgKey }[] = [
+  { id: "all", key: "folderAll" },
+  { id: "friends", key: "folderFriends" },
+  { id: "rooms", key: "folderRooms" },
 ];
 
 // ================= Helpers =================
 const nowTime = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-const checkGrammar = (s: string): string | null => {
+const checkGrammar = (s: string, l: Lang): string | null => {
   const t = s.trim(); if (!t) return null;
-  if (/\s{2,}/.test(t)) return "تجنّب المسافات المزدوجة.";
-  if (/([a-zA-Z\u0600-\u06FF])\1{3,}/.test(t)) return "حروف مكررة قد تكون خطأً مطبعياً.";
-  if (/^[a-z]/.test(t)) return "ابدأ الجملة بحرف كبير (Capital).";
-  if (t.length > 12 && !/[.!?؟…]$/.test(t)) return "أضف علامة ترقيم في النهاية.";
-  if (/\bi\b/.test(t)) return "اكتب \"I\" بحرف كبير.";
+  if (/\s{2,}/.test(t)) return tm(l, "gDoubleSpace");
+  if (/([a-zA-Z\u0600-\u06FF])\1{3,}/.test(t)) return tm(l, "gRepeated");
+  if (/^[a-z]/.test(t)) return tm(l, "gCapital");
+  if (t.length > 12 && !/[.!?\u061F\u2026]$/.test(t)) return tm(l, "gPunct");
+  if (/\bi\b/.test(t)) return tm(l, "gCapitalI");
   return null;
 };
 
@@ -132,6 +135,7 @@ const ActiveFriends = ({ friends, onPick }: { friends: Friend[]; onPick: (f: Fri
 
 // ================= Media lightbox =================
 const Lightbox = ({ src, kind, onClose, alt }: { src: string; kind: "image" | "video"; onClose: () => void; alt?: string }) => {
+  const { tm: T } = useMsg();
   const download = () => {
     const a = document.createElement("a");
     a.href = src;
@@ -145,7 +149,7 @@ const Lightbox = ({ src, kind, onClose, alt }: { src: string; kind: "image" | "v
           <X className="h-5 w-5" />
         </button>
         <button onClick={download} className="inline-flex items-center gap-2 rounded-full bg-gold px-4 py-2 text-sm font-extrabold text-gold-foreground shadow-[0_0_18px_rgba(251,191,36,0.5)]">
-          <Download className="h-4 w-4" /> تحميل المرفق
+          <Download className="h-4 w-4" /> {T("download")}
         </button>
       </div>
       <div className="flex flex-1 items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
@@ -159,6 +163,7 @@ const Lightbox = ({ src, kind, onClose, alt }: { src: string; kind: "image" | "v
 
 // ================= Audio preview =================
 const AudioPreview = ({ url, onSend, onDelete }: { url: string; onSend: () => void; onDelete: () => void }) => {
+  const { tm: T } = useMsg();
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   return (
@@ -171,11 +176,11 @@ const AudioPreview = ({ url, onSend, onDelete }: { url: string; onSend: () => vo
         {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       </button>
       <audio ref={audioRef} src={url} onEnded={() => setPlaying(false)} className="hidden" />
-      <span className="flex-1 text-[11px] text-slate-300">معاينة الصوت — استمع قبل الإرسال</span>
-      <button onClick={onDelete} className="rounded-full bg-rose-500/15 p-2 text-rose-300 hover:bg-rose-500/30" aria-label="حذف">
+      <span className="flex-1 text-[11px] text-slate-300">{T("audioPreview")}</span>
+      <button onClick={onDelete} className="rounded-full bg-rose-500/15 p-2 text-rose-300 hover:bg-rose-500/30" aria-label={T("delete")}>
         <Trash2 className="h-4 w-4" />
       </button>
-      <button onClick={onSend} className="rounded-full bg-gradient-to-r from-gold to-gold-hover p-2.5 text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.5)]" aria-label="إرسال">
+      <button onClick={onSend} className="rounded-full bg-gradient-to-r from-gold to-gold-hover p-2.5 text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.5)]" aria-label={T("send")}>
         <Send className="h-4 w-4" />
       </button>
     </div>
@@ -194,6 +199,7 @@ const MessageBubble = ({
   onOpenMedia: (src: string, kind: "image" | "video") => void;
   onConsumeViewOnce: (m: Msg) => void;
 }) => {
+  const { tm: T } = useMsg();
   const mine = m.from === "me" || isSaved;
   const wrapRef = useRef<HTMLDivElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -242,7 +248,7 @@ const MessageBubble = ({
         {Math.abs(dx) > 20 && (
           <div className={cn("absolute top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-bold text-gold",
             dx > 0 ? "-right-8" : "-left-8")}>
-            <Reply className="h-4 w-4" /> رد
+            <Reply className="h-4 w-4" /> {T("reply")}
           </div>
         )}
         <div
@@ -261,7 +267,7 @@ const MessageBubble = ({
         >
           {m.replyTo && (
             <div className="mb-1.5 rounded-lg border-l-2 border-gold bg-black/25 px-2 py-1 text-[11px] text-slate-300">
-              <span className="block font-bold text-gold">{m.replyTo.from === "me" ? "أنت" : "رد على"}</span>
+              <span className="block font-bold text-gold">{m.replyTo.from === "me" ? T("you") : T("replyTo")}</span>
               <span className="line-clamp-2">{m.replyTo.text}</span>
             </div>
           )}
@@ -269,7 +275,7 @@ const MessageBubble = ({
           {isBlurredViewOnce ? (
             <div className="flex items-center gap-2 rounded-xl border border-slate-700 bg-black/40 px-3 py-4 text-xs text-slate-300">
               <Lock className="h-4 w-4 text-gold" />
-              تم فتح الوسائط وتدميرها تلقائياً 🔒
+              {T("viewOnceBurned")}
             </div>
           ) : showViewOnceGate ? (
             <button
@@ -279,7 +285,7 @@ const MessageBubble = ({
               }}
               className="flex items-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-3 py-4 text-xs font-bold text-gold"
             >
-              <Eye className="h-4 w-4" /> فتح لمرة واحدة
+              <Eye className="h-4 w-4" /> {T("viewOnceOpen")}
             </button>
           ) : m.audioUrl ? (
             <audio controls src={m.audioUrl} className="h-8" />
@@ -294,7 +300,7 @@ const MessageBubble = ({
           ) : (
             <p className="whitespace-pre-wrap break-words">
               {m.text}
-              {m.editedAt && <span className="ml-1 text-[10px] italic text-slate-400">(معدّلة)</span>}
+              {m.editedAt && <span className="ml-1 text-[10px] italic text-slate-400">{T("edited")}</span>}
             </p>
           )}
           {translation && (
@@ -314,7 +320,7 @@ const MessageBubble = ({
           {!mine && m.lang && !isBlurredViewOnce && (
             <button onClick={() => onTranslate(m)}
               className="flex items-center gap-1 rounded-full bg-slate-800/70 px-2 py-0.5 text-[10px] font-semibold text-gold hover:bg-slate-700/70">
-              <Languages className="h-3 w-3" /> ترجمة
+              <Languages className="h-3 w-3" /> {T("translate")}
             </button>
           )}
         </div>
@@ -337,6 +343,7 @@ const FloatingMenu = ({
   onTranslate: (m: Msg) => void;
   onDelete: (m: Msg) => void;
 }) => {
+  const { tm: T } = useMsg();
   if (!state) return null;
   const top = Math.max(80, state.top - 60);
   return (
@@ -359,13 +366,13 @@ const FloatingMenu = ({
         style={{ top: top + 56, left: Math.max(12, Math.min(state.left, window.innerWidth - 240)) }}
         onClick={(e) => e.stopPropagation()}
       >
-        <MenuBtn icon={<Reply className="h-4 w-4" />} label="رد" onClick={() => { onReply(state.m); onClose(); }} />
-        <MenuBtn icon={<Copy className="h-4 w-4" />} label="نسخ الرسالة" onClick={() => { onCopy(state.m); onClose(); }} />
+        <MenuBtn icon={<Reply className="h-4 w-4" />} label={T("reply")} onClick={() => { onReply(state.m); onClose(); }} />
+        <MenuBtn icon={<Copy className="h-4 w-4" />} label={T("copyMsg")} onClick={() => { onCopy(state.m); onClose(); }} />
         {state.mine && !state.m.imageUrl && !state.m.videoUrl && !state.m.audioUrl && (
-          <MenuBtn icon={<Pencil className="h-4 w-4" />} label="تعديل الرسالة" onClick={() => { onEdit(state.m); onClose(); }} />
+          <MenuBtn icon={<Pencil className="h-4 w-4" />} label={T("editMsg")} onClick={() => { onEdit(state.m); onClose(); }} />
         )}
-        <MenuBtn icon={<Languages className="h-4 w-4" />} label="ترجمة الرسالة" onClick={() => { onTranslate(state.m); onClose(); }} />
-        <MenuBtn icon={<Trash2 className="h-4 w-4 text-rose-400" />} label="حذف الرسالة" danger onClick={() => { onDelete(state.m); onClose(); }} />
+        <MenuBtn icon={<Languages className="h-4 w-4" />} label={T("translateMsg")} onClick={() => { onTranslate(state.m); onClose(); }} />
+        <MenuBtn icon={<Trash2 className="h-4 w-4 text-rose-400" />} label={T("deleteMsg")} danger onClick={() => { onDelete(state.m); onClose(); }} />
       </div>
     </div>
   );
@@ -391,6 +398,7 @@ const ChatScreen = ({
   onBlock: () => void;
   onUpdateThread: (patch: Partial<Thread>) => void;
 }) => {
+  const { tm: T, lang, dir } = useMsg();
   const isSaved = thread.kind === "saved";
   const [text, setText] = useState("");
   const [translations, setTranslations] = useState<Record<string, string>>({});
@@ -398,7 +406,7 @@ const ChatScreen = ({
   const taRef = useRef<HTMLTextAreaElement>(null);
   const fileImgRef = useRef<HTMLInputElement>(null);
   const fileVidRef = useRef<HTMLInputElement>(null);
-  const grammarHint = useMemo(() => checkGrammar(text), [text]);
+  const grammarHint = useMemo(() => checkGrammar(text, lang), [text, lang]);
 
   const [showEmoji, setShowEmoji] = useState(false);
   const [emojiTargetMsgId, setEmojiTargetMsgId] = useState<string | null>(null);
@@ -464,7 +472,7 @@ const ChatScreen = ({
     if (!file) return;
     const url = URL.createObjectURL(file);
     onSend({
-      id: `m${Date.now()}`, from: "me", text: kind === "image" ? "📷 صورة" : "🎬 فيديو",
+      id: `m${Date.now()}`, from: "me", text: kind === "image" ? T("photoMsg") : T("videoMsg"),
       time: nowTime(), status: "sent", viewOnce,
       ...(kind === "image" ? { imageUrl: url } : { videoUrl: url }),
     });
@@ -530,7 +538,7 @@ const ChatScreen = ({
   const sendVoice = () => {
     if (!previewUrl) return;
     onSend({
-      id: `m${Date.now()}`, from: "me", text: "🎙️ رسالة صوتية", time: nowTime(), status: "sent", audioUrl: previewUrl,
+      id: `m${Date.now()}`, from: "me", text: T("voiceMsg"), time: nowTime(), status: "sent", audioUrl: previewUrl,
     });
     setPreviewUrl(null);
   };
@@ -545,14 +553,14 @@ const ChatScreen = ({
   };
 
   const partnerStatus = thread.blocked
-    ? "المستخدم محظور"
+    ? T("blockedUser")
     : thread.theyRecording
-    ? "جاري تسجيل رسالة صوتية... 🎙️"
+    ? T("recordingNow")
     : thread.theyTyping
-    ? "جاري الكتابة..."
+    ? T("typingNow")
     : thread.friend.online
-    ? "نشط الآن"
-    : `آخر ظهور ${thread.friend.lastSeen || "قريباً"}`;
+    ? T("onlineNow")
+    : `${T("lastSeen")} ${thread.friend.lastSeen || T("soon")}`;
 
   const filteredMsgs = useMemo(() => {
     if (!searchOpen || !searchQ.trim()) return thread.messages;
@@ -560,10 +568,10 @@ const ChatScreen = ({
   }, [thread.messages, searchOpen, searchQ]);
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-background" dir="rtl">
+    <div className="flex h-[100dvh] flex-col bg-background" dir={dir}>
       {/* Header */}
       <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-slate-800 bg-card/90 px-4 py-3 backdrop-blur">
-        <button onClick={onBack} className="rounded-full p-2 text-slate-300 hover:bg-slate-800/60" aria-label="رجوع">
+        <button onClick={onBack} className="rounded-full p-2 text-slate-300 hover:bg-slate-800/60" aria-label={T("back")}>
           <ArrowRight className="h-5 w-5 rtl:rotate-180" />
         </button>
         <button onClick={() => setLightbox({ src: thread.friend.avatar, kind: "image", alt: thread.friend.name })}>
@@ -584,13 +592,13 @@ const ChatScreen = ({
             {partnerStatus}
           </p>
         </button>
-        <button onClick={() => setSearchOpen((v) => !v)} className="rounded-full bg-slate-800/70 p-2 text-slate-300 hover:bg-slate-700/70" aria-label="بحث">
+        <button onClick={() => setSearchOpen((v) => !v)} className="rounded-full bg-slate-800/70 p-2 text-slate-300 hover:bg-slate-700/70" aria-label={T("search")}>
           <Search className="h-4 w-4" />
         </button>
-        <button className="rounded-full bg-slate-800/70 p-2 text-emerald-300 hover:bg-slate-700/70" aria-label="مكالمة">
+        <button className="rounded-full bg-slate-800/70 p-2 text-emerald-300 hover:bg-slate-700/70" aria-label={T("call")}>
           <Phone className="h-4 w-4" />
         </button>
-        <button onClick={() => setSidebar(true)} className="rounded-full bg-slate-800/70 p-2 text-gold hover:bg-slate-700/70" aria-label="الملف">
+        <button onClick={() => setSidebar(true)} className="rounded-full bg-slate-800/70 p-2 text-gold hover:bg-slate-700/70" aria-label={T("profile")}>
           <MoreHorizontal className="h-4 w-4" />
         </button>
       </header>
@@ -600,7 +608,7 @@ const ChatScreen = ({
           <input
             value={searchQ}
             onChange={(e) => setSearchQ(e.target.value)}
-            placeholder="ابحث في المحادثة…"
+            placeholder={T("searchChat")}
             className="w-full rounded-xl border border-slate-800 bg-surface-2 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-500"
           />
         </div>
@@ -635,7 +643,7 @@ const ChatScreen = ({
         <div className="mx-3 mb-1 flex items-center gap-2 rounded-xl border border-slate-800 bg-surface-2 px-3 py-2 text-[11px] text-slate-300">
           {editing ? <Pencil className="h-3.5 w-3.5 text-gold" /> : <Reply className="h-3.5 w-3.5 text-gold" />}
           <span className="flex-1 truncate">
-            <span className="font-bold text-gold">{editing ? "تعديل: " : "رد على: "}</span>
+            <span className="font-bold text-gold">{editing ? T("editingPrefix") : T("replyPrefix")}</span>
             {(editing || replyTo)!.text}
           </span>
           <button onClick={() => { setReplyTo(null); setEditing(null); setText(""); }} className="text-slate-500 hover:text-white">
@@ -655,7 +663,7 @@ const ChatScreen = ({
       {/* View-once badge */}
       {viewOnce && (
         <div className="mx-3 mb-1 flex items-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-3 py-1.5 text-[11px] text-gold">
-          <EyeOff className="h-3.5 w-3.5" /> الوسائط التالية للعرض لمرة واحدة فقط
+          <EyeOff className="h-3.5 w-3.5" /> {T("viewOnceBanner")}
           <button onClick={() => setViewOnce(false)} className="ms-auto text-slate-400 hover:text-white"><X className="h-3.5 w-3.5" /></button>
         </div>
       )}
@@ -679,23 +687,23 @@ const ChatScreen = ({
               ))}
             </div>
             <span className="tabular-nums text-xs font-extrabold text-gold">0:{secondsLeft.toString().padStart(2, "0")}</span>
-            <button onClick={stopVoice} className="rounded-full bg-gold px-3 py-1.5 text-[11px] font-extrabold text-gold-foreground">إيقاف</button>
+            <button onClick={stopVoice} className="rounded-full bg-gold px-3 py-1.5 text-[11px] font-extrabold text-gold-foreground">{T("stop")}</button>
           </div>
         ) : (
           <div className="flex items-end gap-1 rounded-2xl border border-slate-800 bg-surface-2 p-2">
-            <button onClick={() => fileImgRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label="صورة">
+            <button onClick={() => fileImgRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label={T("image")}>
               <ImagePlus className="h-5 w-5" />
             </button>
-            <button onClick={() => fileVidRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label="فيديو">
+            <button onClick={() => fileVidRef.current?.click()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label={T("video")}>
               <Video className="h-5 w-5" />
             </button>
-            <button onClick={() => setViewOnce((v) => !v)} className={cn("rounded-full p-2 hover:bg-slate-800/60", viewOnce ? "text-gold" : "text-slate-400 hover:text-gold")} aria-label="عرض لمرة واحدة">
+            <button onClick={() => setViewOnce((v) => !v)} className={cn("rounded-full p-2 hover:bg-slate-800/60", viewOnce ? "text-gold" : "text-slate-400 hover:text-gold")} aria-label={T("viewOnce")}>
               <EyeOff className="h-5 w-5" />
             </button>
-            <button onClick={() => { setEmojiTargetMsgId(null); setShowEmoji((v) => !v); }} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label="إيموجي">
+            <button onClick={() => { setEmojiTargetMsgId(null); setShowEmoji((v) => !v); }} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold" aria-label={T("emoji")}>
               <Smile className="h-5 w-5" />
             </button>
-            <button onClick={translateDraft} disabled={!text.trim()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold disabled:opacity-40" aria-label="ترجمة فورية">
+            <button onClick={translateDraft} disabled={!text.trim()} className="rounded-full p-2 text-slate-400 hover:bg-slate-800/60 hover:text-gold disabled:opacity-40" aria-label={T("instantTranslate")}>
               <Languages className="h-5 w-5" />
             </button>
             <input ref={fileImgRef} type="file" accept="image/*" hidden onChange={(e) => handleFile(e.target.files?.[0] || null, "image")} />
@@ -706,15 +714,15 @@ const ChatScreen = ({
               onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
               rows={1}
-              placeholder={isSaved ? "اكتب ملاحظة شخصية…" : "اكتب رسالة…"}
+              placeholder={isSaved ? T("writeNote") : T("writeMsg")}
               className="no-scrollbar flex-1 resize-none bg-transparent px-1 py-2 text-sm text-white outline-none placeholder:text-slate-500"
             />
             {text.trim() ? (
-              <button onClick={send} className="rounded-full bg-gradient-to-r from-gold to-gold-hover p-2.5 text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105" aria-label="إرسال">
+              <button onClick={send} className="rounded-full bg-gradient-to-r from-gold to-gold-hover p-2.5 text-gold-foreground shadow-[0_0_14px_rgba(251,191,36,0.45)] transition hover:scale-105" aria-label={T("send")}>
                 <Send className="h-4 w-4" />
               </button>
             ) : (
-              <button onClick={startVoice} className="rounded-full bg-gold/15 p-2.5 text-gold hover:bg-gold/25 shadow-[0_0_18px_rgba(251,191,36,0.25)]" aria-label="تسجيل صوتي">
+              <button onClick={startVoice} className="rounded-full bg-gold/15 p-2.5 text-gold hover:bg-gold/25 shadow-[0_0_18px_rgba(251,191,36,0.25)]" aria-label={T("voiceRecord")}>
                 <Mic className="h-4 w-4" />
               </button>
             )}
@@ -741,21 +749,21 @@ const ChatScreen = ({
       <Dialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <DialogContent className="border-slate-800 bg-card text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">حذف الرسالة</DialogTitle>
-            <DialogDescription className="text-slate-400">اختر نطاق الحذف. لا يمكن التراجع.</DialogDescription>
+            <DialogTitle className="text-white">{T("deleteMsg")}</DialogTitle>
+            <DialogDescription className="text-slate-400">{T("deleteScope")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
             <button
               onClick={() => { if (deleteTarget) onDeleteMessage(deleteTarget.id, "me"); setDeleteTarget(null); }}
               className="flex items-center gap-2 rounded-xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm text-white hover:border-gold/40"
             >
-              <Trash2 className="h-4 w-4 text-slate-300" /> حذف من طرفي فقط 🗑️
+              <Trash2 className="h-4 w-4 text-slate-300" /> {T("deleteForMe")}
             </button>
             <button
               onClick={() => { if (deleteTarget) onDeleteMessage(deleteTarget.id, "all"); setDeleteTarget(null); }}
               className="flex items-center gap-2 rounded-xl border border-rose-500/40 bg-rose-950/30 px-3 py-3 text-sm text-rose-200 hover:bg-rose-900/40"
             >
-              <ShieldAlert className="h-4 w-4 text-rose-300" /> حذف من الجميع للطرفين 💥
+              <ShieldAlert className="h-4 w-4 text-rose-300" /> {T("deleteForAll")}
             </button>
           </div>
         </DialogContent>
@@ -765,17 +773,17 @@ const ChatScreen = ({
       <Dialog open={!!clearTarget} onOpenChange={(o) => !o && setClearTarget(null)}>
         <DialogContent className="border-slate-800 bg-card text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">مسح سجل المحادثة</DialogTitle>
-            <DialogDescription className="text-slate-400">هذا الإجراء غير قابل للاسترجاع.</DialogDescription>
+            <DialogTitle className="text-white">{T("clearHistory")}</DialogTitle>
+            <DialogDescription className="text-slate-400">{T("irreversible")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2">
             <button onClick={() => { onClearHistory("me"); setClearTarget(null); }}
               className="flex items-center gap-2 rounded-xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm text-white hover:border-gold/40">
-              <Trash2 className="h-4 w-4" /> مسح من طرفي فقط
+              <Trash2 className="h-4 w-4" /> {T("clearForMe")}
             </button>
             <button onClick={() => { onClearHistory("all"); setClearTarget(null); }}
               className="flex items-center gap-2 rounded-xl border border-rose-500/40 bg-rose-950/30 px-3 py-3 text-sm text-rose-200 hover:bg-rose-900/40">
-              <ShieldAlert className="h-4 w-4" /> مسح من الطرفين
+              <ShieldAlert className="h-4 w-4" /> {T("clearForAll")}
             </button>
           </div>
         </DialogContent>
@@ -786,7 +794,7 @@ const ChatScreen = ({
         <SheetContent side="left" className="w-[86vw] max-w-md border-slate-800 bg-card p-0 text-white">
           <div className="flex h-full flex-col">
             <SheetHeader className="border-b border-slate-800 p-4">
-              <SheetTitle className="text-white">تفاصيل المحادثة</SheetTitle>
+              <SheetTitle className="text-white">{T("chatDetails")}</SheetTitle>
             </SheetHeader>
 
             <div className="flex flex-col items-center gap-2 p-6">
@@ -800,27 +808,27 @@ const ChatScreen = ({
 
             <div className="grid grid-cols-2 gap-2 px-4">
               <button className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm font-bold text-white hover:border-gold/40">
-                <UserRound className="h-4 w-4 text-gold" /> عرض الملف
+                <UserRound className="h-4 w-4 text-gold" /> {T("viewProfile")}
               </button>
               <button onClick={() => { setSidebar(false); setSearchOpen(true); }} className="flex items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-3 py-3 text-sm font-bold text-white hover:border-gold/40">
-                <Search className="h-4 w-4 text-gold" /> بحث
+                <Search className="h-4 w-4 text-gold" /> {T("search")}
               </button>
             </div>
 
             <div className="mt-4 space-y-1 px-3">
               <button onClick={onToggleMute} className="flex w-full items-center justify-between rounded-2xl border border-slate-800 bg-surface-2 px-4 py-3 text-sm">
-                <span className="flex items-center gap-2 text-white"><BellOff className="h-4 w-4 text-slate-300" /> كتم الإشعارات</span>
+                <span className="flex items-center gap-2 text-white"><BellOff className="h-4 w-4 text-slate-300" /> {T("muteNotifs")}</span>
                 <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-extrabold",
                   thread.muted ? "bg-gold text-gold-foreground" : "bg-slate-700 text-slate-300")}>
-                  {thread.muted ? "مفعل" : "معطل"}
+                  {thread.muted ? T("on") : T("off")}
                 </span>
               </button>
               <button onClick={() => setClearTarget(true)} className="flex w-full items-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-4 py-3 text-sm text-white">
-                <Trash2 className="h-4 w-4 text-slate-300" /> مسح سجل المحادثة
+                <Trash2 className="h-4 w-4 text-slate-300" /> {T("clearHistory")}
               </button>
               <button onClick={onBlock} className="flex w-full items-center gap-2 rounded-2xl border border-rose-500/40 bg-rose-950/30 px-4 py-3 text-sm font-bold text-rose-200 hover:bg-rose-900/40">
                 {thread.blocked ? <ShieldOff className="h-4 w-4" /> : <ShieldAlert className="h-4 w-4" />}
-                {thread.blocked ? "إلغاء الحظر" : "حظر المستخدم ⛔"}
+                {thread.blocked ? T("unblock") : T("block")}
               </button>
             </div>
           </div>
@@ -835,6 +843,7 @@ const InboxRow = ({ t, onOpen, onAction }: {
   t: Thread; onOpen: () => void;
   onAction: (a: "mute" | "archive" | "pin") => void;
 }) => {
+  const { tm: T } = useMsg();
   const [menu, setMenu] = useState(false);
   const longRef = useRef<number | null>(null);
   const start = () => { longRef.current = window.setTimeout(() => setMenu(true), 450); };
@@ -868,7 +877,7 @@ const InboxRow = ({ t, onOpen, onAction }: {
               {t.pinned && <Pin className="h-3 w-3 text-gold" />}
               {t.muted && <BellOff className="h-3 w-3 text-slate-500" />}
               {t.kind === "room" && <Users className="h-3 w-3 text-cyan-400" />}
-              {isSaved ? "الرسائل المحفوظة الشخصية" : t.friend.name}
+              {isSaved ? T("savedFull") : t.friend.name}
             </p>
             <span className="shrink-0 text-[10px] text-slate-500">{t.time}</span>
           </div>
@@ -878,7 +887,7 @@ const InboxRow = ({ t, onOpen, onAction }: {
                 {Array.from({ length: 3 }).map((_, i) => (
                   <span key={i} className="waveform-bar block h-2 w-[3px] rounded-full bg-gold" style={{ animationDelay: `${i * 0.08}s` }} />
                 ))}
-                جاري تسجيل رسالة صوتية… 🎙️
+                {T("recordingNowShort")}
               </span>
             ) : (
               <>
@@ -898,15 +907,15 @@ const InboxRow = ({ t, onOpen, onAction }: {
       {menu && (
         <div className="absolute inset-x-2 top-full z-30 mt-1 overflow-hidden rounded-2xl border border-slate-800 bg-surface-2 shadow-2xl">
           <button onClick={() => { onAction("pin"); setMenu(false); }} className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-slate-800">
-            <Pin className="h-4 w-4 text-gold" /> تثبيت في الأعلى
+            <Pin className="h-4 w-4 text-gold" /> {T("pinTop")}
           </button>
           <button onClick={() => { onAction("mute"); setMenu(false); }} className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-slate-800">
-            <BellOff className="h-4 w-4 text-slate-300" /> {t.muted ? "إلغاء الكتم" : "عمل ميوت"}
+            <BellOff className="h-4 w-4 text-slate-300" /> {t.muted ? T("unmute") : T("mute")}
           </button>
           <button onClick={() => { onAction("archive"); setMenu(false); }} className="flex w-full items-center gap-2 px-3 py-2.5 text-sm text-white hover:bg-slate-800">
-            <Archive className="h-4 w-4 text-slate-300" /> أرشفة
+            <Archive className="h-4 w-4 text-slate-300" /> {T("archive")}
           </button>
-          <button onClick={() => setMenu(false)} className="block w-full border-t border-slate-800 px-3 py-2 text-xs text-slate-400 hover:bg-slate-800">إغلاق</button>
+          <button onClick={() => setMenu(false)} className="block w-full border-t border-slate-800 px-3 py-2 text-xs text-slate-400 hover:bg-slate-800">{T("close")}</button>
         </div>
       )}
     </li>
@@ -920,6 +929,7 @@ const Inbox = ({ threads, onOpen, onAction, query, setQuery, folder, setFolder }
   query: string; setQuery: (s: string) => void;
   folder: "all" | "friends" | "rooms"; setFolder: (f: "all" | "friends" | "rooms") => void;
 }) => {
+  const { tm: T, lang } = useMsg();
   const sorted = [...threads]
     .filter((x) => !x.archived)
     .filter((x) => {
@@ -936,13 +946,13 @@ const Inbox = ({ threads, onOpen, onAction, query, setQuery, folder, setFolder }
 
   return (
     <div className="px-5 pt-6">
-      <h1 className="text-2xl font-extrabold tracking-tight text-white">الرسائل</h1>
+      <h1 className="text-2xl font-extrabold tracking-tight text-white">{T("title")}</h1>
       <div className="mt-3 flex items-center gap-2 rounded-2xl border border-slate-800 bg-surface-2 px-3 py-2.5">
         <Search className="h-4 w-4 text-slate-400" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="ابحث بالاسم أو @المعرّف"
+          placeholder={T("searchInbox")}
           className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
         />
         {query && (
@@ -963,13 +973,13 @@ const Inbox = ({ threads, onOpen, onAction, query, setQuery, folder, setFolder }
                 : "border border-slate-800 bg-surface-2 text-slate-300 hover:text-white"
             )}
           >
-            {f.label}
+            {T(f.key)}
           </button>
         ))}
       </div>
 
       <div className="mt-4">
-        <ActiveFriends friends={FRIENDS} onPick={(f) => {
+        <ActiveFriends friends={makeFriends(lang)} onPick={(f) => {
           const t = threads.find((x) => x.friend.id === f.id);
           if (t) onOpen(t);
         }} />
@@ -980,7 +990,7 @@ const Inbox = ({ threads, onOpen, onAction, query, setQuery, folder, setFolder }
           <InboxRow key={t.id} t={t} onOpen={() => onOpen(t)} onAction={(a) => onAction(t.id, a)} />
         ))}
         {sorted.length === 0 && (
-          <li className="py-10 text-center text-sm text-slate-500">لا توجد محادثات مطابقة.</li>
+          <li className="py-10 text-center text-sm text-slate-500">{T("noThreads")}</li>
         )}
       </ul>
     </div>
@@ -989,11 +999,20 @@ const Inbox = ({ threads, onOpen, onAction, query, setQuery, folder, setFolder }
 
 // ================= Main =================
 const Messages = () => {
-  const [threads, setThreads] = useState<Thread[]>(SEED_THREADS);
+  const { lang, dir } = useMsg();
+  const [threads, setThreads] = useState<Thread[]>(() => makeSeedThreads(lang));
   const [activeId, setActiveId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [folder, setFolder] = useState<"all" | "friends" | "rooms">("all");
   const active = threads.find((t) => t.id === activeId) || null;
+
+  // Re-localize seeded demo content when the interface language changes
+  const firstLang = useRef(lang);
+  useEffect(() => {
+    if (firstLang.current === lang) return;
+    firstLang.current = lang;
+    setThreads(makeSeedThreads(lang));
+  }, [lang]);
 
   // Simulate a partner recording indicator every ~14s on Léa's thread for demo
   useEffect(() => {
@@ -1074,7 +1093,7 @@ const Messages = () => {
 
   return (
     <AppShell>
-      <div className="min-h-screen bg-background" dir="rtl">
+      <div className="min-h-screen bg-background" dir={dir}>
         <Inbox
           threads={threads}
           onOpen={openThread}
