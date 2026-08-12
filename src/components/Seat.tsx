@@ -48,20 +48,21 @@ export const Seat = ({ user, index, timeLeft }: SeatProps) => {
         </span>
       </div>
 
-      <div className="flex flex-col items-center">
-        <div className="flex items-center gap-1 text-sm font-semibold">
-          {user.name}
-          {user.pro && <ProBadge label="" className="px-1" />}
+      <div className="flex w-full flex-col items-center">
+        <div className="flex max-w-full items-center gap-0.5 text-[10px] font-semibold">
+          <span className="max-w-[52px] truncate">{user.name}</span>
+          {user.pro && <ProBadge label="" className="px-0.5" />}
         </div>
         <div className="flex items-center gap-1">
           <LevelBadge level={user.level} />
           {user.speaking && timeLeft !== undefined && (
-            <span className="rounded-full bg-gold-soft px-2 py-0.5 text-[10px] font-bold text-gold-foreground tabular-nums">
+            <span className="rounded-full bg-gold-soft px-1.5 py-0.5 text-[9px] font-bold text-gold-foreground tabular-nums">
               {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}
             </span>
           )}
         </div>
       </div>
+
     </div>
   );
 };
