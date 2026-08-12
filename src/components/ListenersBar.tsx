@@ -71,23 +71,23 @@ export const ListenersBar = ({
                         </div>
 
                         {/* Flag badge */}
-                        <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-background text-[10px] leading-none shadow-soft border border-border">
+                        <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-background text-[8px] leading-none shadow-soft border border-border">
                           {l.flag}
                         </span>
                         {/* Premium crown */}
                         {l.premium && (
-                          <span className="absolute -top-1 -right-1 text-[13px] leading-none">
+                          <span className="absolute -top-1 -right-1 text-[11px] leading-none">
                             👑
                           </span>
                         )}
                         {/* Muted */}
                         {l.muted && (
-                          <span className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px]">
+                          <span className="absolute -top-1 -left-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-destructive text-[8px]">
                             🔇
                           </span>
                         )}
                       </div>
-                      <span className="max-w-[50px] truncate text-[10px] font-medium text-foreground/80">
+                      <span className="max-w-[44px] truncate text-[9px] font-medium text-foreground/80">
                         {l.name}
                       </span>
                     </button>
@@ -102,12 +102,12 @@ export const ListenersBar = ({
             {onInvite && (
               <button
                 onClick={onInvite}
-                className="flex w-[52px] flex-col items-center gap-1"
+                className="flex w-[44px] flex-col items-center gap-1"
               >
-                <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border-2 border-dashed border-gold/50 text-gold transition-all hover:bg-gold/10 hover:border-gold">
-                  <UserPlus className="h-4 w-4" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-gold/50 text-gold transition-all hover:bg-gold/10 hover:border-gold">
+                  <UserPlus className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-[10px] font-bold text-gold">دعوة</span>
+                <span className="text-[9px] font-bold text-gold">دعوة</span>
               </button>
             )}
           </div>
