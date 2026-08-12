@@ -150,12 +150,38 @@ const Room = () => {
   );
   const roomName = lang === "ar" ? room.nameAr : room.name;
 
-  // Seats
+  // Seats — 10 by default, VIP can expand to 12 or 14
+  const SEATS_KEY = `engvoice.roomSeats.${room.key}`;
+  const isVip = typeof window !== "undefined" && localStorage.getItem("engvoice.vip") === "1";
+  const [maxSeats, setMaxSeats] = useState<number>(() => {
+    if (typeof window === "undefined") return 10;
+    const v = Number(localStorage.getItem(SEATS_KEY));
+    return v === 12 || v === 14 ? v : 10;
+  });
   const [seats, setSeats] = useState<(SeatUser | undefined)[]>(() => {
     const arr: (SeatUser | undefined)[] = [...SAMPLE_SPEAKERS];
-    while (arr.length < 8) arr.push(undefined);
+    while (arr.length < 10) arr.push(undefined);
     return arr;
   });
+
+  useEffect(() => {
+    try { localStorage.setItem(SEATS_KEY, String(maxSeats)); } catch {}
+    setSeats((prev) => {
+      if (prev.length === maxSeats) return prev;
+      const next = prev.slice(0, maxSeats);
+      while (next.length < maxSeats) next.push(undefined);
+      return next;
+    });
+  }, [maxSeats, SEATS_KEY]);
+
+  const changeMaxSeats = (n: number) => {
+    if (n > 10 && !isVip) {
+      toast.error(lang === "ar" ? "زيادة المقاعد متاحة لأعضاء VIP فقط 👑" : "Extra seats are VIP only 👑");
+      return;
+    }
+    setMaxSeats(n);
+  };
+
 
   // Speaker timer (persisted per room)
   const TIMER_KEY = `engvoice.roomTimer.${room.key}`;
@@ -630,7 +656,7 @@ const Room = () => {
         </div>
 
         {/* Topic card */}
-        <div className="mt-5 rounded-2xl bg-white/95 p-4 text-foreground shadow-elegant">
+        <div className="mt-5 rounded-2xl border border-gold/25 bg-card p-4 text-card-foreground shadow-elegant">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-gold-foreground">
               <Sparkles className="h-3 w-3" /> {t("room.topic")}
@@ -696,8 +722,25 @@ const Room = () => {
         <section className="rounded-3xl bg-card p-4 shadow-elegant">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              <Mic className="h-3.5 w-3.5" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
+              <Mic className="h-3.5 w-3.5" /> {t("room.speakers")} · {seats.filter(Boolean).length}/{maxSeats}
             </h2>
+            <div className="flex items-center gap-1">
+              {[10, 12, 14].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => changeMaxSeats(n)}
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums transition-smooth",
+                    maxSeats === n
+                      ? "bg-gradient-gold text-gold-foreground shadow-gold"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {n}{n > 10 && !isVip ? "👑" : ""}
+                </button>
+              ))}
+            </div>
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setStageMode((v) => !v)}
@@ -763,7 +806,7 @@ const Room = () => {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-y-3 gap-x-1">
+            <div className="grid grid-cols-5 gap-y-3 gap-x-1">
               {seats.map((u, i) => (
                 <div key={i} className="relative">
                   <button
