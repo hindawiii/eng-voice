@@ -13,6 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { EmojiStickerPicker } from "@/components/EmojiStickerPicker";
 import { translateText, detectIsArabic } from "@/hooks/useDictionary";
+import { useMsg, tm, MsgKey } from "@/i18n/msg";
+import { Lang } from "@/i18n/I18nProvider";
 
 // ================= Types =================
 interface Friend { id: string; name: string; handle: string; avatar: string; online: boolean; lastSeen?: string }
@@ -35,74 +37,75 @@ interface Thread {
 }
 
 // ================= Seed data =================
-const SELF: Friend = { id: "me", name: "الرسائل المحفوظة", handle: "@saved", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=saved&backgroundColor=FBBF24", online: true };
-const FRIENDS: Friend[] = [
+const makeSelf = (l: Lang): Friend => ({ id: "me", name: tm(l, "saved"), handle: "@saved", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=saved&backgroundColor=FBBF24", online: true });
+const makeFriends = (l: Lang): Friend[] => [
   { id: "u1", name: "Léa Martin", handle: "@lea", avatar: "https://i.pravatar.cc/120?img=47", online: true },
   { id: "u2", name: "Hans Müller", handle: "@hans", avatar: "https://i.pravatar.cc/120?img=12", online: true },
   { id: "u3", name: "Yuki Tanaka", handle: "@yuki", avatar: "https://i.pravatar.cc/120?img=32", online: true },
-  { id: "u4", name: "Carlos Vega", handle: "@carlos", avatar: "https://i.pravatar.cc/120?img=15", online: false, lastSeen: "منذ ١٠ د" },
+  { id: "u4", name: "Carlos Vega", handle: "@carlos", avatar: "https://i.pravatar.cc/120?img=15", online: false, lastSeen: tm(l, "min10") },
   { id: "u5", name: "Sara Ahmed", handle: "@sara", avatar: "https://i.pravatar.cc/120?img=49", online: true },
-  { id: "u6", name: "Marco Rossi", handle: "@marco", avatar: "https://i.pravatar.cc/120?img=8", online: false, lastSeen: "منذ ساعة" },
+  { id: "u6", name: "Marco Rossi", handle: "@marco", avatar: "https://i.pravatar.cc/120?img=8", online: false, lastSeen: tm(l, "hour1") },
 ];
-const ROOM_FRIENDS: Friend[] = [
-  { id: "r1", name: "غرفة English Café", handle: "@english-cafe", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=english&backgroundColor=1E3A5F", online: true },
-  { id: "r2", name: "غرفة Français Élite", handle: "@fr-elite", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=fr&backgroundColor=4C1D95", online: true },
+const makeRoomFriends = (l: Lang): Friend[] => [
+  { id: "r1", name: tm(l, "roomEnglish"), handle: "@english-cafe", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=english&backgroundColor=1E3A5F", online: true },
+  { id: "r2", name: tm(l, "roomFrench"), handle: "@fr-elite", avatar: "https://api.dicebear.com/7.x/shapes/svg?seed=fr&backgroundColor=4C1D95", online: true },
 ];
 
-const SAVED_THREAD: Thread = {
-  id: "saved", kind: "saved", friend: SELF, unread: 0, preview: "احفظ كلماتك ومقاطعك الصوتية هنا",
-  time: "الآن", status: "read", pinned: true,
-  messages: [
-    { id: "s1", from: "me", text: "📌 مساحة شخصية — أرسل هنا الكلمات، العبارات، والمقاطع الصوتية لتراجعها لاحقاً.", time: "الآن", status: "read" },
-  ],
+const makeSeedThreads = (l: Lang): Thread[] => {
+  const F = makeFriends(l);
+  const R = makeRoomFriends(l);
+  const yest = tm(l, "yesterday");
+  return [
+    {
+      id: "saved", kind: "saved", friend: makeSelf(l), unread: 0, preview: tm(l, "savedPreview"),
+      time: tm(l, "now"), status: "read", pinned: true,
+      messages: [{ id: "s1", from: "me", text: tm(l, "savedIntro"), time: tm(l, "now"), status: "read" }],
+    },
+    { id: "t1", kind: "friend", friend: F[0], unread: 2, preview: "On va pratiquer ce soir ?", time: "21:14", status: "delivered",
+      messages: [
+        { id: "m1", from: "them", text: "Salut! Comment ça va aujourd'hui ?", time: "21:10", lang: "fr" },
+        { id: "m2", from: "me", text: tm(l, "seedFine"), time: "21:12", status: "read" },
+        { id: "m3", from: "them", text: "On va pratiquer ce soir ?", time: "21:14", lang: "fr" },
+      ] },
+    { id: "t2", kind: "friend", friend: F[1], unread: 0, preview: "Danke schön 🙏", time: "19:02", status: "read",
+      messages: [
+        { id: "m1", from: "me", text: "Hier ist die Datei", time: "18:59", status: "read" },
+        { id: "m2", from: "them", text: "Danke schön 🙏", time: "19:02", lang: "de" },
+      ] },
+    { id: "t3", kind: "friend", friend: F[2], unread: 5, preview: "また明日話そう！", time: yest, status: "sent",
+      messages: [
+        { id: "m1", from: "them", text: "今日はとても楽しかった", time: yest, lang: "ja" },
+        { id: "m2", from: "them", text: "また明日話そう！", time: yest, lang: "ja" },
+      ] },
+    { id: "t4", kind: "friend", friend: F[3], unread: 0, preview: "Perfecto, nos vemos.", time: yest, status: "read",
+      messages: [{ id: "m1", from: "them", text: "Perfecto, nos vemos.", time: yest, lang: "es" }] },
+    { id: "r1", kind: "room", friend: R[0], unread: 1, preview: tm(l, "seedRoomTopic"), time: "20:30", status: "delivered",
+      messages: [
+        { id: "m1", from: "them", text: tm(l, "seedRoomWelcome"), time: "20:00" },
+        { id: "m2", from: "them", text: tm(l, "seedRoomTopic"), time: "20:30" },
+      ] },
+    { id: "r2", kind: "room", friend: R[1], unread: 0, preview: "Léa: bienvenue tout le monde", time: yest, status: "read",
+      messages: [{ id: "m1", from: "them", text: "Léa: bienvenue tout le monde", time: yest, lang: "fr" }] },
+  ];
 };
-
-const SEED_THREADS: Thread[] = [
-  SAVED_THREAD,
-  { id: "t1", kind: "friend", friend: FRIENDS[0], unread: 2, preview: "On va pratiquer ce soir ?", time: "21:14", status: "delivered",
-    messages: [
-      { id: "m1", from: "them", text: "Salut! Comment ça va aujourd'hui ?", time: "21:10", lang: "fr" },
-      { id: "m2", from: "me", text: "أنا بخير، شكراً!", time: "21:12", status: "read" },
-      { id: "m3", from: "them", text: "On va pratiquer ce soir ?", time: "21:14", lang: "fr" },
-    ] },
-  { id: "t2", kind: "friend", friend: FRIENDS[1], unread: 0, preview: "Danke schön 🙏", time: "19:02", status: "read",
-    messages: [
-      { id: "m1", from: "me", text: "Hier ist die Datei", time: "18:59", status: "read" },
-      { id: "m2", from: "them", text: "Danke schön 🙏", time: "19:02", lang: "de" },
-    ] },
-  { id: "t3", kind: "friend", friend: FRIENDS[2], unread: 5, preview: "また明日話そう！", time: "أمس", status: "sent",
-    messages: [
-      { id: "m1", from: "them", text: "今日はとても楽しかった", time: "أمس", lang: "ja" },
-      { id: "m2", from: "them", text: "また明日話そう！", time: "أمس", lang: "ja" },
-    ] },
-  { id: "t4", kind: "friend", friend: FRIENDS[3], unread: 0, preview: "Perfecto, nos vemos.", time: "أمس", status: "read",
-    messages: [{ id: "m1", from: "them", text: "Perfecto, nos vemos.", time: "أمس", lang: "es" }] },
-  { id: "r1", kind: "room", friend: ROOM_FRIENDS[0], unread: 1, preview: "أحمد: النقاش الليلة عن السفر ✈️", time: "20:30", status: "delivered",
-    messages: [
-      { id: "m1", from: "them", text: "أهلاً بكم في غرفة الممارسة اليومية.", time: "20:00" },
-      { id: "m2", from: "them", text: "أحمد: النقاش الليلة عن السفر ✈️", time: "20:30" },
-    ] },
-  { id: "r2", kind: "room", friend: ROOM_FRIENDS[1], unread: 0, preview: "Léa: bienvenue tout le monde", time: "أمس", status: "read",
-    messages: [{ id: "m1", from: "them", text: "Léa: bienvenue tout le monde", time: "أمس", lang: "fr" }] },
-];
 
 const QUICK_REACTIONS = ["❤️", "😂", "👍", "🔥", "🙏"];
 
-const FOLDERS: { id: "all" | "friends" | "rooms"; label: string }[] = [
-  { id: "all", label: "الكل" },
-  { id: "friends", label: "الأصدقاء" },
-  { id: "rooms", label: "الغرف المشترك بها" },
+const FOLDERS: { id: "all" | "friends" | "rooms"; key: MsgKey }[] = [
+  { id: "all", key: "folderAll" },
+  { id: "friends", key: "folderFriends" },
+  { id: "rooms", key: "folderRooms" },
 ];
 
 // ================= Helpers =================
 const nowTime = () => new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-const checkGrammar = (s: string): string | null => {
+const checkGrammar = (s: string, l: Lang): string | null => {
   const t = s.trim(); if (!t) return null;
-  if (/\s{2,}/.test(t)) return "تجنّب المسافات المزدوجة.";
-  if (/([a-zA-Z\u0600-\u06FF])\1{3,}/.test(t)) return "حروف مكررة قد تكون خطأً مطبعياً.";
-  if (/^[a-z]/.test(t)) return "ابدأ الجملة بحرف كبير (Capital).";
-  if (t.length > 12 && !/[.!?؟…]$/.test(t)) return "أضف علامة ترقيم في النهاية.";
-  if (/\bi\b/.test(t)) return "اكتب \"I\" بحرف كبير.";
+  if (/\s{2,}/.test(t)) return tm(l, "gDoubleSpace");
+  if (/([a-zA-Z\u0600-\u06FF])\1{3,}/.test(t)) return tm(l, "gRepeated");
+  if (/^[a-z]/.test(t)) return tm(l, "gCapital");
+  if (t.length > 12 && !/[.!?\u061F\u2026]$/.test(t)) return tm(l, "gPunct");
+  if (/\bi\b/.test(t)) return tm(l, "gCapitalI");
   return null;
 };
 
