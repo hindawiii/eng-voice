@@ -722,8 +722,25 @@ const Room = () => {
         <section className="rounded-3xl bg-card p-4 shadow-elegant">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              <Mic className="h-3.5 w-3.5" /> {t("room.speakers")} · {seats.filter(Boolean).length}/8
+              <Mic className="h-3.5 w-3.5" /> {t("room.speakers")} · {seats.filter(Boolean).length}/{maxSeats}
             </h2>
+            <div className="flex items-center gap-1">
+              {[10, 12, 14].map((n) => (
+                <button
+                  key={n}
+                  onClick={() => changeMaxSeats(n)}
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums transition-smooth",
+                    maxSeats === n
+                      ? "bg-gradient-gold text-gold-foreground shadow-gold"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {n}{n > 10 && !isVip ? "👑" : ""}
+                </button>
+              ))}
+            </div>
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setStageMode((v) => !v)}
