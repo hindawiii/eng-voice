@@ -1006,6 +1006,14 @@ const Messages = () => {
   const [folder, setFolder] = useState<"all" | "friends" | "rooms">("all");
   const active = threads.find((t) => t.id === activeId) || null;
 
+  // Re-localize seeded demo content when the interface language changes
+  const firstLang = useRef(lang);
+  useEffect(() => {
+    if (firstLang.current === lang) return;
+    firstLang.current = lang;
+    setThreads(makeSeedThreads(lang));
+  }, [lang]);
+
   // Simulate a partner recording indicator every ~14s on Léa's thread for demo
   useEffect(() => {
     const int = window.setInterval(() => {
