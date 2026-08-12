@@ -13,11 +13,11 @@ interface SeatProps {
 export const Seat = ({ user, index, timeLeft }: SeatProps) => {
   if (!user) {
     return (
-      <div className="flex flex-col items-center gap-2">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-border text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
-          <Plus className="h-5 w-5" />
+      <div className="flex flex-col items-center gap-1.5">
+        <div className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-dashed border-border text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
+          <Plus className="h-4 w-4" />
         </div>
-        <span className="text-xs text-muted-foreground">Seat {index + 1}</span>
+        <span className="text-[9px] text-muted-foreground">{index + 1}</span>
       </div>
     );
   }
@@ -25,28 +25,29 @@ export const Seat = ({ user, index, timeLeft }: SeatProps) => {
   const initials = user.name.slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-1.5">
       <div className="relative">
         <div
           className={cn(
-            "flex h-16 w-16 items-center justify-center rounded-full bg-gradient-primary text-lg font-bold text-primary-foreground transition-smooth",
+            "flex h-11 w-11 items-center justify-center rounded-full bg-gradient-primary text-sm font-bold text-primary-foreground transition-smooth",
             user.speaking && "speaker-ring speaker-ring-active"
           )}
         >
           {initials}
         </div>
-        <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background bg-card text-xs">
+        <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border border-background bg-card text-[9px] leading-none">
           {user.flag}
         </span>
         <span
           className={cn(
-            "absolute -top-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full border-2 border-background text-xs",
+            "absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full border border-background text-[9px]",
             user.speaking ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
           )}
         >
-          {user.speaking ? <Mic className="h-3 w-3" /> : <MicOff className="h-3 w-3" />}
+          {user.speaking ? <Mic className="h-2.5 w-2.5" /> : <MicOff className="h-2.5 w-2.5" />}
         </span>
       </div>
+
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-1 text-sm font-semibold">
           {user.name}
