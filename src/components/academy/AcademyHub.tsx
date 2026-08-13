@@ -4,6 +4,7 @@ import { ACADEMY_LANGS, LANG_ONLINE } from "@/data/academy";
 import { useCustomRooms } from "@/data/customRooms";
 import { cn } from "@/lib/utils";
 import { LanguageCorner } from "./LanguageCorner";
+import { ActiveRoomCard } from "@/components/ActiveRoomCard";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 
@@ -79,34 +80,9 @@ export const AcademyHub = () => {
                 لا توجد غرف نشطة حالياً — كن أول من ينشئ غرفة!
               </p>
             ) : (
-              <div className="grid grid-cols-4 gap-3 sm:grid-cols-6">
+              <div className="space-y-2.5">
                 {activeRooms.map((r) => (
-                  <Tooltip key={r.key}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        to={`/room/${r.key}`}
-                        className="group flex flex-col items-center gap-1 outline-none"
-                      >
-                        <div className="relative">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-xl ring-1 ring-gold/40 transition-all group-hover:-translate-y-0.5 group-hover:ring-gold">
-                            {r.flag}
-                          </div>
-                          <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
-                            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                          </span>
-                        </div>
-                        <span className="max-w-[56px] truncate text-[10px] font-semibold text-foreground/80">
-                          {r.language}
-                        </span>
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-[190px] font-arabic">
-                      <p className="text-xs font-bold">{r.language}</p>
-                      <p className="mt-0.5 text-[10px] leading-snug text-foreground/80">{r.topic}</p>
-                      <p className="mt-0.5 text-[10px] text-gold">{r.liveUsers} مباشر</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  <ActiveRoomCard key={r.key} room={r} />
                 ))}
               </div>
             )}
