@@ -856,12 +856,9 @@ const Room = () => {
 
         {/* Compact tabbed interaction panel directly under seats */}
         <Tabs defaultValue="chat" className="mt-4">
-          <TabsList className="grid w-full grid-cols-4 rounded-full bg-card shadow-soft p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-3 rounded-full bg-card shadow-soft p-1 h-auto">
             <TabsTrigger value="chat" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
               <MessageSquare className="h-3.5 w-3.5" /> {lang === "ar" ? "دردشة" : "Chat"}
-            </TabsTrigger>
-            <TabsTrigger value="people" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
-              <Users className="h-3.5 w-3.5" /> {listeners.length}
             </TabsTrigger>
             <TabsTrigger value="translate" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
               <Languages className="h-3.5 w-3.5" /> {lang === "ar" ? "ترجمة" : "Translate"}
