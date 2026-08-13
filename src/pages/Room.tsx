@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Flag, Hand, Languages, Lock, Mic, Sparkles, Timer, Zap, Plus, Crown, MicOff, UserMinus, X,
-  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Download, GraduationCap, LogOut,
+  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Download, GraduationCap, LogOut,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
