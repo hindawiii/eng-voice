@@ -17,12 +17,11 @@ export const ACADEMY_LANGS: AcademyLang[] = [
   { key: "ja", labelAr: "اليابانية", flag: "🇯🇵", bcp47: "ja-JP", code: "ja", name: "日本語" },
   { key: "ko", labelAr: "الكورية", flag: "🇰🇷", bcp47: "ko-KR", code: "ko", name: "한국어" },
   { key: "zh", labelAr: "الصينية", flag: "🇨🇳", bcp47: "zh-CN", code: "zh", name: "中文" },
-  { key: "us", labelAr: "الإنجليزية (أمريكا)", flag: "🇺🇸", bcp47: "en-US", code: "en", name: "English (US)" },
 ];
 
 // Live online counts per corner (deterministic mock — replace with realtime later)
 export const LANG_ONLINE: Record<string, number> = {
-  all: 680, en: 142, us: 118, fr: 88, es: 64, de: 45, ja: 32,
+  all: 680, en: 142, fr: 88, es: 64, de: 45, ja: 32,
   ar: 120, ko: 28, zh: 56, tr: 38,
 };
 
@@ -281,7 +280,7 @@ export const generateRandomPhrase = (langKey: string): VocabItem => {
 };
 
 // Fallback data for corners without dedicated content — mirror English until localized content lands
-["tr", "ko", "us"].forEach((k) => {
+["tr", "ko"].forEach((k) => {
   if (!LETTERS[k]) LETTERS[k] = LETTERS.en;
   if (!VOCAB[k]) VOCAB[k] = VOCAB.en;
   if (!GRAMMAR[k]) GRAMMAR[k] = GRAMMAR.en;
