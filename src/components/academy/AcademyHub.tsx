@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { ACADEMY_LANGS, LANG_ONLINE } from "@/data/academy";
 import { useCustomRooms } from "@/data/customRooms";
 import { cn } from "@/lib/utils";
