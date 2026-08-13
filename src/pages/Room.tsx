@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Flag, Hand, Languages, Lock, Mic, Sparkles, Timer, Zap, Plus, Crown, MicOff, UserMinus, X,
-  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Users, Download, GraduationCap, LogOut,
+  MessageSquare, Wand2, ChevronDown, ChevronUp, Settings as Cog, Download, GraduationCap, LogOut,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -856,12 +856,9 @@ const Room = () => {
 
         {/* Compact tabbed interaction panel directly under seats */}
         <Tabs defaultValue="chat" className="mt-4">
-          <TabsList className="grid w-full grid-cols-4 rounded-full bg-card shadow-soft p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-3 rounded-full bg-card shadow-soft p-1 h-auto">
             <TabsTrigger value="chat" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
               <MessageSquare className="h-3.5 w-3.5" /> {lang === "ar" ? "دردشة" : "Chat"}
-            </TabsTrigger>
-            <TabsTrigger value="people" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
-              <Users className="h-3.5 w-3.5" /> {listeners.length}
             </TabsTrigger>
             <TabsTrigger value="translate" className="rounded-full text-xs gap-1 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground">
               <Languages className="h-3.5 w-3.5" /> {lang === "ar" ? "ترجمة" : "Translate"}
@@ -873,33 +870,6 @@ const Room = () => {
 
           <TabsContent value="chat" className="mt-3">
             <ChatBox isAdmin={isAdmin} />
-          </TabsContent>
-
-          <TabsContent value="people" className="mt-3">
-            <section className="rounded-3xl bg-card p-4 shadow-soft">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {t("room.listeners")} · {listeners.length}
-                </h2>
-                <button
-                  onClick={requestSeat}
-                  className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
-                >
-                  <Hand className="h-3.5 w-3.5" /> {t("room.raise")}
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {listeners.map((l) => (
-                  <div key={l.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs">
-                    <span>{l.flag}</span>
-                    <span className="font-medium">{l.name}</span>
-                  </div>
-                ))}
-                <button className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
-                  <Plus className="h-3 w-3" /> {t("room.invite")}
-                </button>
-              </div>
-            </section>
           </TabsContent>
 
           <TabsContent value="translate" className="mt-3">
