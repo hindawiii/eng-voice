@@ -872,33 +872,6 @@ const Room = () => {
             <ChatBox isAdmin={isAdmin} />
           </TabsContent>
 
-          <TabsContent value="people" className="mt-3">
-            <section className="rounded-3xl bg-card p-4 shadow-soft">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  {t("room.listeners")} · {listeners.length}
-                </h2>
-                <button
-                  onClick={requestSeat}
-                  className="flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary transition-smooth hover:bg-primary hover:text-primary-foreground"
-                >
-                  <Hand className="h-3.5 w-3.5" /> {t("room.raise")}
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {listeners.map((l) => (
-                  <div key={l.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs">
-                    <span>{l.flag}</span>
-                    <span className="font-medium">{l.name}</span>
-                  </div>
-                ))}
-                <button className="flex items-center gap-1 rounded-full border border-dashed border-border px-3 py-1.5 text-xs text-muted-foreground transition-smooth hover:border-primary hover:text-primary">
-                  <Plus className="h-3 w-3" /> {t("room.invite")}
-                </button>
-              </div>
-            </section>
-          </TabsContent>
-
           <TabsContent value="translate" className="mt-3">
             <section className="rounded-3xl bg-card p-4 shadow-soft">
               <h2 className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
