@@ -168,6 +168,9 @@ const Profile = () => {
   const { t, lang } = useI18n();
   const [avatar, setAvatar] = useAvatar();
   const fileRef = useRef<HTMLInputElement>(null);
+  const camRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState(false);
+  const [picker, setPicker] = useState(false);
 
   const currentLevel = LEVELS.find((l) => l.id === USER.level)!;
   const nextLevel = LEVELS.find((l) => l.id === USER.level + 1);
@@ -177,11 +180,24 @@ const Profile = () => {
 
   const onPickAvatar: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const f = e.target.files?.[0];
+    e.target.value = "";
     if (!f) return;
     const reader = new FileReader();
-    reader.onload = () => setAvatar(reader.result as string);
+    reader.onload = () => {
+      setAvatar(reader.result as string);
+      setPicker(false);
+    };
     reader.readAsDataURL(f);
   };
+
+  const downloadAvatar = () => {
+    if (!avatar) return;
+    const a = document.createElement("a");
+    a.href = avatar;
+    a.download = "engvoice-avatar.png";
+    a.click();
+  };
+
 
   const socialStats = useMemo(
     () => [
