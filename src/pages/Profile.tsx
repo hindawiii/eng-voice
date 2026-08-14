@@ -403,7 +403,7 @@ const Profile = () => {
 
 
           {/* Level progress directly below identity */}
-          <div className="mt-4 rounded-2xl border border-border bg-background p-4">
+          <div className="relative mt-4 rounded-2xl border border-border bg-background p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="font-black text-white" dir="ltr">
                 {currentLevel.emoji} Lv {currentLevel.id} ·{" "}
