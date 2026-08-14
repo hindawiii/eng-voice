@@ -244,19 +244,31 @@ const Profile = () => {
 
       <div className="space-y-4 px-5 pt-4">
         {/* 1. Hero user card with real avatar upload */}
-        <section className="rounded-3xl border border-border bg-surface-2 p-5 shadow-elegant">
+        <section className="relative overflow-hidden rounded-3xl border border-border bg-surface-2 p-5 shadow-elegant">
+          {/* Country map backdrop */}
+          <img
+            src={mapSd}
+            alt={lang === "ar" ? `خريطة ${USER.country.ar}` : `${USER.country.en} map`}
+            loading="lazy"
+            width={1024}
+            height={640}
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-25"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-surface-2/60 via-surface-2/80 to-surface-2" />
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickAvatar} />
           <input
-            ref={fileRef}
+            ref={camRef}
             type="file"
             accept="image/*"
+            capture="user"
             className="hidden"
             onChange={onPickAvatar}
           />
-          <div className="flex flex-col items-center gap-3 text-center">
+          <div className="relative flex flex-col items-center gap-3 text-center">
             <button
               type="button"
-              onClick={() => fileRef.current?.click()}
-              aria-label={lang === "ar" ? "رفع صورة شخصية" : "Upload profile photo"}
+              onClick={() => setPreview(true)}
+              aria-label={lang === "ar" ? "معاينة الصورة الشخصية" : "Preview profile photo"}
               className="group relative h-24 w-24 overflow-hidden rounded-2xl border-2 border-gold/50 bg-gradient-to-br from-gold to-amber-600 shadow-gold transition-spring hover:scale-[1.03]"
             >
               {avatar ? (
@@ -266,13 +278,34 @@ const Profile = () => {
                   YA
                 </span>
               )}
-              <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-black/70 py-1 text-[10px] font-black text-white opacity-0 transition-opacity group-hover:opacity-100">
-                <Camera className="h-3 w-3" /> {lang === "ar" ? "تغيير" : "Change"}
+              <span className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1 bg-background/80 py-1 text-[10px] font-black text-white opacity-0 transition-opacity group-hover:opacity-100">
+                <Eye className="h-3 w-3" /> {lang === "ar" ? "معاينة" : "Preview"}
               </span>
               <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface-2 bg-background text-base">
                 {USER.flag}
               </span>
             </button>
+
+            {/* Photo actions */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={downloadAvatar}
+                disabled={!avatar}
+                className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-[11px] font-bold text-white/85 transition-smooth hover:border-gold/40 hover:text-gold disabled:opacity-40"
+              >
+                <Download className="h-3.5 w-3.5" />
+                {lang === "ar" ? "تحميل الصورة" : "Download"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPicker(true)}
+                className="flex items-center gap-1.5 rounded-full bg-gradient-gold px-3 py-1.5 text-[11px] font-black text-gold-foreground shadow-gold transition-spring hover:scale-[1.03]"
+              >
+                <Camera className="h-3.5 w-3.5" />
+                {lang === "ar" ? "تغيير الصورة" : "Change photo"}
+              </button>
+            </div>
 
             <div>
               <div className="flex items-center justify-center gap-2">
@@ -285,6 +318,89 @@ const Profile = () => {
               </p>
             </div>
           </div>
+
+          {/* Preview lightbox */}
+          <Dialog open={preview} onOpenChange={setPreview}>
+            <DialogContent className="max-w-sm border-border bg-card">
+              <DialogHeader>
+                <DialogTitle className="text-white">
+                  {lang === "ar" ? "الصورة الشخصية" : "Profile photo"}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="overflow-hidden rounded-2xl border border-gold/30 bg-background">
+                {avatar ? (
+                  <img src={avatar} alt={USER.name} className="h-auto w-full object-contain" />
+                ) : (
+                  <div className="flex aspect-square items-center justify-center bg-gradient-to-br from-gold to-amber-600 text-6xl font-black text-gold-foreground">
+                    YA
+                  </div>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={downloadAvatar}
+                  disabled={!avatar}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border bg-background py-2 text-xs font-bold text-white/85 transition-smooth hover:text-gold disabled:opacity-40"
+                >
+                  <Download className="h-4 w-4" />
+                  {lang === "ar" ? "تحميل" : "Download"}
+                </button>
+                <button
+                  onClick={() => {
+                    setPreview(false);
+                    setPicker(true);
+                  }}
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-gold py-2 text-xs font-black text-gold-foreground"
+                >
+                  <Camera className="h-4 w-4" />
+                  {lang === "ar" ? "تغيير" : "Change"}
+                </button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Source picker */}
+          <Dialog open={picker} onOpenChange={setPicker}>
+            <DialogContent className="max-w-xs border-border bg-card">
+              <DialogHeader>
+                <DialogTitle className="text-white">
+                  {lang === "ar" ? "اختر مصدر الصورة" : "Choose photo source"}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => camRef.current?.click()}
+                  className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 transition-smooth hover:border-gold/40"
+                >
+                  <Camera className="h-6 w-6 text-gold" />
+                  <span className="text-xs font-bold text-white">
+                    {lang === "ar" ? "الكاميرا" : "Camera"}
+                  </span>
+                </button>
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-background p-4 transition-smooth hover:border-gold/40"
+                >
+                  <ImageIcon className="h-6 w-6 text-gold" />
+                  <span className="text-xs font-bold text-white">
+                    {lang === "ar" ? "الاستوديو" : "Gallery"}
+                  </span>
+                </button>
+              </div>
+              {avatar && (
+                <button
+                  onClick={() => {
+                    setAvatar(null);
+                    setPicker(false);
+                  }}
+                  className="rounded-full border border-destructive/40 py-2 text-xs font-bold text-destructive"
+                >
+                  {lang === "ar" ? "إزالة الصورة" : "Remove photo"}
+                </button>
+              )}
+            </DialogContent>
+          </Dialog>
+
 
           {/* Level progress directly below identity */}
           <div className="mt-4 rounded-2xl border border-border bg-background p-4">
