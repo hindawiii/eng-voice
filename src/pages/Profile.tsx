@@ -5,8 +5,10 @@ import {
   Circle,
   Coins,
   Crown,
+  Download,
   Eye,
   Gift,
+  Image as ImageIcon,
   Mic2,
   Play,
   Settings,
@@ -20,10 +22,13 @@ import { ProBadge } from "@/components/ProBadge";
 import { AdBoosterButton } from "@/components/AdBoosterButton";
 import { ProfileGpsDropdown } from "@/components/ProfileGpsDropdown";
 import { ReferralRewardsPanel } from "@/components/ReferralRewardsPanel";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LEVELS } from "@/data/rooms";
 import { useI18n } from "@/i18n/I18nProvider";
 import { useOnboarding, MISSION_IDS, MISSION_LABELS } from "@/hooks/useOnboarding";
 import { cn } from "@/lib/utils";
+import mapSd from "@/assets/map-sd.jpg";
+
 
 const USER = {
   name: "Yusuf Al-Amin",
