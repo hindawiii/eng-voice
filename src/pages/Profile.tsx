@@ -433,7 +433,7 @@ const Profile = () => {
           </div>
 
           {/* Merged points + XP */}
-          <div className="mt-3 grid grid-cols-2 overflow-hidden rounded-2xl border border-border">
+          <div className="relative mt-3 grid grid-cols-2 overflow-hidden rounded-2xl border border-border">
             <div className="flex items-center justify-between gap-2 border-e border-border bg-background p-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-white/70">
